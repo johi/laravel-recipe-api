@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreRecipeRequest;
-use App\Http\Requests\UpdateRecipeRequest;
+use App\Http\Requests\Api\V1\StoreRecipeRequest;
+use App\Http\Requests\Api\V1\UpdateRecipeRequest;
 use App\Models\Recipe;
 
 class RecipeController extends Controller
@@ -14,15 +14,7 @@ class RecipeController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        return Recipe::all();
     }
 
     /**
@@ -37,14 +29,6 @@ class RecipeController extends Controller
      * Display the specified resource.
      */
     public function show(Recipe $recipe)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Recipe $recipe)
     {
         //
     }
