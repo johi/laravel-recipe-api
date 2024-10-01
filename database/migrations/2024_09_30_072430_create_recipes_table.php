@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->timestamps();
         });
 
         Schema::create('recipes', function (Blueprint $table) {
@@ -22,9 +21,9 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users');
             $table->foreignId('category_id')->constrained('categories');
             $table->string('title');
-            $table->string('description');
-            $table->string('preparation_time');
-            $table->string('servings');
+            $table->text('description');
+            $table->unsignedInteger('preparation_time_minutes');
+            $table->unsignedInteger('servings');
             $table->string('image_url');
             $table->timestamps();
         });
@@ -41,7 +40,7 @@ return new class extends Migration
         Schema::create('instructions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('recipe_id')->constrained('recipes');
-            $table->string('description');
+            $table->text('description');
             $table->unsignedInteger('order');
             $table->timestamps();
         });

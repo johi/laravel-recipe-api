@@ -2,6 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Models\Category;
+use App\Models\Ingredient;
+use App\Models\Instruction;
+use App\Models\Recipe;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -13,11 +17,35 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        $users = User::factory(10)->create();
+        $categories = collect(['Starters', 'Main dishes', 'Side dishes', 'Dessert', 'Bakery', 'Drinks']);
+        $createdCategories = collect([]);
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        foreach ($categories as $category) {
+            $createdCategory = Category::factory(1)
+                ->create([
+                    'title' => $category,
+                ]);
+            $createdCategories->push($createdCategory);
+        }
+
+        $recipes = Recipe::factory(100)
+            ->recycle($createdCategories)
+            ->create();
+
+        foreach ($recipes as $recipe) {
+            Ingredient::factory(rand(2, 10))
+                ->create([
+                    'recipe_id' => $recipe->id,
+                ]);
+            $amount = rand(1, 10);
+            for ($i = 0; $i < $amount; $i++) {
+                Instruction::factory(1)
+                    ->create([
+                        'recipe_id' => $recipe->id,
+                        'order' => $i
+                    ]);
+            }
+        }
     }
 }
