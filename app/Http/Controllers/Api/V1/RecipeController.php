@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\StoreRecipeRequest;
 use App\Http\Requests\Api\V1\UpdateRecipeRequest;
+use App\Http\Resources\V1\RecipeResource;
 use App\Models\Recipe;
 
 class RecipeController extends Controller
@@ -14,7 +15,7 @@ class RecipeController extends Controller
      */
     public function index()
     {
-        return Recipe::all();
+        return RecipeResource::collection(Recipe::paginate());
     }
 
     /**
@@ -30,7 +31,7 @@ class RecipeController extends Controller
      */
     public function show(Recipe $recipe)
     {
-        //
+        return new RecipeResource($recipe);
     }
 
     /**
