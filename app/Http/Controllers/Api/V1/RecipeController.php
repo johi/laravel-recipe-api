@@ -2,20 +2,21 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\StoreRecipeRequest;
 use App\Http\Requests\Api\V1\UpdateRecipeRequest;
 use App\Http\Resources\V1\RecipeResource;
 use App\Models\Recipe;
 
-class RecipeController extends Controller
+class RecipeController extends ApiController
 {
+    private $possibleIncludes = ['category', 'ingredients', 'instructions'];
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return RecipeResource::collection(Recipe::with(['category', 'ingredients', 'instructions'])->paginate());
+        return RecipeResource::collection(Recipe::with($this->includes($this->possibleIncludes))->paginate());
     }
 
     /**
@@ -29,9 +30,9 @@ class RecipeController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Recipe $recipe)
+    public function show(int $recipe_id)
     {
-        return new RecipeResource($recipe);
+        return new RecipeResource(Recipe::with($this->possibleIncludes)->find($recipe_id));
     }
 
     /**

@@ -20,7 +20,7 @@ class IngredientFactory extends Factory
         return [
             'recipe_id' => Recipe::factory(),
             'title' => $this->faker->word(),
-            'quantity' => $this->faker->randomDigit(),
+            'quantity' => $this->faker->numberBetween(1, 100),
             'unit' => array_rand(array_flip(['g', 'kg', 'dl', 'tsp', 'cl'])),
         ];
     }
