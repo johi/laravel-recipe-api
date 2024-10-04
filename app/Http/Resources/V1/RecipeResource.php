@@ -35,6 +35,9 @@ class RecipeResource extends JsonResource
             'included' => [
                 'author' => [
                     new UserResource($this->user)
+                ],
+                'category' => [
+                    new CategoryResource($this->whenLoaded('category')),
                 ]
             ],
             'links' => [

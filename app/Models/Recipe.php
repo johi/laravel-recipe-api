@@ -12,9 +12,9 @@ class Recipe extends Model
 {
     use HasFactory;
 
-    public function category() : HasOne
+    public function category() : BelongsTo
     {
-        return $this->hasOne(Category::class);
+        return $this->belongsTo(Category::class);
     }
 
     public function ingredients() : HasMany
