@@ -22,22 +22,19 @@ class RecipeResource extends JsonResource
             'id' => $this->id,
             'attributes' => [
                 'title' => $this->title,
-                'description' => $this->description,
+                'description' => $this->when(
+                    $request->routeIs('tickets.show'),
+                    $this->description
+                ),
                 'preparationTimeMinutes' => $this->preparation_time_minutes,
                 'servings' => $this->servings,
                 'imageUrl' => $this->image_url,
                 'createdAt' => $this->created_at,
                 'updatedAt' => $this->updated_at
             ],
-            'relationships' => [
+            'included' => [
                 'author' => [
-                    'data' => [
-                        'type' => 'user',
-                        'id' => $this->user_id
-                    ],
-                    'links' => [
-                        ['self' => 'todo']
-                    ]
+                    new UserResource($this->user)
                 ]
             ],
             'links' => [
