@@ -7,7 +7,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class RecipeResource extends JsonResource
 {
-//    public static $wrap = 'recipe';
+    //    public static $wrap = 'recipe';
 
     /**
      * Transform the resource into an array.
@@ -39,7 +39,7 @@ class RecipeResource extends JsonResource
                 'instructions' => InstructionResource::collection($this->whenLoaded('instructions')),
             ],
             'links' => [
-                ['self' => route('recipes.show', ['recipe' => $this->id])]
+                'self' => route('recipes.show', ['recipe' => $this->id])
             ]
         ];
     }
