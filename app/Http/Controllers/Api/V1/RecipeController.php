@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Http\Filters\V1\RecipeFilter;
 use App\Http\Requests\Api\V1\StoreRecipeRequest;
 use App\Http\Requests\Api\V1\UpdateRecipeRequest;
 use App\Http\Resources\V1\RecipeResource;
@@ -14,9 +15,13 @@ class RecipeController extends ApiController
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(RecipeFilter $filters)
     {
-        return RecipeResource::collection(Recipe::with($this->includes($this->possibleIncludes))->paginate());
+        return RecipeResource::collection(
+            Recipe::filter($filters)
+                ->with($this->includes($this->possibleIncludes))
+                ->paginate()
+        );
     }
 
     /**
