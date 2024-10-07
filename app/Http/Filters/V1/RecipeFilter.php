@@ -4,6 +4,13 @@ namespace App\Http\Filters\V1;
 
 class RecipeFilter extends QueryFilter
 {
+    protected $sortable = [
+        'title',
+        'preparationTimeMinutes' => 'preparation_time_minutes',
+        'createdAt' => 'created_at',
+        'updatedAt' => 'updated_at'
+    ];
+
     public function createdAt($value)
     {
         $dates = explode(',', $value);
