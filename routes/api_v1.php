@@ -1,16 +1,17 @@
 <?php
 
-use App\Http\Controllers\Api\V1\CategoryController;
+use App\Http\Controllers\Api\V1\CategoriesController;
 use App\Http\Controllers\Api\V1\IngredientsController;
 use App\Http\Controllers\Api\V1\InstructionsController;
-use App\Http\Controllers\Api\V1\RecipeController;
+use App\Http\Controllers\Api\V1\RecipesController;
 use App\Http\Controllers\Api\V1\UsersController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware('auth:sanctum')->apiResource('users', UsersController::class);
-Route::middleware('auth:sanctum')->apiResource('recipes', RecipeController::class);
+Route::middleware('auth:sanctum')->apiResource('authors', UsersController::class);
+Route::middleware('auth:sanctum')->apiResource('recipes', RecipesController::class);
 
-Route::middleware('auth:sanctum')->get('/categories', [CategoryController::class, 'index']);
+Route::middleware('auth:sanctum')->get('/categories', [CategoriesController::class, 'index']);
+//Route::get('/categories', [CategoryController::class, 'index']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('recipes/{recipe}/ingredients', [IngredientsController::class, 'index'])->name('ingredients.index');          // List all ingredients for a specific recipe

@@ -30,9 +30,9 @@ class UsersController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(User $user)
+    public function show(int $user_id)
     {
-        return new UserResource($user);
+        return new UserResource(User::where('id', $user_id)->first());
     }
 
     /**

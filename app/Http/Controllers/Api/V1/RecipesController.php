@@ -8,7 +8,7 @@ use App\Http\Requests\Api\V1\UpdateRecipeRequest;
 use App\Http\Resources\V1\RecipeResource;
 use App\Models\Recipe;
 
-class RecipeController extends ApiController
+class RecipesController extends ApiController
 {
     private $possibleIncludes = ['category', 'ingredients', 'instructions'];
 
