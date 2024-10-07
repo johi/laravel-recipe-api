@@ -33,7 +33,7 @@ class RecipeResource extends JsonResource
                 'updatedAt' => $this->updated_at
             ],
             'included' => [
-                'author' => new UserResource($this->user),
+                'author' => new UserResource($this->author),
                 'category' => new CategoryResource($this->whenLoaded('category')),
                 'ingredients' => IngredientResource::collection($this->whenLoaded('ingredients')),
                 'instructions' => InstructionResource::collection($this->whenLoaded('instructions')),

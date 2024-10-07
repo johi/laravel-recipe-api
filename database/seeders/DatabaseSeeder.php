@@ -7,7 +7,6 @@ use App\Models\Ingredient;
 use App\Models\Instruction;
 use App\Models\Recipe;
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
