@@ -4,6 +4,7 @@ namespace App\Http\Filters\V1;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 abstract class QueryFilter
 {
@@ -38,28 +39,16 @@ abstract class QueryFilter
         return $this->builder;
     }
 
-    protected function sort($value) {
-        $sortAttributes = explode(',', $value);
+    protected function sort($values) {
+        $sortables = explode(',', $values);
 
-        foreach($sortAttributes as $sortAttribute) {
-            $direction = 'asc';
+        foreach ($sortables as $sortable) {
+            $direction = Str::startsWith($sortable, '-') ? 'desc' : 'asc';
+            $column = Str::of($sortable)->remove('-')->snake()->value();
 
-            if (strpos($sortAttribute, '-') === 0) {
-                $direction = 'desc';
-                $sortAttribute = substr($sortAttribute, 1);
+            if (in_array($column, $this->sortable)) {
+                $this->builder->orderBy($column, $direction);
             }
-
-            if (!in_array($sortAttribute, $this->sortable) && !array_key_exists($sortAttribute, $this->sortable)) {
-                continue;
-            }
-
-            $columnName = $this->sortable[$sortAttribute] ?? null;
-
-            if ($columnName === null) {
-                $columnName = $sortAttribute;
-            }
-
-            $this->builder->orderBy($columnName, $direction);
         }
     }
 }
