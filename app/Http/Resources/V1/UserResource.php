@@ -24,7 +24,10 @@ class UserResource extends JsonResource
                     'emailVerifiedAt' => $this->email_verified_at,
                     'createdAt' => $this->created_at,
                     'updatedAt' => $this->updated_at,
-                ])
+                ]),
+                'included' => [
+                    'recipes' => RecipeResource::collection($this->whenLoaded('recipes')),
+                ]
             ],
             'links' => [
                 ['self' => route('authors.show', ['author' => $this->id])]

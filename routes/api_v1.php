@@ -4,10 +4,10 @@ use App\Http\Controllers\Api\V1\CategoriesController;
 use App\Http\Controllers\Api\V1\IngredientsController;
 use App\Http\Controllers\Api\V1\InstructionsController;
 use App\Http\Controllers\Api\V1\RecipesController;
-use App\Http\Controllers\Api\V1\UsersController;
+use App\Http\Controllers\Api\V1\AuthorsController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware('auth:sanctum')->apiResource('authors', UsersController::class);
+Route::middleware('auth:sanctum')->apiResource('authors', AuthorsController::class);
 Route::middleware('auth:sanctum')->apiResource('recipes', RecipesController::class);
 
 Route::middleware('auth:sanctum')->get('/categories', [CategoriesController::class, 'index']);

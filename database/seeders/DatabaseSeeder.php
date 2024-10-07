@@ -30,6 +30,7 @@ class DatabaseSeeder extends Seeder
         }
 
         $recipes = Recipe::factory(100)
+            ->recycle($users)
             ->recycle($createdCategories)
             ->create();
 

@@ -8,14 +8,19 @@ use App\Http\Requests\Api\V1\UpdateUserRequest;
 use App\Http\Resources\V1\UserResource;
 use App\Models\User;
 
-class UsersController extends Controller
+class AuthorsController extends ApiController
 {
+    private $possibleIncludes = ['recipes'];
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return UserResource::collection(User::all());
+        return UserResource::collection(
+            User::with($this->includes($this->possibleIncludes))
+            ->paginate()
+        );
     }
 
 
