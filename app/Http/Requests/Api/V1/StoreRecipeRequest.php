@@ -11,7 +11,7 @@ class StoreRecipeRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,8 +21,17 @@ class StoreRecipeRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            //
+        $rules = [
+            'data.relationships.category.data.id' => 'required|integer',
+            'data.attributes.title' => 'required|string',
+            'data.attributes.description' => 'required|string',
+            'data.attributes.preparationTimeMinutes' => 'required|integer',
+            'data.attributes.servings' => 'required|integer',
+            'data.attributes.imageUrl' => 'sometimes|string',
         ];
+        if ($this->routeIs('recipes.store')) {
+            $rules['data.relationships.author.data.id'] = 'required|integer';
+        }
+        return $rules;
     }
 }

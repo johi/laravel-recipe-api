@@ -11,11 +11,10 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->apiResource('authors', AuthorsController::class);
 Route::middleware('auth:sanctum')->apiResource('authors.recipes', AuthorsRecipesController::class);
 Route::middleware('auth:sanctum')->apiResource('recipes', RecipesController::class);
-Route::middleware('auth:sanctum')->get('/categories', [CategoriesController::class, 'index']);
-//Route::get('/categories', [CategoryController::class, 'index']);
+Route::middleware('auth:sanctum')->get('/categories', [CategoriesController::class, 'index'])->name('categories.index');
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('recipes/{recipe}/ingredients', [IngredientsController::class, 'index'])->name('ingredients.index');          // List all ingredients for a specific recipe
+    Route::get('recipes/{recipe}/ingredients', [IngredientsController::class, 'index'])->name('ingredients.index');         // List all ingredients for a specific recipe
     Route::post('recipes/{recipe}/ingredients', [IngredientsController::class, 'store'])->name('ingredients.store');        // Create a new ingredient for a specific recipe
     Route::get('recipes/{recipe}/ingredients/{ingredient}', [IngredientsController::class, 'show'])->name('ingredients.show'); // Show a specific ingredient for a specific recipe
     Route::put('recipes/{recipe}/ingredients/{ingredient}', [IngredientsController::class, 'update'])->name('ingredients.update'); // Update a specific ingredient for a specific recipe

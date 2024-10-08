@@ -13,6 +13,15 @@ class Recipe extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'user_id',
+        'category_id',
+        'title',
+        'description',
+        'preparation_time_minutes',
+        'servings',
+        'image_url',
+    ];
     public function category() : BelongsTo
     {
         return $this->belongsTo(Category::class);

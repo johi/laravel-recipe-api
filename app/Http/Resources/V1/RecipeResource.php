@@ -32,6 +32,26 @@ class RecipeResource extends JsonResource
                 'createdAt' => $this->created_at,
                 'updatedAt' => $this->updated_at
             ],
+            'relationships' => [
+                'author' => [
+                    'data' => [
+                        'type' => 'user',
+                        'id' => $this->user_id
+                    ],
+                    'links' => [
+                        'self' => route('authors.show', ['author' => $this->user_id])
+                    ]
+                ],
+                'category' => [
+                    'data' => [
+                        'type' => 'category',
+                        'id' => $this->category_id
+                    ],
+                    'links' => [
+                        'self' => route('categories.index')
+                    ]
+                ]
+            ],
             'included' => [
                 'author' => new UserResource($this->author),
                 'category' => new CategoryResource($this->whenLoaded('category')),
