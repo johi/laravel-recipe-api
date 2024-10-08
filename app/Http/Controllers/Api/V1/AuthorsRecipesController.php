@@ -50,20 +50,19 @@ class AuthorsRecipesController extends ApiController
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($author_id, $ticket_id)
+    public function destroy($author_id, $recipe_id)
     {
         try {
-            $ticket = Ticket::findOrFail($ticket_id);
+            $ticket = Recipe::findOrFail($recipe_id);
 
             if ($ticket->user_id == $author_id) {
                 $ticket->delete();
-                return $this->ok('Ticket successfully deleted');
+                return $this->ok('Recipe successfully deleted');
             }
 
-            return $this->error('Ticket cannot found.', 404);
-
+            return $this->error('Recipe cannot be found.', 404);
         } catch (ModelNotFoundException $exception) {
-            return $this->error('Ticket cannot found.', 404);
+            return $this->error('Recipe cannot be found.', 404);
         }
     }
 }
