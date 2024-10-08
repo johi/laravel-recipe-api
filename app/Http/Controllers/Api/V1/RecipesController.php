@@ -66,7 +66,11 @@ class RecipesController extends ApiController
      */
     public function show(int $recipe_id)
     {
-        return new RecipeResource(Recipe::with($this->possibleIncludes)->find($recipe_id));
+        try {
+            return new RecipeResource(Recipe::with($this->possibleIncludes)->findOrFail($recipe_id));
+        } catch (ModelNotFoundException $exception) {
+            return $this->error('Recipe cannot be found.', 404);
+        }
     }
 
     /**
@@ -80,8 +84,14 @@ class RecipesController extends ApiController
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Recipe $recipe)
+    public function destroy(int $recipe_id)
     {
-        //
+        try {
+            $recipe = Recipe::findOrFail($recipe_id);
+            $recipe->delete();
+            return $this->ok('Recipe successfully deleted');
+        } catch (ModelNotFoundException $exception) {
+            return $this->error('Recipe cannot be found.', 404);
+        }
     }
 }
