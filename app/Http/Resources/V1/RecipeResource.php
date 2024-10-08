@@ -23,7 +23,7 @@ class RecipeResource extends JsonResource
             'attributes' => [
                 'title' => $this->title,
                 'description' => $this->when(
-                    $request->routeIs('tickets.show'),
+                    !$request->routeIs(['recipes.index', 'authors.recipes.index']),
                     $this->description
                 ),
                 'preparationTimeMinutes' => $this->preparation_time_minutes,

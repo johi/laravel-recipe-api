@@ -1,12 +1,28 @@
 <?php
 namespace App\Traits;
 
+use Illuminate\Http\JsonResponse;
+
 trait ApiResponses {
-    protected function ok($message, $data = []) {
+
+    /**
+     * @param string $message
+     * @param array $data
+     * @return JsonResponse
+     */
+    protected function ok(string $message, array $data = []) : JsonResponse
+    {
         return $this->success($message, $data, 200);
     }
 
-    protected function success($message, $data = [], $statusCode = 200) {
+    /**
+     * @param string $message
+     * @param array $data
+     * @param int $statusCode
+     * @return JsonResponse
+     */
+    protected function success(string $message, array $data = [], int $statusCode = 200) : JsonResponse
+    {
         return response()->json([
             'data' => $data,
             'message' => $message,
@@ -14,7 +30,13 @@ trait ApiResponses {
         ], $statusCode);
     }
 
-    protected function error($errors = [], $statusCode = null) {
+    /**
+     * @param string|array $errors
+     * @param int|null $statusCode
+     * @return JsonResponse
+     */
+    protected function error(string|array $errors = [], int|null $statusCode = null) : JsonResponse
+    {
         if (is_string($errors)) {
             return response()->json([
                 'message' => $errors,
@@ -27,7 +49,12 @@ trait ApiResponses {
         ], $statusCode);
     }
 
-    protected function notAuthorized($message) {
+    /**
+     * @param string $message
+     * @return JsonResponse
+     */
+    protected function notAuthorized(string $message) : JsonResponse
+    {
         return $this->error([
             'status' => 401,
             'message' => $message,

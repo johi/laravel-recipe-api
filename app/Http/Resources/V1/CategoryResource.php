@@ -19,6 +19,9 @@ class CategoryResource extends JsonResource
             'id' => $this->id,
             'attributes' => [
                 'title' => $this->title,
+            ],
+            'links' => [
+                'self' => route('categories.index')
             ]
         ];
     }
