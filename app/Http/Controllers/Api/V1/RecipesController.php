@@ -36,17 +36,7 @@ class RecipesController extends ApiController
         try {
             $user = User::findOrFail($request->input('data.relationships.author.data.id'));
             $category = Category::findOrFail($request->input('data.relationships.category.data.id'));
-            $model = [
-                'user_id' => $request->input('data.relationships.author.data.id'),
-                'category_id' => $request->input('data.relationships.category.data.id'),
-                'title' => $request->input('data.attributes.title'),
-                'description' => $request->input('data.attributes.description'),
-                'preparation_time_minutes' => $request->input('data.attributes.preparationTimeMinutes'),
-                'servings' => $request->input('data.attributes.servings'),
-                'image_url' => $request->input('data.attributes.imageUrl') ?? '',
-            ];
-
-            return new RecipeResource(Recipe::create($model));
+            return new RecipeResource(Recipe::create($request->mappedAttributes()));
         } catch (ModelNotFoundException $exception) {
             return $this->error(sprintf('The provided %s id does not exist', class_basename($exception->getModel())), 400);
         }
@@ -69,7 +59,21 @@ class RecipesController extends ApiController
      */
     public function update(UpdateRecipeRequest $request, int $recipe_id)
     {
-        // PATCH
+        try {
+            $recipe = Recipe::findOrFail($recipe_id);
+            $mappedAttributes = $request->mappedAttributes();
+            if (isset($mappedAttributes['category_id'])) {
+                $category = Category::findOrFail($mappedAttributes['category_id']);
+            }
+            $recipe->update($mappedAttributes);
+            return new RecipeResource($recipe);
+        } catch (ModelNotFoundException $exception) {
+            $className = class_basename($exception->getModel());
+            return $this->error(
+                sprintf('The provided %s id does not exist', $className),
+                ($className === 'Recipe') ? 404 : 400
+            );
+        }
     }
 
     /**
@@ -80,16 +84,7 @@ class RecipesController extends ApiController
         try {
             $recipe = Recipe::findOrFail($recipe_id);
             $category = Category::findOrFail($request->input('data.relationships.category.data.id'));
-            $model = [
-                'user_id' => $request->input('data.relationships.author.data.id'),
-                'category_id' => $request->input('data.relationships.category.data.id'),
-                'title' => $request->input('data.attributes.title'),
-                'description' => $request->input('data.attributes.description'),
-                'preparation_time_minutes' => $request->input('data.attributes.preparationTimeMinutes'),
-                'servings' => $request->input('data.attributes.servings'),
-                'image_url' => $request->input('data.attributes.imageUrl') ?? '',
-            ];
-            $recipe->update($model);
+            $recipe->update($request->mappedAttributes());
             return new RecipeResource($recipe);
         } catch (ModelNotFoundException $exception) {
             $className = class_basename($exception->getModel());
@@ -98,7 +93,6 @@ class RecipesController extends ApiController
                 ($className === 'Recipe') ? 404 : 400
             );
         }
-
     }
 
     /**

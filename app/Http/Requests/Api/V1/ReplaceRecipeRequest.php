@@ -4,7 +4,7 @@ namespace App\Http\Requests\Api\V1;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ReplaceRecipeRequest extends FormRequest
+class ReplaceRecipeRequest extends BaseRecipeRequest
 {
     /**
      * Determine if the user is authorized to make this request.

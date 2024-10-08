@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Filters\V1\RecipeFilter;
 use App\Http\Requests\Api\V1\ReplaceRecipeRequest;
 use App\Http\Requests\Api\V1\StoreRecipeRequest;
+use App\Http\Requests\Api\V1\UpdateRecipeRequest;
 use App\Http\Resources\V1\RecipeResource;
 use App\Models\Category;
 use App\Models\Recipe;
@@ -32,18 +33,28 @@ class AuthorsRecipesController extends ApiController
         } catch (ModelNotFoundException $exception) {
             return $this->error( 'The provided category id does not exists', 400);
         }
-
-        $model = [
-            'user_id' => $author_id,
-            'category_id' => $request->input('data.relationships.category.data.id'),
-            'title' => $request->input('data.attributes.title'),
-            'description' => $request->input('data.attributes.description'),
-            'preparation_time_minutes' => $request->input('data.attributes.preparationTimeMinutes'),
-            'servings' => $request->input('data.attributes.servings'),
-            'image_url' => $request->input('data.attributes.imageUrl') ?? '',
-        ];
-
-        return new RecipeResource(Recipe::create($model));
+        return new RecipeResource(Recipe::create($request->mappedAttributes()));
+    }
+    public function update(UpdateRecipeRequest $request, int $author_id, int $recipe_id)
+    {
+        try {
+            $recipe = Recipe::findOrFail($recipe_id);
+            if ($recipe->user_id == $author_id) {
+                $mappedAttributes = $request->mappedAttributes();
+                if (isset($mappedAttributes['category_id'])) {
+                    $category = Category::findOrFail($mappedAttributes['category_id']);
+                }
+                $recipe->update($mappedAttributes);
+                return new RecipeResource($recipe);
+            }
+            return $this->error('Recipe cannot be found.', 404);
+        } catch (ModelNotFoundException $exception) {
+            $className = class_basename($exception->getModel());
+            return $this->error(
+                sprintf('The provided %s id does not exist', $className),
+                ($className === 'Recipe') ? 404 : 400
+            );
+        }
     }
 
     public function replace(ReplaceRecipeRequest $request, int $author_id, int $recipe_id)
@@ -52,23 +63,12 @@ class AuthorsRecipesController extends ApiController
             $ticket = Recipe::findOrFail($recipe_id);
 
             if ($ticket->user_id == $author_id) {
-
-                $model = [
-                    'user_id' => $author_id,
-                    'category_id' => $request->input('data.relationships.category.data.id'),
-                    'title' => $request->input('data.attributes.title'),
-                    'description' => $request->input('data.attributes.description'),
-                    'preparation_time_minutes' => $request->input('data.attributes.preparationTimeMinutes'),
-                    'servings' => $request->input('data.attributes.servings'),
-                    'image_url' => $request->input('data.attributes.imageUrl') ?? '',
-                ];
-
-                $ticket->update($model);
+                $ticket->update($request->mappedAttributes());
                 return new RecipeResource($ticket);
             }
-
+            return $this->error('Recipe cannot be found.', 404);
         } catch (ModelNotFoundException $exception) {
-            return $this->error('Ticket cannot be found.', 404);
+            return $this->error('Recipe cannot be found.', 404);
         }
     }
 
