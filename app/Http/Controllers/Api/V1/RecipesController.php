@@ -10,11 +10,14 @@ use App\Http\Resources\V1\RecipeResource;
 use App\Models\Category;
 use App\Models\Recipe;
 use App\Models\User;
+use App\Policies\V1\RecipePolicy;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Gate;
 
 class RecipesController extends ApiController
 {
-    private $possibleIncludes = ['category', 'ingredients', 'instructions'];
+    protected string $policyClass = RecipePolicy::class;
+    private array $possibleIncludes = ['category', 'ingredients', 'instructions'];
 
     /**
      * Display a listing of the resource.
@@ -65,6 +68,7 @@ class RecipesController extends ApiController
             if (isset($mappedAttributes['category_id'])) {
                 $category = Category::findOrFail($mappedAttributes['category_id']);
             }
+            Gate::authorize('update', $recipe);
             $recipe->update($mappedAttributes);
             return new RecipeResource($recipe);
         } catch (ModelNotFoundException $exception) {
