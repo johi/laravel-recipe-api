@@ -6,9 +6,9 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class BaseRecipeRequest extends FormRequest
 {
-    public function mappedAttributes(): array
+    public function mappedAttributes(array $otherAttributes = []): array
     {
-        $mappedAttributes = [
+        $mappedAttributes = array_merge([
             'data.relationships.author.data.id' => 'user_id',
             'data.relationships.category.data.id' => 'category_id',
             'data.attributes.title' => 'title',
@@ -18,7 +18,7 @@ class BaseRecipeRequest extends FormRequest
             'data.attributes.imageUrl' => 'image_url',
             'data.attributes.createdAt' => 'created_at',
             'data.attributes.updatedAt' => 'updated_at',
-        ];
+        ], $otherAttributes);
         $attributesToUpdate = [];
         foreach ($mappedAttributes as $key => $attribute) {
             if ($this->has($key)) {

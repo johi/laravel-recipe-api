@@ -22,8 +22,9 @@ class StoreRecipeRequest extends BaseRecipeRequest
      */
     public function rules(): array
     {
+        $authorIdAttribute = $this->routeIs('recipes.store') ? 'data.relationships.author.data.id' : 'author';
         $rules = [
-            'data.relationships.author.data.id' => 'required|integer|exists:users,id',
+            $authorIdAttribute => 'required|integer|exists:users,id',
             'data.relationships.category.data.id' => 'required|integer',
             'data.attributes.title' => 'required|string',
             'data.attributes.description' => 'required|string',
@@ -31,17 +32,27 @@ class StoreRecipeRequest extends BaseRecipeRequest
             'data.attributes.servings' => 'required|integer',
             'data.attributes.imageUrl' => 'sometimes|string',
         ];
-        if ($this->routeIs('recipes.store')) {
-            if ($this->user()->tokenCan(Abilities::CREATE_OWN_RECIPE)) {
-                $rules['data.relationships.author.data.id'] .= '|size:' . $this->user()->id;
-            }
+
+        if ($this->user()->tokenCan(Abilities::CREATE_OWN_RECIPE)) {
+            $rules[$authorIdAttribute] .= '|size:' . $this->user()->id;
         }
+
         return $rules;
     }
 
     public function messages() {
         return [
-            'data.relationships.author.data.id' => 'The data.relationships.author.data.id value is invalid.'
+            'data.relationships.author.data.id' => 'The data.relationships.author.data.id value is invalid.',
+            'author' => 'The authors id must match with current users id',
         ];
+    }
+
+    protected function prepareForValidation()
+    {
+        if ($this->routeIs('authors.recipes.store')) {
+            $this->merge([
+                'author' => $this->route('author')
+            ]);
+        }
     }
 }

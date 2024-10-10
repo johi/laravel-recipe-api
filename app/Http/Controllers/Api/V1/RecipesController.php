@@ -39,10 +39,11 @@ class RecipesController extends ApiController
     {
         try {
             $category = Category::findOrFail($request->input('data.relationships.category.data.id'));
-            Gate::authorize('store');
+            Gate::authorize('store', Recipe::class);
             return new RecipeResource(Recipe::create($request->mappedAttributes()));
         } catch (ModelNotFoundException $exception) {
-            return $this->error(sprintf('The provided %s id does not exist', class_basename($exception->getModel())), 400);
+            return $this->error(
+                'Category cannot be found.', 400);
         } catch (AuthorizationException $ex) {
             // in this case when providing another author_id, would it be a bad request?
             return $this->error('You are not authorized to update that resource', 401);
@@ -78,7 +79,7 @@ class RecipesController extends ApiController
         } catch (ModelNotFoundException $exception) {
             $className = class_basename($exception->getModel());
             return $this->error(
-                sprintf('The provided %s id does not exist', $className),
+                sprintf('%s cannot be found.', $className),
                 ($className === 'Recipe') ? 404 : 400
             );
         } catch (AuthorizationException $ex) {
@@ -100,7 +101,7 @@ class RecipesController extends ApiController
         } catch (ModelNotFoundException $exception) {
             $className = class_basename($exception->getModel());
             return $this->error(
-                sprintf('The provided %s id does not exist', $className),
+                sprintf('%s cannot be found.', $className),
                 ($className === 'Recipe') ? 404 : 400
             );
         } catch (AuthorizationException $ex) {
