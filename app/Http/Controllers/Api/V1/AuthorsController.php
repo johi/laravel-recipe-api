@@ -19,8 +19,11 @@ class AuthorsController extends ApiController
     public function index(AuthorFilter $filters)
     {
         return UserResource::collection(
-            User::filter($filters)
+            User::select('users.*')
                 ->with($this->includes($this->possibleIncludes))
+                ->join('recipes', 'recipes.user_id', '=', 'users.id')
+                ->filter($filters)
+                ->distinct()
                 ->paginate()
         );
     }
