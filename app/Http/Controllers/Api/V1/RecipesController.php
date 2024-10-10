@@ -11,6 +11,7 @@ use App\Models\Category;
 use App\Models\Recipe;
 use App\Models\User;
 use App\Policies\V1\RecipePolicy;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Gate;
 
@@ -77,6 +78,8 @@ class RecipesController extends ApiController
                 sprintf('The provided %s id does not exist', $className),
                 ($className === 'Recipe') ? 404 : 400
             );
+        } catch (AuthorizationException $ex) {
+            return $this->error('You are not authorized to update that resource', 401);
         }
     }
 

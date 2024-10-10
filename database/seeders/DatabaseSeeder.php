@@ -8,6 +8,7 @@ use App\Models\Instruction;
 use App\Models\Recipe;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -16,6 +17,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        User::factory(1)->create([
+            'name' => 'Johan',
+            'email' => 'johan@example.com',
+            'is_admin' => true
+        ]);
+
         $users = User::factory(10)->create();
         $categories = collect(['Starters', 'Main dishes', 'Side dishes', 'Dessert', 'Bakery', 'Drinks']);
         $createdCategories = collect([]);
