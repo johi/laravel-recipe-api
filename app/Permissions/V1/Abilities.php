@@ -5,11 +5,12 @@ use App\Models\User;
 
 final class Abilities
 {
-//    public const CreateRecipe = 'recipe:create';
+    public const CREATE_RECIPE = 'recipe:create';
     public const UPDATE_RECIPE = 'recipe:update';
     public const REPLACE_RECIPE = 'recipe:replace';
     public const DELETE_RECIPE = 'recipe:delete';
 
+    public const CREATE_OWN_RECIPE = 'recipe:create';
     public const UPDATE_OWN_RECIPE = 'recipe:own:update';
     public const REPLACE_OWN_RECIPE = 'recipe:own:replace';
     public const DELETE_OWN_RECIPE = 'recipe:own:delete';
@@ -21,8 +22,10 @@ final class Abilities
 
     public static function getAbilities(User $user): array
     {
+        // don't assign '*'
         if ($user->is_admin) {
             return [
+                self::CREATE_RECIPE,
                 self::UPDATE_RECIPE,
                 self::REPLACE_RECIPE,
                 self::DELETE_RECIPE,
@@ -33,6 +36,7 @@ final class Abilities
             ];
         } else {
             return [
+                self::CREATE_OWN_RECIPE,
                 self::UPDATE_OWN_RECIPE,
                 self::REPLACE_OWN_RECIPE,
                 self::DELETE_OWN_RECIPE,

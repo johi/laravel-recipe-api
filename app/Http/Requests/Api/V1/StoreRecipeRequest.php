@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Api\V1;
 
+use App\Permissions\V1\Abilities;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreRecipeRequest extends BaseRecipeRequest
@@ -22,6 +23,7 @@ class StoreRecipeRequest extends BaseRecipeRequest
     public function rules(): array
     {
         $rules = [
+            'data.relationships.author.data.id' => 'required|integer|exists:users,id',
             'data.relationships.category.data.id' => 'required|integer',
             'data.attributes.title' => 'required|string',
             'data.attributes.description' => 'required|string',
@@ -30,8 +32,16 @@ class StoreRecipeRequest extends BaseRecipeRequest
             'data.attributes.imageUrl' => 'sometimes|string',
         ];
         if ($this->routeIs('recipes.store')) {
-            $rules['data.relationships.author.data.id'] = 'required|integer';
+            if ($this->user()->tokenCan(Abilities::CREATE_OWN_RECIPE)) {
+                $rules['data.relationships.author.data.id'] .= '|size:' . $this->user()->id;
+            }
         }
         return $rules;
+    }
+
+    public function messages() {
+        return [
+            'data.relationships.author.data.id' => 'The data.relationships.author.data.id value is invalid.'
+        ];
     }
 }

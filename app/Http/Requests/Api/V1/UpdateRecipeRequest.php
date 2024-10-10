@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Api\V1;
 
+use App\Permissions\V1\Abilities;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateRecipeRequest extends BaseRecipeRequest
@@ -22,6 +23,7 @@ class UpdateRecipeRequest extends BaseRecipeRequest
     public function rules(): array
     {
         $rules = [
+            'data.relationships.author.data.id' => 'sometimes|integer',
             'data.relationships.category.data.id' => 'sometimes|integer',
             'data.attributes.title' => 'sometimes|string',
             'data.attributes.description' => 'sometimes|string',
@@ -29,8 +31,8 @@ class UpdateRecipeRequest extends BaseRecipeRequest
             'data.attributes.servings' => 'sometimes|integer',
             'data.attributes.imageUrl' => 'sometimes|string',
         ];
-        if ($this->routeIs('recipes.replace')) {
-            $rules['data.relationships.author.data.id'] = 'sometimes|integer';
+        if ($this->user()->tokenCan(Abilities::UPDATE_OWN_RECIPE)) {
+            $rules['data.relationships.author.data.id'] = 'prohibited';
         }
         return $rules;
     }

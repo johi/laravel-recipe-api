@@ -8,15 +8,14 @@ use App\Permissions\V1\Abilities;
 
 class RecipePolicy
 {
-    /**
-     * Create a new policy instance.
-     */
-    public function __construct()
+    public function store(User $user) : bool
     {
-        //
+        return $user->tokenCan(Abilities::CREATE_RECIPE) ||
+            $user->tokenCan(Abilities::CREATE_OWN_RECIPE);
     }
 
-    public function update(User $user, Recipe $recipe) {
+    public function update(User $user, Recipe $recipe) : bool
+    {
         if ($user->tokenCan(Abilities::UPDATE_RECIPE)) {
             return true;
         } else if ($user->tokenCan(Abilities::UPDATE_OWN_RECIPE)) {
@@ -25,7 +24,8 @@ class RecipePolicy
         return false;
     }
 
-    public function replace(User $user, Recipe $recipe) {
+    public function replace(User $user, Recipe $recipe) : bool
+    {
         if ($user->tokenCan(Abilities::REPLACE_RECIPE)) {
             return true;
         } else if ($user->tokenCan(Abilities::REPLACE_OWN_RECIPE)) {
@@ -34,7 +34,8 @@ class RecipePolicy
         return false;
     }
 
-    public function delete(User $user, Recipe $recipe) {
+    public function delete(User $user, Recipe $recipe) : bool
+    {
         if ($user->tokenCan(Abilities::DELETE_RECIPE)) {
             return true;
         } else if ($user->tokenCan(Abilities::DELETE_OWN_RECIPE)) {

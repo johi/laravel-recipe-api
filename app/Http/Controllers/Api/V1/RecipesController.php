@@ -38,11 +38,14 @@ class RecipesController extends ApiController
     public function store(StoreRecipeRequest $request)
     {
         try {
-            $user = User::findOrFail($request->input('data.relationships.author.data.id'));
             $category = Category::findOrFail($request->input('data.relationships.category.data.id'));
+            Gate::authorize('store');
             return new RecipeResource(Recipe::create($request->mappedAttributes()));
         } catch (ModelNotFoundException $exception) {
             return $this->error(sprintf('The provided %s id does not exist', class_basename($exception->getModel())), 400);
+        } catch (AuthorizationException $ex) {
+            // in this case when providing another author_id, would it be a bad request?
+            return $this->error('You are not authorized to update that resource', 401);
         }
     }
 
@@ -91,6 +94,7 @@ class RecipesController extends ApiController
         try {
             $recipe = Recipe::findOrFail($recipe_id);
             $category = Category::findOrFail($request->input('data.relationships.category.data.id'));
+            Gate::authorize('replace', $recipe);
             $recipe->update($request->mappedAttributes());
             return new RecipeResource($recipe);
         } catch (ModelNotFoundException $exception) {
@@ -99,6 +103,8 @@ class RecipesController extends ApiController
                 sprintf('The provided %s id does not exist', $className),
                 ($className === 'Recipe') ? 404 : 400
             );
+        } catch (AuthorizationException $ex) {
+            return $this->error('You are not authorized to update that resource', 401);
         }
     }
 
@@ -109,10 +115,13 @@ class RecipesController extends ApiController
     {
         try {
             $recipe = Recipe::findOrFail($recipe_id);
+            Gate::authorize('delete', $recipe);
             $recipe->delete();
             return $this->ok('Recipe successfully deleted');
         } catch (ModelNotFoundException $exception) {
             return $this->error('Recipe cannot be found.', 404);
+        } catch (AuthorizationException $ex) {
+            return $this->error('You are not authorized to update that resource', 401);
         }
     }
 }
