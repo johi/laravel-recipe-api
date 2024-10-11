@@ -3,15 +3,17 @@
 namespace App\Providers;
 
 use App\Models\Recipe;
+use App\Models\User;
 use App\Policies\V1\RecipePolicy;
+use App\Policies\V1\UserPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\Gate;
 
 class AuthServiceProvider extends ServiceProvider
 {
 
     protected $policies = [
         Recipe::class => RecipePolicy::class,
+        User::class => UserPolicy::class,
     ];
 
     /**

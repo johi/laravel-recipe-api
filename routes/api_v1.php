@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\V1\IngredientsController;
 use App\Http\Controllers\Api\V1\InstructionsController;
 use App\Http\Controllers\Api\V1\RecipesController;
 use App\Http\Controllers\Api\V1\AuthorsController;
+use App\Http\Controllers\Api\V1\UsersController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -17,6 +18,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('recipes/{recipe}', [RecipesController::class, 'replace'])->name('recipes.replace');
     Route::patch('recipes/{recipe}', [RecipesController::class, 'update'])->name('recipes.update');
     Route::get('/categories', [CategoriesController::class, 'index'])->name('categories.index');
+
+    Route::apiResource('users', UsersController::class)->except(['update']);
+    Route::put('users/{user}', [UsersController::class, 'replace']);
+    Route::patch('users/{user}', [UsersController::class, 'update']);
 
     // ingredients
     Route::get('recipes/{recipe}/ingredients', [IngredientsController::class, 'index'])->name('ingredients.index');         // List all ingredients for a specific recipe

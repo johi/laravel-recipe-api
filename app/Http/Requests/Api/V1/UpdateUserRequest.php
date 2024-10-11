@@ -4,14 +4,14 @@ namespace App\Http\Requests\Api\V1;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateUserRequest extends FormRequest
+class UpdateUserRequest extends BaseUserRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,10 @@ class UpdateUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'data.attributes.name' => 'sometimes|string',
+            'data.attributes.email' => 'sometimes|email|string|unique:users,email,' . $this->route('user'),
+            'data.attributes.isAdmin' => 'sometimes|boolean',
+            'data.attributes.password' => 'sometimes|string',
         ];
     }
 }
