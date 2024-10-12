@@ -34,10 +34,8 @@ class UsersController extends ApiController
      */
     public function store(StoreUserRequest $request)
     {
-        if ($this->isAble('store', User::class)) {
-            return new UserResource(User::create($request->mappedAttributes()));
-        }
-        return $this->error('You are not authorized to create that resource', 401);
+        Gate::authorize('store', User::class);
+        return new UserResource(User::create($request->mappedAttributes()));
     }
 
     /**
@@ -57,19 +55,15 @@ class UsersController extends ApiController
      */
     public function update(UpdateUserRequest $request, User $user)
     {
-        if ($this->isAble('update', $user)) {
-            $user->update($request->mappedAttributes());
-            return new UserResource($user);
-        }
-        return $this->error('You are not authorized to update that resource', 401);
+        Gate::authorize('update', $user);
+        $user->update($request->mappedAttributes());
+        return new UserResource($user);
     }
 
     public function replace(ReplaceUserRequest $request, User $user) {
-        if ($this->isAble('replace', $user)) {
-            $user->update($request->mappedAttributes());
-            return new UserResource($user);
-        }
-        return $this->error('You are not authorized to update that resource', 401);
+        Gate::authorize('replace', $user);
+        $user->update($request->mappedAttributes());
+        return new UserResource($user);
     }
 
     /**
@@ -77,13 +71,11 @@ class UsersController extends ApiController
      */
     public function destroy(User $user)
     {
-        if ($this->isAble('delete', $user)) {
-            if ($user->recipes()->exists()) {
-                return $this->error('User has associated recipes and cannot be deleted.', 400);
-            }
-            $user->delete();
-            return $this->ok('User successfully deleted');
+        Gate::authorize('delete', $user);
+        if ($user->recipes()->exists()) {
+            return $this->error('User has associated recipes and cannot be deleted.', 400);
         }
-        return $this->error('You are not authorized to update that resource', 401);
+        $user->delete();
+        return $this->ok('User successfully deleted');
     }
 }

@@ -32,13 +32,11 @@ class AuthorsRecipesController extends ApiController
      */
     public function store(StoreRecipeRequest $request)
     {
+        Gate::authorize('store', Recipe::class);
         $category = Category::findOrFail($request->input('data.relationships.category.data.id'));
-        if ($this->isAble('store', Recipe::class)) {
-            return new RecipeResource(Recipe::create($request->mappedAttributes([
-                'author' => 'user_id'
-            ])));
-        }
-        return $this->error('You are not authorized to create that resource', 401);
+        return new RecipeResource(Recipe::create($request->mappedAttributes([
+            'author' => 'user_id'
+        ])));
     }
 
     public function update(UpdateRecipeRequest $request, int $author_id, int $recipe_id)
@@ -46,15 +44,13 @@ class AuthorsRecipesController extends ApiController
         $recipe = Recipe::where('id', $recipe_id)
             ->where('user_id', $author_id)
             ->firstOrFail();
-        if ($this->isAble('update', $recipe)) {
-            $mappedAttributes = $request->mappedAttributes();
-            if (isset($mappedAttributes['category_id'])) {
-                $category = Category::findOrFail($mappedAttributes['category_id']);
-            }
-            $recipe->update($mappedAttributes);
-            return new RecipeResource($recipe);
+        Gate::authorize('update', $recipe);
+        $mappedAttributes = $request->mappedAttributes();
+        if (isset($mappedAttributes['category_id'])) {
+            $category = Category::findOrFail($mappedAttributes['category_id']);
         }
-        return $this->error('You are not authorized to update that resource', 401);
+        $recipe->update($mappedAttributes);
+        return new RecipeResource($recipe);
     }
 
     public function replace(ReplaceRecipeRequest $request, int $author_id, int $recipe_id)
@@ -62,11 +58,9 @@ class AuthorsRecipesController extends ApiController
         $recipe = Recipe::where('id', $recipe_id)
             ->where('user_id', $author_id)
             ->firstOrFail();
-        if ($this->isAble('replace', $recipe)) {
-            $recipe->update($request->mappedAttributes());
-            return new RecipeResource($recipe);
-        }
-        return $this->error('You are not authorized to update that resource', 401);
+        Gate::authorize('replace', $recipe);
+        $recipe->update($request->mappedAttributes());
+        return new RecipeResource($recipe);
     }
 
     /**
@@ -77,10 +71,8 @@ class AuthorsRecipesController extends ApiController
         $recipe = Recipe::where('id', $recipe_id)
             ->where('user_id', $author_id)
             ->firstOrFail();
-        if ($this->isAble('delete', $recipe)) {
-            $recipe->delete();
-            return $this->ok('Recipe successfully deleted');
-        }
-        return $this->error('You are not authorized to delete that resource', 401);
+        Gate::authorize('delete', $recipe);
+        $recipe->delete();
+        return $this->ok('Recipe successfully deleted');
     }
 }

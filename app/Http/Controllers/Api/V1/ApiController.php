@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Traits\ApiResponses;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\Gate;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class ApiController extends Controller
 {
@@ -34,11 +35,6 @@ class ApiController extends Controller
     }
 
     public function isAble($ability, $targetModel) {
-        try {
             Gate::authorize($ability, $targetModel);
-            return true;
-        } catch (AuthorizationException $exception) {
-            return false;
-        }
     }
 }

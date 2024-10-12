@@ -9,6 +9,7 @@ use Illuminate\Foundation\Configuration\Exceptions as BaseExceptions;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Handler
@@ -19,19 +20,29 @@ class Handler
     {
         // The most generic exceptions go last
         $this->renderUnauthorized($exceptions);
+        $this->renderUnauthenticated($exceptions);
         $this->renderNotFound($exceptions);
         $this->renderValidation($exceptions);
         $this->renderGeneric($exceptions);
-
         return $exceptions;
     }
 
     protected function renderUnauthorized(BaseExceptions $exceptions): void
     {
         $exceptions->renderable(
-            fn (AuthenticationException $e) => $this->response(
+            fn (AccessDeniedHttpException $e) => $this->response(
                 messages: __('Unauthorized'),
                 code: 401,
+            )
+        );
+    }
+
+    protected function renderUnauthenticated(BaseExceptions $exceptions): void
+    {
+        $exceptions->renderable(
+            fn (AuthenticationException $e) => $this->response(
+                messages: __('Forbidden'),
+                code: 403,
             )
         );
     }

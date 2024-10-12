@@ -10,6 +10,7 @@ use App\Http\Resources\V1\RecipeResource;
 use App\Models\Category;
 use App\Models\Recipe;
 use App\Policies\V1\RecipePolicy;
+use Illuminate\Support\Facades\Gate;
 
 class RecipesController extends ApiController
 {
@@ -33,11 +34,9 @@ class RecipesController extends ApiController
      */
     public function store(StoreRecipeRequest $request)
     {
-        if ($this->isAble('store', Recipe::class)) {
-            $category = Category::findOrFail($request->input('data.relationships.category.data.id'));
-            return new RecipeResource(Recipe::create($request->mappedAttributes()));
-        }
-        return $this->error('You are not authorized to update that resource', 401);
+        Gate::authorize('store', Recipe::class);
+        $category = Category::findOrFail($request->input('data.relationships.category.data.id'));
+        return new RecipeResource(Recipe::create($request->mappedAttributes()));
     }
 
     /**
@@ -53,15 +52,13 @@ class RecipesController extends ApiController
      */
     public function update(UpdateRecipeRequest $request, Recipe $recipe)
     {
-        if ($this->isAble('update', $recipe)) {
-            $mappedAttributes = $request->mappedAttributes();
-            if (isset($mappedAttributes['category_id'])) {
-                $category = Category::findOrFail($mappedAttributes['category_id']);
-            }
-            $recipe->update($mappedAttributes);
-            return new RecipeResource($recipe);
+        Gate::authorize('update', $recipe);
+        $mappedAttributes = $request->mappedAttributes();
+        if (isset($mappedAttributes['category_id'])) {
+            $category = Category::findOrFail($mappedAttributes['category_id']);
         }
-        return $this->error('You are not authorized to update that resource', 401);
+        $recipe->update($mappedAttributes);
+        return new RecipeResource($recipe);
     }
 
     /**
@@ -69,12 +66,10 @@ class RecipesController extends ApiController
      */
     public function replace(ReplaceRecipeRequest $request, Recipe $recipe)
     {
-        if ($this->isAble('replace', $recipe)) {
-            $category = Category::findOrFail($request->input('data.relationships.category.data.id'));
-            $recipe->update($request->mappedAttributes());
-            return new RecipeResource($recipe);
-        }
-        return $this->error('You are not authorized to update that resource', 401);
+        Gate::authorize('replace', $recipe);
+        $category = Category::findOrFail($request->input('data.relationships.category.data.id'));
+        $recipe->update($request->mappedAttributes());
+        return new RecipeResource($recipe);
     }
 
     /**
@@ -82,10 +77,8 @@ class RecipesController extends ApiController
      */
     public function destroy(Recipe $recipe)
     {
-        if ($this->isAble('delete', $recipe)) {
-            $recipe->delete();
-            return $this->ok('Recipe successfully deleted');
-        }
-        return $this->error('You are not authorized to update that resource', 401);
+        Gate::authorize('delete', $recipe);
+        $recipe->delete();
+        return $this->ok('Recipe successfully deleted');
     }
 }
