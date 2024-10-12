@@ -43,17 +43,16 @@ class RecipesController extends ApiController
     /**
      * Display the specified resource.
      */
-    public function show(int $recipe_id)
+    public function show(Recipe $recipe)
     {
-        return new RecipeResource(Recipe::with($this->possibleIncludes)->findOrFail($recipe_id));
+        return new RecipeResource($recipe);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateRecipeRequest $request, int $recipe_id)
+    public function update(UpdateRecipeRequest $request, Recipe $recipe)
     {
-        $recipe = Recipe::findOrFail($recipe_id);
         if ($this->isAble('update', $recipe)) {
             $mappedAttributes = $request->mappedAttributes();
             if (isset($mappedAttributes['category_id'])) {
@@ -68,9 +67,8 @@ class RecipesController extends ApiController
     /**
      * Update the specified resource in storage.
      */
-    public function replace(ReplaceRecipeRequest $request, int $recipe_id)
+    public function replace(ReplaceRecipeRequest $request, Recipe $recipe)
     {
-        $recipe = Recipe::findOrFail($recipe_id);
         if ($this->isAble('replace', $recipe)) {
             $category = Category::findOrFail($request->input('data.relationships.category.data.id'));
             $recipe->update($request->mappedAttributes());
@@ -82,9 +80,8 @@ class RecipesController extends ApiController
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(int $recipe_id)
+    public function destroy(Recipe $recipe)
     {
-        $recipe = Recipe::findOrFail($recipe_id);
         if ($this->isAble('delete', $recipe)) {
             $recipe->delete();
             return $this->ok('Recipe successfully deleted');
