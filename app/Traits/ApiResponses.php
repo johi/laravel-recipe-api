@@ -59,6 +59,6 @@ trait ApiResponses {
             'status' => 401,
             'message' => $message,
             'source' => ''
-        ]);
+        ], 401);
     }
 }

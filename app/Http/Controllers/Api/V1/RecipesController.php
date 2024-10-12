@@ -10,7 +10,6 @@ use App\Http\Resources\V1\RecipeResource;
 use App\Models\Category;
 use App\Models\Recipe;
 use App\Policies\V1\RecipePolicy;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class RecipesController extends ApiController
 {
@@ -34,16 +33,11 @@ class RecipesController extends ApiController
      */
     public function store(StoreRecipeRequest $request)
     {
-        try {
-            if ($this->isAble('store', Recipe::class)) {
-                $category = Category::findOrFail($request->input('data.relationships.category.data.id'));
-                return new RecipeResource(Recipe::create($request->mappedAttributes()));
-            }
-            return $this->error('You are not authorized to update that resource', 401);
-        } catch (ModelNotFoundException $exception) {
-            return $this->error(
-                'Category cannot be found.', 400);
+        if ($this->isAble('store', Recipe::class)) {
+            $category = Category::findOrFail($request->input('data.relationships.category.data.id'));
+            return new RecipeResource(Recipe::create($request->mappedAttributes()));
         }
+        return $this->error('You are not authorized to update that resource', 401);
     }
 
     /**
@@ -51,11 +45,7 @@ class RecipesController extends ApiController
      */
     public function show(int $recipe_id)
     {
-        try {
-            return new RecipeResource(Recipe::with($this->possibleIncludes)->findOrFail($recipe_id));
-        } catch (ModelNotFoundException $exception) {
-            return $this->error('Recipe cannot be found.', 404);
-        }
+        return new RecipeResource(Recipe::with($this->possibleIncludes)->findOrFail($recipe_id));
     }
 
     /**
@@ -63,24 +53,16 @@ class RecipesController extends ApiController
      */
     public function update(UpdateRecipeRequest $request, int $recipe_id)
     {
-        try {
-            $recipe = Recipe::findOrFail($recipe_id);
-            if ($this->isAble('update', $recipe)) {
-                $mappedAttributes = $request->mappedAttributes();
-                if (isset($mappedAttributes['category_id'])) {
-                    $category = Category::findOrFail($mappedAttributes['category_id']);
-                }
-                $recipe->update($mappedAttributes);
-                return new RecipeResource($recipe);
+        $recipe = Recipe::findOrFail($recipe_id);
+        if ($this->isAble('update', $recipe)) {
+            $mappedAttributes = $request->mappedAttributes();
+            if (isset($mappedAttributes['category_id'])) {
+                $category = Category::findOrFail($mappedAttributes['category_id']);
             }
-            return $this->error('You are not authorized to update that resource', 401);
-        } catch (ModelNotFoundException $exception) {
-            $className = class_basename($exception->getModel());
-            return $this->error(
-                sprintf('%s cannot be found.', $className),
-                ($className === 'Recipe') ? 404 : 400
-            );
+            $recipe->update($mappedAttributes);
+            return new RecipeResource($recipe);
         }
+        return $this->error('You are not authorized to update that resource', 401);
     }
 
     /**
@@ -88,21 +70,13 @@ class RecipesController extends ApiController
      */
     public function replace(ReplaceRecipeRequest $request, int $recipe_id)
     {
-        try {
-            $recipe = Recipe::findOrFail($recipe_id);
-            if ($this->isAble('replace', $recipe)) {
-                $category = Category::findOrFail($request->input('data.relationships.category.data.id'));
-                $recipe->update($request->mappedAttributes());
-                return new RecipeResource($recipe);
-            }
-            return $this->error('You are not authorized to update that resource', 401);
-        } catch (ModelNotFoundException $exception) {
-            $className = class_basename($exception->getModel());
-            return $this->error(
-                sprintf('%s cannot be found.', $className),
-                ($className === 'Recipe') ? 404 : 400
-            );
+        $recipe = Recipe::findOrFail($recipe_id);
+        if ($this->isAble('replace', $recipe)) {
+            $category = Category::findOrFail($request->input('data.relationships.category.data.id'));
+            $recipe->update($request->mappedAttributes());
+            return new RecipeResource($recipe);
         }
+        return $this->error('You are not authorized to update that resource', 401);
     }
 
     /**
@@ -110,15 +84,11 @@ class RecipesController extends ApiController
      */
     public function destroy(int $recipe_id)
     {
-        try {
-            $recipe = Recipe::findOrFail($recipe_id);
-            if ($this->isAble('delete', $recipe)) {
-                $recipe->delete();
-                return $this->ok('Recipe successfully deleted');
-            }
-            return $this->error('You are not authorized to update that resource', 401);
-        } catch (ModelNotFoundException $exception) {
-            return $this->error('Recipe cannot be found.', 404);
+        $recipe = Recipe::findOrFail($recipe_id);
+        if ($this->isAble('delete', $recipe)) {
+            $recipe->delete();
+            return $this->ok('Recipe successfully deleted');
         }
+        return $this->error('You are not authorized to update that resource', 401);
     }
 }
