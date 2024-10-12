@@ -10,7 +10,7 @@ use App\Http\Controllers\Api\V1\UsersController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::apiResource('authors', AuthorsController::class);
+    Route::apiResource('authors', AuthorsController::class)->except(['store', 'update', 'destroy']);
     Route::apiResource('authors.recipes', AuthorsRecipesController::class)->except(['update']);
     Route::put('authors/{author}/recipes/{recipe}', [AuthorsRecipesController::class, 'replace'])->name('authors.recipes.replace');
     Route::patch('authors/{author}/recipes/{recipe}', [AuthorsRecipesController::class, 'update'])->name('authors.recipes.update');
