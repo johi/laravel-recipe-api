@@ -32,7 +32,7 @@ class Handler
         $exceptions->renderable(
             fn (AccessDeniedHttpException $e) => $this->response(
                 messages: __('Unauthorized'),
-                code: 401,
+                code: 403,
             )
         );
     }
@@ -42,7 +42,7 @@ class Handler
         $exceptions->renderable(
             fn (AuthenticationException $e) => $this->response(
                 messages: __('Forbidden'),
-                code: 403,
+                code: 401,
             )
         );
     }
