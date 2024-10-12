@@ -10,7 +10,6 @@ use App\Http\Resources\V1\UserResource;
 use App\Models\User;
 use App\Policies\V1\UserPolicy;
 use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Gate;
 
 class UsersController extends ApiController
@@ -56,50 +55,35 @@ class UsersController extends ApiController
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateUserRequest $request, int $user_id)
+    public function update(UpdateUserRequest $request, User $user)
     {
-        try {
-            $user = User::findOrFail($user_id);
-            if ($this->isAble('udate', $user)) {
-                $user->update($request->mappedAttributes());
-                return new UserResource($user);
-            }
-            return $this->error('You are not authorized to update that resource', 401);
-        } catch (ModelNotFoundException $exception) {
-            return $this->error('User cannot be found.', 404);
+        if ($this->isAble('update', $user)) {
+            $user->update($request->mappedAttributes());
+            return new UserResource($user);
         }
+        return $this->error('You are not authorized to update that resource', 401);
     }
 
-    public function replace(ReplaceUserRequest $request, int $user_id) {
-        try {
-            $user = User::findOrFail($user_id);
-            if ($this->isAble('replace', $user)) {
-                $user->update($request->mappedAttributes());
-                return new UserResource($user);
-            }
-            return $this->error('You are not authorized to update that resource', 401);
-        } catch (ModelNotFoundException $exception) {
-            return $this->error('User cannot be found.', 404);
+    public function replace(ReplaceUserRequest $request, User $user) {
+        if ($this->isAble('replace', $user)) {
+            $user->update($request->mappedAttributes());
+            return new UserResource($user);
         }
+        return $this->error('You are not authorized to update that resource', 401);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(int $user_id)
+    public function destroy(User $user)
     {
-        try {
-            $user = User::findOrFail($user_id);
-            if ($this->isAble('delete', $user)) {
-                if ($user->recipes()->exists()) {
-                    return $this->error('User has associated recipes and cannot be deleted.', 400);
-                }
-                $user->delete();
-                return $this->ok('User successfully deleted');
+        if ($this->isAble('delete', $user)) {
+            if ($user->recipes()->exists()) {
+                return $this->error('User has associated recipes and cannot be deleted.', 400);
             }
-            return $this->error('You are not authorized to update that resource', 401);
-        } catch (ModelNotFoundException $exception) {
-            return $this->error('User cannot be found.', 404);
+            $user->delete();
+            return $this->ok('User successfully deleted');
         }
+        return $this->error('You are not authorized to update that resource', 401);
     }
 }
