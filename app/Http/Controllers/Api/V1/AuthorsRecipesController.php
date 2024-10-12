@@ -34,15 +34,14 @@ class AuthorsRecipesController extends ApiController
     {
         try {
             $category = Category::findOrFail($request->input('data.relationships.category.data.id'));
-            Gate::authorize('store', Recipe::class);
-            return new RecipeResource(Recipe::create($request->mappedAttributes([
-                'author' => 'user_id'
-            ])));
+            if ($this->isAble('store', Recipe::class)) {
+                return new RecipeResource(Recipe::create($request->mappedAttributes([
+                    'author' => 'user_id'
+                ])));
+            }
+            return $this->error('You are not authorized to create that resource', 401);
         } catch (ModelNotFoundException $exception) {
             return $this->error(sprintf('%s cannot be found.', class_basename($exception->getModel())), 400);
-        } catch (AuthorizationException $ex) {
-            // in this case when providing another author_id, would it be a bad request?
-            return $this->error('You are not authorized to create that resource', 401);
         }
     }
 
@@ -52,23 +51,21 @@ class AuthorsRecipesController extends ApiController
             $recipe = Recipe::where('id', $recipe_id)
                 ->where('user_id', $author_id)
                 ->firstOrFail();
-
-            $mappedAttributes = $request->mappedAttributes();
-            if (isset($mappedAttributes['category_id'])) {
-                $category = Category::findOrFail($mappedAttributes['category_id']);
+            if ($this->isAble('update', $recipe)) {
+                $mappedAttributes = $request->mappedAttributes();
+                if (isset($mappedAttributes['category_id'])) {
+                    $category = Category::findOrFail($mappedAttributes['category_id']);
+                }
+                $recipe->update($mappedAttributes);
+                return new RecipeResource($recipe);
             }
-            Gate::authorize('update', $recipe);
-            $recipe->update($mappedAttributes);
-            return new RecipeResource($recipe);
+            return $this->error('You are not authorized to update that resource', 401);
         } catch (ModelNotFoundException $exception) {
             $className = class_basename($exception->getModel());
             return $this->error(
                 sprintf('%s cannot be found.', $className),
                 ($className === 'Recipe') ? 404 : 400
             );
-        } catch (AuthorizationException $ex) {
-            // in this case when providing another author_id, would it be a bad request?
-            return $this->error('You are not authorized to update that resource', 401);
         }
     }
 
@@ -78,14 +75,13 @@ class AuthorsRecipesController extends ApiController
             $recipe = Recipe::where('id', $recipe_id)
                 ->where('user_id', $author_id)
                 ->firstOrFail();
-            Gate::authorize('replace', $recipe);
-            $recipe->update($request->mappedAttributes());
-            return new RecipeResource($recipe);
+            if ($this->isAble('replace', $recipe)) {
+                $recipe->update($request->mappedAttributes());
+                return new RecipeResource($recipe);
+            }
+            return $this->error('You are not authorized to update that resource', 401);
         } catch (ModelNotFoundException $exception) {
             return $this->error('Recipe cannot be found.', 404);
-        } catch (AuthorizationException $ex) {
-            // in this case when providing another author_id, would it be a bad request?
-            return $this->error('You are not authorized to update that resource', 401);
         }
     }
 
@@ -98,14 +94,13 @@ class AuthorsRecipesController extends ApiController
             $recipe = Recipe::where('id', $recipe_id)
                 ->where('user_id', $author_id)
                 ->firstOrFail();
-            Gate::authorize('delete', $recipe);
-            $recipe->delete();
-            return $this->ok('Recipe successfully deleted');
+            if ($this->isAble('delete', $recipe)) {
+                $recipe->delete();
+                return $this->ok('Recipe successfully deleted');
+            }
+            return $this->error('You are not authorized to delete that resource', 401);
         } catch (ModelNotFoundException $exception) {
             return $this->error('Recipe cannot be found.', 404);
-        } catch (AuthorizationException $ex) {
-            // in this case when providing another author_id, would it be a bad request?
-            return $this->error('You are not authorized to delete that resource', 401);
         }
     }
 }

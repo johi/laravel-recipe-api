@@ -23,7 +23,7 @@ class UpdateRecipeRequest extends BaseRecipeRequest
     public function rules(): array
     {
         $rules = [
-            'data.relationships.author.data.id' => 'sometimes|integer',
+            'data.relationships.author.data.id' => 'prohibited',
             'data.relationships.category.data.id' => 'sometimes|integer',
             'data.attributes.title' => 'sometimes|string',
             'data.attributes.description' => 'sometimes|string',
@@ -31,8 +31,8 @@ class UpdateRecipeRequest extends BaseRecipeRequest
             'data.attributes.servings' => 'sometimes|integer',
             'data.attributes.imageUrl' => 'sometimes|string',
         ];
-        if ($this->user()->tokenCan(Abilities::UPDATE_OWN_RECIPE)) {
-            $rules['data.relationships.author.data.id'] = 'prohibited';
+        if ($this->user()->tokenCan(Abilities::UPDATE_RECIPE)) {
+            $rules['data.relationships.author.data.id'] = 'sometimes|integer';
         }
         return $rules;
     }

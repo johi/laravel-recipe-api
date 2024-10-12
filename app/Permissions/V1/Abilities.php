@@ -22,7 +22,6 @@ final class Abilities
 
     public static function getAbilities(User $user): array
     {
-        // don't assign '*'
         if ($user->is_admin) {
             return [
                 self::CREATE_RECIPE,

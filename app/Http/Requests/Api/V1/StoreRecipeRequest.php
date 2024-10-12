@@ -23,8 +23,10 @@ class StoreRecipeRequest extends BaseRecipeRequest
     public function rules(): array
     {
         $authorIdAttribute = $this->routeIs('recipes.store') ? 'data.relationships.author.data.id' : 'author';
+        $user = $this->user();
+        $authorRule = 'required|integer|exists:users,id';
         $rules = [
-            $authorIdAttribute => 'required|integer|exists:users,id',
+            $authorIdAttribute => $authorRule . '|size:' . $user->id,
             'data.relationships.category.data.id' => 'required|integer',
             'data.attributes.title' => 'required|string',
             'data.attributes.description' => 'required|string',
@@ -32,11 +34,9 @@ class StoreRecipeRequest extends BaseRecipeRequest
             'data.attributes.servings' => 'required|integer',
             'data.attributes.imageUrl' => 'sometimes|string',
         ];
-
-        if ($this->user()->tokenCan(Abilities::CREATE_OWN_RECIPE)) {
-            $rules[$authorIdAttribute] .= '|size:' . $this->user()->id;
+        if ($user()->tokenCan(Abilities::CREATE_RECIPE)) {
+            $rules[$authorIdAttribute] .= $authorIdAttribute;
         }
-
         return $rules;
     }
 
