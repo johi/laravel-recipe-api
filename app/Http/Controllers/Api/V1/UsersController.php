@@ -17,9 +17,6 @@ class UsersController extends ApiController
     protected string $policyClass = UserPolicy::class;
     private $possibleIncludes = ['recipes'];
 
-    /**
-     * Display a listing of the resource.
-     */
     public function index(AuthorFilter $filters)
     {
         return UserResource::collection(
@@ -29,18 +26,12 @@ class UsersController extends ApiController
         );
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreUserRequest $request)
     {
         Gate::authorize('store', User::class);
         return new UserResource(User::create($request->mappedAttributes()));
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(int $user_id)
     {
         return new UserResource(
@@ -50,9 +41,6 @@ class UsersController extends ApiController
         );
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(UpdateUserRequest $request, User $user)
     {
         Gate::authorize('update', $user);
@@ -66,9 +54,6 @@ class UsersController extends ApiController
         return new UserResource($user);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(User $user)
     {
         Gate::authorize('delete', $user);

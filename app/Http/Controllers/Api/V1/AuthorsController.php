@@ -10,9 +10,6 @@ class AuthorsController extends ApiController
 {
     private $possibleIncludes = ['recipes'];
 
-    /**
-     * Display a listing of the resource.
-     */
     public function index(AuthorFilter $filters)
     {
         return UserResource::collection(
@@ -25,9 +22,6 @@ class AuthorsController extends ApiController
         );
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(int $user_id)
     {
         return new UserResource(

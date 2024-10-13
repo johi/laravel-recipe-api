@@ -4,6 +4,7 @@ namespace App\Http\Requests\Api\V1;
 
 use App\Permissions\V1\Abilities;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class StoreRecipeRequest extends BaseRecipeRequest
 {
@@ -23,7 +24,7 @@ class StoreRecipeRequest extends BaseRecipeRequest
     public function rules(): array
     {
         $authorIdAttribute = $this->routeIs('recipes.store') ? 'data.relationships.author.data.id' : 'author';
-        $user = $this->user();
+        $user = Auth::user();
         $authorRule = 'required|integer|exists:users,id';
         $rules = [
             $authorIdAttribute => $authorRule . '|size:' . $user->id,
@@ -34,7 +35,7 @@ class StoreRecipeRequest extends BaseRecipeRequest
             'data.attributes.servings' => 'required|integer',
             'data.attributes.imageUrl' => 'sometimes|string',
         ];
-        if ($user()->tokenCan(Abilities::CREATE_RECIPE)) {
+        if ($user->tokenCan(Abilities::CREATE_RECIPE)) {
             $rules[$authorIdAttribute] .= $authorIdAttribute;
         }
         return $rules;

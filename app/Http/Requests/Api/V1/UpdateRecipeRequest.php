@@ -4,6 +4,7 @@ namespace App\Http\Requests\Api\V1;
 
 use App\Permissions\V1\Abilities;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class UpdateRecipeRequest extends BaseRecipeRequest
 {
@@ -31,7 +32,7 @@ class UpdateRecipeRequest extends BaseRecipeRequest
             'data.attributes.servings' => 'sometimes|integer',
             'data.attributes.imageUrl' => 'sometimes|string',
         ];
-        if ($this->user()->tokenCan(Abilities::UPDATE_RECIPE)) {
+        if (Auth::user()->tokenCan(Abilities::UPDATE_RECIPE)) {
             $rules['data.relationships.author.data.id'] = 'sometimes|integer';
         }
         return $rules;

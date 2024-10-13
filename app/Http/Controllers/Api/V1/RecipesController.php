@@ -18,7 +18,12 @@ class RecipesController extends ApiController
     private array $possibleIncludes = ['category', 'ingredients', 'instructions'];
 
     /**
-     * Display a listing of the resource.
+     * Get all recipes
+     *
+     * @group Manage recipes
+     * @queryParam sort string Data field(s) to sort by. Separate multiple with commas.
+     * Denote descending sort with a minus sign. Example: sort=title,-createdAt
+     * @queryParam filter[createdAt] Filter by created date Example: filter[createdAt]=2024-10-13
      */
     public function index(RecipeFilter $filters)
     {
@@ -30,7 +35,10 @@ class RecipesController extends ApiController
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Create a recipe
+     *
+     * @group Manage recipes
+     *
      */
     public function store(StoreRecipeRequest $request)
     {
@@ -39,17 +47,11 @@ class RecipesController extends ApiController
         return new RecipeResource(Recipe::create($request->mappedAttributes()));
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Recipe $recipe)
     {
         return new RecipeResource($recipe);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(UpdateRecipeRequest $request, Recipe $recipe)
     {
         Gate::authorize('update', $recipe);
@@ -61,9 +63,6 @@ class RecipesController extends ApiController
         return new RecipeResource($recipe);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function replace(ReplaceRecipeRequest $request, Recipe $recipe)
     {
         Gate::authorize('replace', $recipe);
@@ -72,9 +71,6 @@ class RecipesController extends ApiController
         return new RecipeResource($recipe);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Recipe $recipe)
     {
         Gate::authorize('delete', $recipe);
