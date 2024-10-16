@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Exceptions;
 
+use App\Traits\ApiResponses;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Configuration\Exceptions as BaseExceptions;
 use Illuminate\Http\JsonResponse;
@@ -14,7 +15,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Handler
 {
-    protected int $jsonFlags = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK;
+    use ApiResponses;
 
     public function __invoke(BaseExceptions $exceptions): BaseExceptions
     {
@@ -30,9 +31,9 @@ class Handler
     protected function renderUnauthorized(BaseExceptions $exceptions): void
     {
         $exceptions->renderable(
-            fn (AccessDeniedHttpException $e) => $this->response(
-                messages: __('Unauthorized'),
-                code: 403,
+            fn (AccessDeniedHttpException $e) => $this->error(
+                __('Unauthorized'),
+                403,
             )
         );
     }
@@ -40,9 +41,9 @@ class Handler
     protected function renderUnauthenticated(BaseExceptions $exceptions): void
     {
         $exceptions->renderable(
-            fn (AuthenticationException $e) => $this->response(
-                messages: __('Forbidden'),
-                code: 401,
+            fn (AuthenticationException $e) => $this->error(
+                __('Forbidden'),
+                401,
             )
         );
     }
@@ -50,11 +51,11 @@ class Handler
     protected function renderNotFound(BaseExceptions $exceptions): void
     {
         $exceptions->renderable(
-            fn (NotFoundHttpException $e) => $this->response(
-                messages: __(':resource cannot be found.', [
+            fn (NotFoundHttpException $e) => $this->error(
+                __(':resource cannot be found.', [
                     'resource' => ucfirst(Str::afterLast($e->getPrevious()?->getModel(), '\\')) ?: 'Resource',
                 ]),
-                code: 404,
+                404,
             )
         );
     }
@@ -73,9 +74,9 @@ class Handler
                 }
             }
 
-            return $this->response(
-                messages: $errors,
-                code: 422,
+            return $this->error(
+                $errors,
+                400,
             );
         });
     }
@@ -83,30 +84,10 @@ class Handler
     protected function renderGeneric(BaseExceptions $exceptions): void
     {
         $exceptions->renderable(
-            fn (\Throwable $e) => $this->response(
-                messages: __('Unknown error'),
-                code: 400,
+            fn (\Throwable $e) => $this->error(
+                 __('Unknown error'),
+                 400,
             )
-        );
-    }
-
-    protected function response(string|array $messages, int $code): JsonResponse
-    {
-        if (is_string($messages)) {
-            $messages = [
-                [
-                    'message' => $messages,
-                    'source' => null,
-                ]
-            ];
-        }
-
-        return response()->json(
-            data: [
-                'message' => $messages,
-                'status' => $code,
-            ],
-            options: $this->jsonFlags,
         );
     }
 }

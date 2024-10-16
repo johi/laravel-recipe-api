@@ -7,6 +7,7 @@ use App\Http\Requests\Api\LoginUserRequest;
 use App\Models\User;
 use App\Permissions\V1\Abilities;
 use App\Traits\ApiResponses;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -86,8 +87,7 @@ class AuthController extends Controller
       }
      */
     public function logout(Request $request) {
-        $request->user()->currentAccessToken()->delete();
-
+        Auth::user()->currentAccessToken()->delete();
         return $this->ok('');
     }
 }
