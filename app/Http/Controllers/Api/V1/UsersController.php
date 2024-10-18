@@ -9,7 +9,6 @@ use App\Http\Requests\Api\V1\UpdateUserRequest;
 use App\Http\Resources\V1\UserResource;
 use App\Models\User;
 use App\Policies\V1\UserPolicy;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\Gate;
 
 class UsersController extends ApiController
@@ -48,7 +47,8 @@ class UsersController extends ApiController
         return new UserResource($user);
     }
 
-    public function replace(ReplaceUserRequest $request, User $user) {
+    public function replace(ReplaceUserRequest $request, User $user)
+    {
         Gate::authorize('replace', $user);
         $user->update($request->mappedAttributes());
         return new UserResource($user);

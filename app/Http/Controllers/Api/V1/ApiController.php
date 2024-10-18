@@ -33,8 +33,4 @@ class ApiController extends Controller
         }
         return $includes;
     }
-
-    public function isAble($ability, $targetModel) {
-            Gate::authorize($ability, $targetModel);
-    }
 }

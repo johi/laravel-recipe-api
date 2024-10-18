@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use Database\Seeders\Tests\TestSeeder;
+use Database\Seeders\Tests\AuthControllerSeeder;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -10,7 +10,7 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         if (app()->environment('testing')) {
-            $this->call(TestSeeder::class);
+            $this->call(AuthControllerSeeder::class);
         } else {
             $this->call(DevelopmentSeeder::class);
         }

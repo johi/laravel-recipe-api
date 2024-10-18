@@ -43,13 +43,7 @@ class AuthController extends Controller
         return $this->ok(
             'Authenticated',
             [
-                'token' => $user
-                    ->createToken(
-                        'API Token for ' . $user->email,
-                        Abilities::getAbilities($user),
-                        now()->addMonth()
-                    )
-                    ->plainTextToken,
+                'token' => self::createToken($user),
             ]
         );
     }
@@ -89,5 +83,15 @@ class AuthController extends Controller
     public function logout(Request $request) {
         Auth::user()->currentAccessToken()->delete();
         return $this->ok('');
+    }
+
+    public static function createToken(User $user) {
+        return $user
+            ->createToken(
+                'API Token for ' . $user->email,
+                Abilities::getAbilities($user),
+                now()->addMonth()
+            )
+            ->plainTextToken;
     }
 }

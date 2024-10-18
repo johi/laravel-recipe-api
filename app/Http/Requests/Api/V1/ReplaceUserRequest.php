@@ -23,7 +23,7 @@ class ReplaceUserRequest extends BaseUserRequest
     {
         $rules = [
             'data.attributes.name' => 'required|string',
-            'data.attributes.email' => 'required|email|string|unique:users,email,' . $this->route('user'),
+            'data.attributes.email' => 'required|email|string|unique:users,email,' . $this->route('user')->id,
             'data.attributes.isAdmin' => 'required|boolean',
             'data.attributes.password' => 'required|string',
         ];

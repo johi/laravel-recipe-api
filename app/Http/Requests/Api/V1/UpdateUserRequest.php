@@ -23,7 +23,7 @@ class UpdateUserRequest extends BaseUserRequest
     {
         return [
             'data.attributes.name' => 'sometimes|string',
-            'data.attributes.email' => 'sometimes|email|string|unique:users,email,' . $this->route('user'),
+            'data.attributes.email' => 'sometimes|email|string|unique:users,email,' . $this->route('user')->id,
             'data.attributes.isAdmin' => 'sometimes|boolean',
             'data.attributes.password' => 'sometimes|string',
         ];
