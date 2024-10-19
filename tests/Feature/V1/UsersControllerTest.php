@@ -32,22 +32,6 @@ class UsersControllerTest extends TestCase
             ->assertJsonPath('status', 401);
     }
 
-    public function test_as_admin_i_get_a_list_of_all_users(): void
-    {
-        $user = User::factory()->create([
-            'is_admin' => true
-        ]);
-        $response = $this->get(self::ENDPOINT_PREFIX . '/users', ['Authorization' => 'Bearer ' . AuthController::createToken($user)]);
-
-        $response->assertStatus(200)
-            ->assertJsonStructure([
-                'data',
-                'links',
-                'meta',
-            ])
-            ->assertJsonPath('meta.total', UsersControllerSeeder::USERS_TO_CREATE + 1);
-    }
-
     public function test_as_user_i_get_a_list_of_all_users()
     {
         $user = User::factory()->create([
@@ -57,6 +41,22 @@ class UsersControllerTest extends TestCase
             self::ENDPOINT_PREFIX . '/users',
             ['Authorization' => 'Bearer ' . AuthController::createToken($user)]
         );
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'data',
+                'links',
+                'meta',
+            ])
+            ->assertJsonPath('meta.total', UsersControllerSeeder::USERS_TO_CREATE + 1);
+    }
+
+    public function test_as_admin_i_get_a_list_of_all_users(): void
+    {
+        $user = User::factory()->create([
+            'is_admin' => true
+        ]);
+        $response = $this->get(self::ENDPOINT_PREFIX . '/users', ['Authorization' => 'Bearer ' . AuthController::createToken($user)]);
+
         $response->assertStatus(200)
             ->assertJsonStructure([
                 'data',
@@ -92,6 +92,18 @@ class UsersControllerTest extends TestCase
             ->assertJsonPath('status', 401);
     }
 
+    public function test_as_user_i_get_a_specific_user(): void
+    {
+        $user = User::factory()->create([
+            'is_admin' => false
+        ]);
+        $response = $this->get(
+            self::ENDPOINT_PREFIX . '/users/1',
+            ['Authorization' => 'Bearer ' . AuthController::createToken($user)]
+        );
+        $response->assertStatus(200);
+    }
+
     public function test_as_admin_i_get_a_specific_user(): void
     {
         $user = User::factory()->create([
@@ -103,18 +115,6 @@ class UsersControllerTest extends TestCase
         );
         $response->assertStatus(200)
             ->assertJsonStructure($this->getUserJsonStructure());
-    }
-
-    public function test_as_user_i_get_a_specific_user(): void
-    {
-        $user = User::factory()->create([
-            'is_admin' => false
-        ]);
-        $response = $this->get(
-            self::ENDPOINT_PREFIX . '/users/1',
-            ['Authorization' => 'Bearer ' . AuthController::createToken($user)]
-        );
-        $response->assertStatus(200);
     }
 
     public function test_trying_to_show_a_non_existing_user_gives_404(): void

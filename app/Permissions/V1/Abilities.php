@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Permissions\V1;
 use App\Models\User;

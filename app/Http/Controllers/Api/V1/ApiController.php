@@ -1,12 +1,11 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Traits\ApiResponses;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\Gate;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class ApiController extends Controller
 {
@@ -23,7 +22,7 @@ class ApiController extends Controller
 
     public function includes(array $relationships): array
     {
-        $param = request()->get('include');
+        $param = (string) request()->get('include');
         $includes = [];
         $includeValues = explode(',', strtolower($param));
         foreach ($relationships as $relationship) {
