@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Category;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,6 +16,12 @@ return new class extends Migration
             $table->id();
             $table->string('title');
         });
+
+        foreach (Category::getCategories() as $category) {
+            $newCategory = new Category();
+            $newCategory['title'] = $category;
+            $newCategory->save();
+        }
 
         Schema::create('recipes', function (Blueprint $table) {
             $table->id();

@@ -24,17 +24,7 @@ class DevelopmentSeeder extends Seeder
         ]);
 
         $users = User::factory(10)->create();
-        $categories = collect(['Starters', 'Main dishes', 'Side dishes', 'Dessert', 'Bakery', 'Drinks']);
-        $createdCategories = collect([]);
-
-        foreach ($categories as $category) {
-            $createdCategory = Category::factory(1)
-                ->create([
-                    'title' => $category,
-                ]);
-            $createdCategories->push($createdCategory);
-        }
-
+        $createdCategories = Category::all();
         $recipes = Recipe::factory(100)
             ->recycle($users)
             ->recycle($createdCategories)
