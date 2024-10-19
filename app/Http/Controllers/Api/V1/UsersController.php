@@ -9,7 +9,9 @@ use App\Http\Requests\Api\V1\UpdateUserRequest;
 use App\Http\Resources\V1\UserResource;
 use App\Models\User;
 use App\Policies\V1\UserPolicy;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Gate;
+use Mockery\Exception;
 
 class UsersController extends ApiController
 {
@@ -33,10 +35,9 @@ class UsersController extends ApiController
 
     public function show(int $user_id)
     {
-        return new UserResource(
-            User::with($this->includes($this->possibleIncludes))
-                ->where('id', $user_id)
-                ->first()
+        return new UserResource(User::with($this->includes($this->possibleIncludes))
+            ->where('id', $user_id)
+            ->firstOrFail()
         );
     }
 
