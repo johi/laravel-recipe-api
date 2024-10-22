@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Api\V1;
 
+use App\Models\User;
 use App\Permissions\V1\Abilities;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -28,7 +29,6 @@ class StoreRecipeRequest extends BaseRecipeRequest
         $user = Auth::user();
         $authorRule = 'required|integer|exists:users,id';
         $rules = [
-            $authorIdAttribute => $authorRule . '|size:' . $user->id,
             'data.relationships.category.data.id' => 'required|integer',
             'data.attributes.title' => 'required|string',
             'data.attributes.description' => 'required|string',
@@ -36,8 +36,11 @@ class StoreRecipeRequest extends BaseRecipeRequest
             'data.attributes.servings' => 'required|integer',
             'data.attributes.imageUrl' => 'sometimes|string',
         ];
-        if ($user->tokenCan(Abilities::CREATE_RECIPE)) {
-            $rules[$authorIdAttribute] .= $authorIdAttribute;
+        if ($user) {
+            $rules[$authorIdAttribute] = $authorRule . '|size:' . $user->id;
+            if ($user->tokenCan(Abilities::CREATE_RECIPE)) {
+                $rules[$authorIdAttribute] .= $authorIdAttribute;
+            }
         }
         return $rules;
     }
@@ -49,12 +52,12 @@ class StoreRecipeRequest extends BaseRecipeRequest
         ];
     }
 
-    protected function prepareForValidation()
-    {
-        if ($this->routeIs('authors.recipes.store')) {
-            $this->merge([
-                'author' => $this->route('author')
-            ]);
-        }
-    }
+//    protected function prepareForValidation()
+//    {
+//        if ($this->routeIs('authors.recipes.store')) {
+//            $this->merge([
+//                'author' => $this->route('author')
+//            ]);
+//        }
+//    }
 }

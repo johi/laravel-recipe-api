@@ -22,9 +22,14 @@ class UpdateUserRequest extends BaseUserRequest
      */
     public function rules(): array
     {
+        $user = $this->route('user');
+        $emailValidationFragment = '';
+        if ($user) {
+            $emailValidationFragment = ',' . $user->id;
+        }
         return [
             'data.attributes.name' => 'sometimes|string',
-            'data.attributes.email' => 'sometimes|email|string|unique:users,email,' . $this->route('user')->id,
+            'data.attributes.email' => 'sometimes|email|string|unique:users,email' . $emailValidationFragment,
             'data.attributes.isAdmin' => 'sometimes|boolean',
             'data.attributes.password' => 'sometimes|string',
         ];

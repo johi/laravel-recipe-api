@@ -33,8 +33,11 @@ class UpdateRecipeRequest extends BaseRecipeRequest
             'data.attributes.servings' => 'sometimes|integer',
             'data.attributes.imageUrl' => 'sometimes|string',
         ];
-        if (Auth::user()->tokenCan(Abilities::UPDATE_RECIPE)) {
-            $rules['data.relationships.author.data.id'] = 'sometimes|integer';
+        $user = Auth::user();
+        if ($user) {
+            if ($user->tokenCan(Abilities::UPDATE_RECIPE)) {
+                $rules['data.relationships.author.data.id'] = 'sometimes|integer';
+            }
         }
         return $rules;
     }
