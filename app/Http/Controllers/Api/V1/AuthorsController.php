@@ -16,9 +16,8 @@ class AuthorsController extends ApiController
         return UserResource::collection(
             User::select('users.*')
                 ->with($this->includes($this->possibleIncludes))
-                ->join('recipes', 'recipes.user_id', '=', 'users.id')
                 ->filter($filters)
-                ->distinct()
+                ->whereHas('recipes')
                 ->paginate()
         );
     }
