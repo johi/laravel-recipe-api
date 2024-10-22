@@ -22,26 +22,9 @@ class RecipesControllerTest extends TestCase
     }
 
     // RETRIEVE A LIST OF ALL RECIPES
-    public function test_as_anonymous_i_dont_get_a_list_of_all_recipes(): void
+    public function test_as_anonymous_i_get_a_list_of_all_recipes(): void
     {
         $response = $this->get(self::ENDPOINT_PREFIX . '/recipes');
-        $response->assertStatus(401)
-            ->assertJsonStructure([
-                'message',
-                'status'
-            ])
-            ->assertJsonPath('status', 401);
-    }
-
-    public function test_as_user_i_get_a_list_of_all_recipes(): void
-    {
-        $user = User::factory()->create([
-            'is_admin' => false
-        ]);
-        $response = $this->get(
-            self::ENDPOINT_PREFIX . '/recipes',
-            ['Authorization' => 'Bearer ' . AuthController::createToken($user)]
-        );
         $response->assertStatus(200)
             ->assertJsonStructure([
                 'data',
@@ -50,16 +33,53 @@ class RecipesControllerTest extends TestCase
             ]);
     }
 
-    public function test_i_can_include_category_for_all_recipes(): void
+    public function test_as_anonymous_i_get_a_single_recipe(): void
     {
-        $user = User::factory()->create([
-            'is_admin' => false
-        ]);
-        $response = $this->get(
-            self::ENDPOINT_PREFIX . '/recipes?include=category',
-            ['Authorization' => 'Bearer ' . AuthController::createToken($user)]
-        );
-
-        $response->assertStatus(200);
+        $response = $this->get(self::ENDPOINT_PREFIX . '/recipes/1');
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'data' => [
+                    'type',
+                    'id',
+                    'attributes' => [
+                        'title',
+                        'description',
+                        'preparationTimeMinutes',
+                        'servings',
+                        'imageUrl',
+                        'createdAt',
+                        'updatedAt',
+                    ],
+                    'relationships' => [
+                        'author' => [
+                            'data' => [
+                                'type',
+                                'id'
+                            ],
+                            'links'
+                        ],
+                        'category' => [
+                            'data' => [
+                                'type',
+                                'id'
+                            ],
+                            'links'
+                        ]
+                    ],
+                    'included' => [
+                        'author' => [
+                            'type',
+                            'id',
+                            'attributes' => [
+                                'name',
+                                'email',
+                                'isAdmin'
+                            ],
+                            'links'
+                        ]
+                    ],
+                    'links'
+                ]
+            ]);
     }
 }

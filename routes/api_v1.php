@@ -9,22 +9,26 @@ use App\Http\Controllers\Api\V1\AuthorsController;
 use App\Http\Controllers\Api\V1\UsersController;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/categories', [CategoriesController::class, 'index'])->name('categories.index');
+Route::get('recipes', [RecipesController::class, 'index'])->name('recipes.index');
+Route::get('recipes/{recipe}', [RecipesController::class, 'show'])->name('recipes.show');
+Route::get('authors', [AuthorsController::class, 'index'])->name('authors.index');
+Route::get('authors/{author}', [AuthorsController::class, 'show'])->name('authors.show');
+Route::get('authors/{author}/recipes', [AuthorsRecipesController::class, 'index'])->name('recipes.index');
+
 Route::middleware('auth:sanctum')->group(function () {
-    Route::apiResource('authors', AuthorsController::class)->except(['store', 'update', 'destroy']);
-    Route::apiResource('authors.recipes', AuthorsRecipesController::class)->except(['update']);
-    Route::put('authors/{author}/recipes/{recipe}', [AuthorsRecipesController::class, 'replace'])->name('authors.recipes.replace');
-    Route::patch('authors/{author}/recipes/{recipe}', [AuthorsRecipesController::class, 'update'])->name('authors.recipes.update');
-    Route::apiResource('recipes', RecipesController::class)->except(['update']);
+
+    Route::post('recipes', [RecipesController::class, 'store'])->name('recipes.store');
+    Route::delete('recipes/{recipe}', [RecipesController::class, 'destroy'])->name('recipes.destroy');
     Route::put('recipes/{recipe}', [RecipesController::class, 'replace'])->name('recipes.replace');
     Route::patch('recipes/{recipe}', [RecipesController::class, 'update'])->name('recipes.update');
-    Route::get('/categories', [CategoriesController::class, 'index'])->name('categories.index');
 
     Route::apiResource('users', UsersController::class)->except(['update']);
     Route::put('users/{user}', [UsersController::class, 'replace']);
     Route::patch('users/{user}', [UsersController::class, 'update']);
 
     // ingredients
-    Route::get('recipes/{recipe}/ingredients', [IngredientsController::class, 'index'])->name('ingredients.index');         // List all ingredients for a specific recipe
+    Route::get('recipes/{recipe}/ingredients', [IngredientsController::class, 'index'])->name('ingredients.index');
     Route::post('recipes/{recipe}/ingredients', [IngredientsController::class, 'store'])->name('ingredients.store');        // Create a new ingredient for a specific recipe
     Route::get('recipes/{recipe}/ingredients/{ingredient}', [IngredientsController::class, 'show'])->name('ingredients.show'); // Show a specific ingredient for a specific recipe
     Route::put('recipes/{recipe}/ingredients/{ingredient}', [IngredientsController::class, 'update'])->name('ingredients.update'); // Update a specific ingredient for a specific recipe
