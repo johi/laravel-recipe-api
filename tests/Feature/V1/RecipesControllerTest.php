@@ -27,7 +27,9 @@ class RecipesControllerTest extends TestCase
         $response = $this->get(self::ENDPOINT_PREFIX . '/recipes');
         $response->assertStatus(200)
             ->assertJsonStructure([
-                'data',
+                'data' => [
+                    0 => $this->getRecipeStructure()
+                ],
                 'links',
                 'meta',
             ]);
@@ -38,48 +40,59 @@ class RecipesControllerTest extends TestCase
         $response = $this->get(self::ENDPOINT_PREFIX . '/recipes/1');
         $response->assertStatus(200)
             ->assertJsonStructure([
-                'data' => [
-                    'type',
-                    'id',
-                    'attributes' => [
-                        'title',
-                        'description',
-                        'preparationTimeMinutes',
-                        'servings',
-                        'imageUrl',
-                        'createdAt',
-                        'updatedAt',
+                'data' => $this->getRecipeStructure()
+            ]);
+    }
+
+    public function test_trying_to_show_non_existent_recipe_gives_404(): void
+    {
+        $response = $this->get(self::ENDPOINT_PREFIX . '/recipes/9999');
+        $response->assertStatus(404);
+    }
+
+    private function getRecipeStructure()
+    {
+        return [
+            'type',
+            'id',
+            'attributes' => [
+                'title',
+//                'description',
+                'preparationTimeMinutes',
+                'servings',
+                'imageUrl',
+                'createdAt',
+                'updatedAt',
+            ],
+            'relationships' => [
+                'author' => [
+                    'data' => [
+                        'type',
+                        'id'
                     ],
-                    'relationships' => [
-                        'author' => [
-                            'data' => [
-                                'type',
-                                'id'
-                            ],
-                            'links'
-                        ],
-                        'category' => [
-                            'data' => [
-                                'type',
-                                'id'
-                            ],
-                            'links'
-                        ]
-                    ],
-                    'included' => [
-                        'author' => [
-                            'type',
-                            'id',
-                            'attributes' => [
-                                'name',
-                                'email',
-                                'isAdmin'
-                            ],
-                            'links'
-                        ]
+                    'links'
+                ],
+                'category' => [
+                    'data' => [
+                        'type',
+                        'id'
                     ],
                     'links'
                 ]
-            ]);
+            ],
+            'included' => [
+                'author' => [
+                    'type',
+                    'id',
+                    'attributes' => [
+                        'name',
+                        'email',
+                        'isAdmin'
+                    ],
+                    'links'
+                ]
+            ],
+            'links'
+        ];
     }
 }
