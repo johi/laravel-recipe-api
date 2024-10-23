@@ -27,7 +27,7 @@ class AuthorsController extends ApiController
         return new UserResource(
             User::where('id', $user_id)
                 ->with($this->includes($this->possibleIncludes))
-                ->first()
+                ->firstOrFail()
         );
     }
 

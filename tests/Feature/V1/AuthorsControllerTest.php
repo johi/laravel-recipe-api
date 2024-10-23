@@ -3,9 +3,7 @@
 namespace Tests\Feature\V1;
 
 use Database\Seeders\Tests\AuthorsControllerSeeder;
-use Database\Seeders\Tests\UsersControllerSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class AuthorsControllerTest extends TestCase
@@ -48,6 +46,12 @@ class AuthorsControllerTest extends TestCase
             ->assertJsonStructure(['data' => $this->getAuthorStructure()]);
     }
 
+    public function test_trying_to_show_non_existent_author_gives_404(): void
+    {
+        $response = $this->get(self::ENDPOINT_PREFIX . '/authors/1000');
+        $response->assertStatus(404);
+    }
+
     public function test_i_can_include_recipes_for_single_author(): void
     {
         $response = $this->get(self::ENDPOINT_PREFIX . '/authors/1?include=recipes');
@@ -71,5 +75,4 @@ class AuthorsControllerTest extends TestCase
             ]
         ];
     }
-
 }
