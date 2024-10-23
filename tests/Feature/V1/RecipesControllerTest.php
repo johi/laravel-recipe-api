@@ -50,7 +50,40 @@ class RecipesControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
-    private function getRecipeStructure()
+    public function test_as_anonymous_i_cannot_create_a_recipe(): void
+    {
+        $response = $this->post(self::ENDPOINT_PREFIX . '/recipes', $this->getRecipePayload());
+        $response->assertStatus(401);
+    }
+
+    
+
+    private function getRecipePayload(int $categoryId = 1, int $authorId = 1): array
+    {
+        return [
+            'data' => [
+                'attributes' => [
+                    'title' => 'Test Recipe',
+                    'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+                    'preparationTimeMinutes' => 30,
+                    'servings' => 4
+                ],
+                'relationships' => [
+                    'author' => [
+                        'data' => [
+                            'id' => $authorId
+                        ]
+                    ],
+                    'category' => [
+                        'data' => [
+                            'id' => $categoryId
+                        ]
+                    ]
+                ]
+            ],
+        ];
+    }
+    private function getRecipeStructure(): array
     {
         return [
             'type',
