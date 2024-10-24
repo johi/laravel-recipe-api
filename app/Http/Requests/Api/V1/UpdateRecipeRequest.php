@@ -36,7 +36,7 @@ class UpdateRecipeRequest extends BaseRecipeRequest
         $user = Auth::user();
         if ($user) {
             if ($user->tokenCan(Abilities::UPDATE_RECIPE)) {
-                $rules['data.relationships.author.data.id'] = 'sometimes|integer';
+                $rules['data.relationships.author.data.id'] = 'sometimes|integer|exists:users,id';
             }
         }
         return $rules;

@@ -91,7 +91,6 @@ class RecipesControllerTest extends TestCase
         $response->assertStatus(201);
     }
 
-
     public function test_as_anonymous_i_cannot_replace_a_recipe(): void
     {
         $response = $this->put(self::ENDPOINT_PREFIX . '/recipes/1', $this->getRecipePayload());
@@ -112,7 +111,7 @@ class RecipesControllerTest extends TestCase
             ->assertJsonPath('data.attributes.title', 'Test Recipe');
     }
 
-    public function test_as_user_i_can_replace_my_own_recipe_with_myself_as_author(): void
+    public function test_as_user_i_can_only_replace_my_own_recipe_with_myself_as_author(): void
     {
         $user = User::factory()->create(['is_admin' => false]);
         $recipe = Recipe::factory()->create(['user_id' => $user->id]);
@@ -145,6 +144,74 @@ class RecipesControllerTest extends TestCase
         );
         $response->assertStatus(200)
             ->assertJsonPath('data.attributes.title', 'Test Recipe');
+    }
+
+    public function test_as_anonymous_i_cannot_update_a_recipe(): void
+    {
+        $response = $this->patch(
+            self::ENDPOINT_PREFIX . '/recipes/1',
+            ['data' => ['attributes' => ['title' => 'PATCHED Recipe']]]
+        );
+        $response->assertStatus(401);
+    }
+
+    public function test_as_user_i_can_update_my_own_recipe(): void
+    {
+        $changedTitle = 'PATCHED Recipe';
+        $user = User::factory()->create(['is_admin' => false]);
+        $recipe = Recipe::factory()->create(['user_id' => $user->id]);
+        $response = $this->patch(
+            self::ENDPOINT_PREFIX . '/recipes/' . $recipe->id,
+            ['data' => ['attributes' => ['title' => $changedTitle]]],
+            ['Authorization' => 'Bearer ' . AuthController::createToken($user)]
+        );
+        $response->assertStatus(200)
+            ->assertJsonStructure(['data' => $this->getRecipeStructure()])
+            ->assertJsonPath('data.attributes.title', $changedTitle);
+    }
+
+    public function test_as_user_i_cannot_update_someone_else_recipe(): void
+    {
+        $changedTitle = 'PATCHED Recipe';
+        $user = User::factory()->create(['is_admin' => false]);
+        $response = $this->patch(
+            self::ENDPOINT_PREFIX . '/recipes/1',
+            ['data' => ['attributes' => ['title' => $changedTitle]]],
+            ['Authorization' => 'Bearer ' . AuthController::createToken($user)]
+        );
+        $response->assertStatus(403);
+    }
+
+    public function test_as_user_i_can_only_update_my_own_recipe_with_myself_as_author(): void
+    {
+        $changedTitle = 'PATCHED Recipe';
+        $user = User::factory()->create(['is_admin' => false]);
+        $recipe = Recipe::factory()->create(['user_id' => $user->id]);
+        $response = $this->patch(
+            self::ENDPOINT_PREFIX . '/recipes/' . $recipe->id,
+            [
+                'data' => [
+                    'attributes' => ['title' => $changedTitle],
+                    'relationships' => ['author' => ['data' => ['id' => 1]]]
+                ]
+            ],
+            ['Authorization' => 'Bearer ' . AuthController::createToken($user)]
+        );
+        $response->assertStatus(400);
+    }
+
+    public function test_as_admin_i_can_update_some_else_recipe(): void
+    {
+        $changedTitle = 'PATCHED Recipe';
+        $user = User::factory()->create(['is_admin' => true]);
+        $response = $this->patch(
+            self::ENDPOINT_PREFIX . '/recipes/1',
+            ['data' => ['attributes' => ['title' => $changedTitle]]],
+            ['Authorization' => 'Bearer ' . AuthController::createToken($user)]
+        );
+        $response->assertStatus(200)
+            ->assertJsonStructure(['data' => $this->getRecipeStructure()])
+            ->assertJsonPath('data.attributes.title', $changedTitle);
     }
 
     private function getRecipePayload(int $authorId = 1, int $categoryId = 1): array
