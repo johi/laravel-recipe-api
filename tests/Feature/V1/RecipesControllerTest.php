@@ -214,6 +214,47 @@ class RecipesControllerTest extends TestCase
             ->assertJsonPath('data.attributes.title', $changedTitle);
     }
 
+    public function test_as_anonymous_i_cannot_delete_a_recipe(): void
+    {
+        $response = $this->delete(self::ENDPOINT_PREFIX . '/recipes/1');
+        $response->assertStatus(401);
+    }
+
+    public function test_as_user_i_can_delete_my_own_recipe(): void
+    {
+        $user = User::factory()->create(['is_admin' => false]);
+        $recipe = Recipe::factory()->create(['user_id' => $user->id]);
+        $response = $this->delete(
+            self::ENDPOINT_PREFIX . '/recipes/' . $recipe->id,
+            [],
+            ['Authorization' => 'Bearer ' . AuthController::createToken($user)]
+        );
+        $response->assertStatus(200);
+        $this->assertDatabaseMissing('recipes', ['id' => $recipe->id]);
+    }
+
+    public function test_as_user_i_cannot_delete_someone_else_recipe(): void
+    {
+        $user = User::factory()->create(['is_admin' => false]);
+        $response = $this->delete(
+            self::ENDPOINT_PREFIX . '/recipes/1',
+            [],
+            ['Authorization' => 'Bearer ' . AuthController::createToken($user)]
+        );
+        $response->assertStatus(403);
+
+    }
+
+    public function test_as_admin_i_can_delete_someone__else_recipe(): void
+    {
+        $user = User::factory()->create(['is_admin' => true]);
+        $response = $this->delete(
+            self::ENDPOINT_PREFIX . '/recipes/1',
+            [],
+            ['Authorization' => 'Bearer ' . AuthController::createToken($user)]
+        );
+        $response->assertStatus(200);
+    }
     private function getRecipePayload(int $authorId = 1, int $categoryId = 1): array
     {
         return [
