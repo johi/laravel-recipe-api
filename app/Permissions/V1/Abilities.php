@@ -11,7 +11,7 @@ final class Abilities
     public const REPLACE_RECIPE = 'recipe:replace';
     public const DELETE_RECIPE = 'recipe:delete';
 
-    public const CREATE_OWN_RECIPE = 'recipe:create';
+    public const CREATE_OWN_RECIPE = 'recipe:own:create';
     public const UPDATE_OWN_RECIPE = 'recipe:own:update';
     public const REPLACE_OWN_RECIPE = 'recipe:own:replace';
     public const DELETE_OWN_RECIPE = 'recipe:own:delete';

@@ -56,9 +56,42 @@ class RecipesControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
-    
+    public function test_as_user_i_can_create_my_own_recipe(): void
+    {
+        $user = User::factory()->create(['is_admin' => false]);
+        $payload = $this->getRecipePayload($user->id);
+//        dd($payload);
+        $response = $this->post(
+            self::ENDPOINT_PREFIX . '/recipes',
+            $this->getRecipePayload($user->id),
+            ['Authorization' => 'Bearer ' . AuthController::createToken($user)]
+        );
+        $response->assertStatus(201);
+    }
 
-    private function getRecipePayload(int $categoryId = 1, int $authorId = 1): array
+    public function test_as_user_i_cannot_create_someone_else_recipe(): void
+    {
+        $user = User::factory()->create(['is_admin' => false]);
+        $response = $this->post(
+            self::ENDPOINT_PREFIX . '/recipes',
+            $this->getRecipePayload(1),
+            ['Authorization' => 'Bearer ' . AuthController::createToken($user)]
+        );
+        $response->assertStatus(400);
+    }
+
+    public function test_as_admin_i_can_create_someone_else_recipe(): void
+    {
+        $user = User::factory()->create(['is_admin' => true]);
+        $response = $this->post(
+            self::ENDPOINT_PREFIX . '/recipes',
+            $this->getRecipePayload(1),
+            ['Authorization' => 'Bearer ' . AuthController::createToken($user)]
+        );
+        $response->assertStatus(201);
+    }
+
+    private function getRecipePayload(int $authorId = 1, int $categoryId = 1): array
     {
         return [
             'data' => [
