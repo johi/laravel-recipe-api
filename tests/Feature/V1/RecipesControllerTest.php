@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Tests\Feature\V1;
 
 use App\Http\Controllers\Api\AuthController;
+use App\Models\Recipe;
 use App\Models\User;
 use Database\Seeders\Tests\RecipesControllerSeeder;
 use Database\Seeders\Tests\UsersControllerSeeder;
@@ -60,7 +61,6 @@ class RecipesControllerTest extends TestCase
     {
         $user = User::factory()->create(['is_admin' => false]);
         $payload = $this->getRecipePayload($user->id);
-//        dd($payload);
         $response = $this->post(
             self::ENDPOINT_PREFIX . '/recipes',
             $this->getRecipePayload($user->id),
@@ -89,6 +89,62 @@ class RecipesControllerTest extends TestCase
             ['Authorization' => 'Bearer ' . AuthController::createToken($user)]
         );
         $response->assertStatus(201);
+    }
+
+
+    public function test_as_anonymous_i_cannot_replace_a_recipe(): void
+    {
+        $response = $this->put(self::ENDPOINT_PREFIX . '/recipes/1', $this->getRecipePayload());
+        $response->assertStatus(401);
+    }
+
+    public function test_as_user_i_can_replace_my_own_recipe(): void
+    {
+        $user = User::factory()->create(['is_admin' => false]);
+        $recipe = Recipe::factory()->create(['user_id' => $user->id]);
+        $response = $this->put(
+            self::ENDPOINT_PREFIX . '/recipes/' . $recipe->id,
+            $this->getRecipePayload($user->id),
+            ['Authorization' => 'Bearer ' . AuthController::createToken($user)]
+        );
+        $response->assertStatus(200)
+            ->assertJsonStructure(['data' => $this->getRecipeStructure()])
+            ->assertJsonPath('data.attributes.title', 'Test Recipe');
+    }
+
+    public function test_as_user_i_can_replace_my_own_recipe_with_myself_as_author(): void
+    {
+        $user = User::factory()->create(['is_admin' => false]);
+        $recipe = Recipe::factory()->create(['user_id' => $user->id]);
+        $response = $this->put(
+            self::ENDPOINT_PREFIX . '/recipes/' . $recipe->id,
+            $this->getRecipePayload(1),
+            ['Authorization' => 'Bearer ' . AuthController::createToken($user)]
+        );
+        $response->assertStatus(400);
+    }
+
+    public function test_as_user_i_cannot_replace_someone_else_recipe(): void
+    {
+        $user = User::factory()->create(['is_admin' => false]);
+        $response = $this->put(
+            self::ENDPOINT_PREFIX . '/recipes/1',
+            $this->getRecipePayload($user->id),
+            ['Authorization' => 'Bearer ' . AuthController::createToken($user)]
+        );
+        $response->assertStatus(403);
+    }
+
+    public function test_as_admin_i_can_replace_someone_else_recipe(): void
+    {
+        $user = User::factory()->create(['is_admin' => true]);
+        $response = $this->put(
+            self::ENDPOINT_PREFIX . '/recipes/1',
+            $this->getRecipePayload($user->id),
+            ['Authorization' => 'Bearer ' . AuthController::createToken($user)]
+        );
+        $response->assertStatus(200)
+            ->assertJsonPath('data.attributes.title', 'Test Recipe');
     }
 
     private function getRecipePayload(int $authorId = 1, int $categoryId = 1): array

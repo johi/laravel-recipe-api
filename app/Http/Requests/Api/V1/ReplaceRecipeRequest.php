@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Api\V1;
 
+use App\Permissions\V1\Abilities;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class ReplaceRecipeRequest extends BaseRecipeRequest
 {
@@ -22,7 +24,10 @@ class ReplaceRecipeRequest extends BaseRecipeRequest
      */
     public function rules(): array
     {
+        $authorIdAttribute = 'data.relationships.author.data.id';
+        $authorRule = 'required|integer|exists:users,id';
         $rules = [
+            $authorIdAttribute => $authorRule,
             'data.relationships.category.data.id' => 'required|integer',
             'data.attributes.title' => 'required|string',
             'data.attributes.description' => 'required|string',
@@ -30,8 +35,11 @@ class ReplaceRecipeRequest extends BaseRecipeRequest
             'data.attributes.servings' => 'required|integer',
             'data.attributes.imageUrl' => 'sometimes|string',
         ];
-        if ($this->routeIs('recipes.replace')) {
-            $rules['data.relationships.author.data.id'] = 'required|integer';
+        $user = Auth::user();
+        if ($user) {
+            if ($user->tokenCan(Abilities::UPDATE_OWN_RECIPE)) {
+                $rules[$authorIdAttribute] = $authorRule . '|size:' . $user->id;
+            }
         }
         return $rules;
     }
