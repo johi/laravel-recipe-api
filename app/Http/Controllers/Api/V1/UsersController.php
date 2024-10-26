@@ -34,10 +34,10 @@ class UsersController extends ApiController
         return new UserResource(User::create($request->mappedAttributes()));
     }
 
-    public function show(int $user_id)
+    public function show(int $userId)
     {
         return new UserResource(User::with($this->includes($this->possibleIncludes))
-            ->where('id', $user_id)
+            ->where('id', $userId)
             ->firstOrFail()
         );
     }

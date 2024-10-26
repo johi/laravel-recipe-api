@@ -15,6 +15,8 @@ Route::get('recipes/{recipe}', [RecipesController::class, 'show'])->name('recipe
 Route::get('authors', [AuthorsController::class, 'index'])->name('authors.index');
 Route::get('authors/{author}', [AuthorsController::class, 'show'])->name('authors.show');
 Route::get('authors/{author}/recipes', [AuthorsRecipesController::class, 'index'])->name('recipes.index');
+Route::get('recipes/{recipe}/ingredients', [IngredientsController::class, 'index'])->name('ingredients.index');
+Route::get('recipes/{recipe}/ingredients/{ingredient}', [IngredientsController::class, 'show'])->name('ingredients.show'); // Show a specific ingredient for a specific recipe
 
 Route::middleware('auth:sanctum')->group(function () {
 
@@ -28,9 +30,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('users/{user}', [UsersController::class, 'update']);
 
     // ingredients
-    Route::get('recipes/{recipe}/ingredients', [IngredientsController::class, 'index'])->name('ingredients.index');
     Route::post('recipes/{recipe}/ingredients', [IngredientsController::class, 'store'])->name('ingredients.store');        // Create a new ingredient for a specific recipe
-    Route::get('recipes/{recipe}/ingredients/{ingredient}', [IngredientsController::class, 'show'])->name('ingredients.show'); // Show a specific ingredient for a specific recipe
     Route::put('recipes/{recipe}/ingredients/{ingredient}', [IngredientsController::class, 'update'])->name('ingredients.update'); // Update a specific ingredient for a specific recipe
     Route::delete('recipes/{recipe}/ingredients/{ingredient}', [IngredientsController::class, 'destroy'])->name('ingredients.destroy'); // Delete a specific ingredient for a specific recipe
 

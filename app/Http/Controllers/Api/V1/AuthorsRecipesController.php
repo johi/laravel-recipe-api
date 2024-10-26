@@ -18,9 +18,9 @@ class AuthorsRecipesController extends ApiController
     protected string $policyClass = RecipePolicy::class;
     private $possibleIncludes = ['category', 'ingredients', 'instructions'];
 
-    public function index(RecipeFilter $filters, int $author_id) {
+    public function index(RecipeFilter $filters, int $authorId) {
         return RecipeResource::collection(
-            Recipe::where('user_id', $author_id)->with($this->includes($this->possibleIncludes))->filter($filters)->paginate()
+            Recipe::where('user_id', $authorId)->with($this->includes($this->possibleIncludes))->filter($filters)->paginate()
         );
     }
 }

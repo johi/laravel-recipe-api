@@ -48,9 +48,12 @@ class RecipesController extends ApiController
         return new RecipeResource(Recipe::create($request->mappedAttributes()));
     }
 
-    public function show(Recipe $recipe)
+    public function show(int $recipeId)
     {
-        return new RecipeResource($recipe);
+        return new RecipeResource(Recipe::with($this->includes($this->possibleIncludes))
+                ->where('id', $recipeId)
+                ->firstOrFail()
+        );
     }
 
     public function update(UpdateRecipeRequest $request, Recipe $recipe)

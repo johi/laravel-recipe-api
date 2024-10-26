@@ -17,7 +17,6 @@ class RecipeResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        // still need to map: author, category, instructions, ingredients
         return [
             'type' => 'recipe',
             'id' => $this->id,
@@ -50,6 +49,11 @@ class RecipeResource extends JsonResource
                     ],
                     'links' => [
                         'self' => route('categories.index')
+                    ]
+                ],
+                'ingredients' => [
+                    'links' => [
+                        'self' => route('ingredients.index', ['recipe' => $this->id])
                     ]
                 ]
             ],
