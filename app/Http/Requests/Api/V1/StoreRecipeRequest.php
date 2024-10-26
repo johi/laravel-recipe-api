@@ -57,12 +57,4 @@ class StoreRecipeRequest extends BaseRecipeRequest
         ];
     }
 
-//    protected function prepareForValidation()
-//    {
-//        if ($this->routeIs('authors.recipes.store')) {
-//            $this->merge([
-//                'author' => $this->route('author')
-//            ]);
-//        }
-//    }
 }

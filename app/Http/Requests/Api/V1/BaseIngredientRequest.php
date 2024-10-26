@@ -5,18 +5,14 @@ namespace App\Http\Requests\Api\V1;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class BaseRecipeRequest extends FormRequest
+class BaseIngredientRequest extends FormRequest
 {
     public function mappedAttributes(array $otherAttributes = []): array
     {
         $mappedAttributes = array_merge([
-            'data.relationships.author.data.id' => 'user_id',
-            'data.relationships.category.data.id' => 'category_id',
             'data.attributes.title' => 'title',
-            'data.attributes.description' => 'description',
-            'data.attributes.preparationTimeMinutes' => 'preparation_time_minutes',
-            'data.attributes.servings' => 'servings',
-            'data.attributes.imageUrl' => 'image_url',
+            'data.attributes.quantity' => 'quantity',
+            'data.attributes.unit' => 'unit',
         ], $otherAttributes);
         $attributesToUpdate = [];
         foreach ($mappedAttributes as $key => $attribute) {

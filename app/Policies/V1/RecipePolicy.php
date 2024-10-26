@@ -15,6 +15,14 @@ class RecipePolicy
             $user->tokenCan(Abilities::CREATE_OWN_RECIPE);
     }
 
+    public function storeIngredient(User $user, Recipe $recipe) : bool
+    {
+        if ($user->tokenCan(Abilities::CREATE_OWN_RECIPE)) {
+            return $user->id === $recipe->user_id;
+        }
+        return $user->tokenCan(Abilities::CREATE_RECIPE);
+    }
+
     public function update(User $user, Recipe $recipe) : bool
     {
         if ($user->tokenCan(Abilities::UPDATE_RECIPE)) {
