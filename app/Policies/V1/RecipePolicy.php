@@ -15,7 +15,7 @@ class RecipePolicy
             $user->tokenCan(Abilities::CREATE_OWN_RECIPE);
     }
 
-    public function storeIngredient(User $user, Recipe $recipe) : bool
+    public function storeRelated(User $user, Recipe $recipe) : bool
     {
         if ($user->tokenCan(Abilities::CREATE_OWN_RECIPE)) {
             return $user->id === $recipe->user_id;
@@ -25,31 +25,25 @@ class RecipePolicy
 
     public function update(User $user, Recipe $recipe) : bool
     {
-        if ($user->tokenCan(Abilities::UPDATE_RECIPE)) {
-            return true;
-        } else if ($user->tokenCan(Abilities::UPDATE_OWN_RECIPE)) {
+        if ($user->tokenCan(Abilities::UPDATE_OWN_RECIPE)) {
             return $user->id === $recipe->user_id;
         }
-        return false;
+        return $user->tokenCan(Abilities::UPDATE_RECIPE);
     }
 
     public function replace(User $user, Recipe $recipe) : bool
     {
-        if ($user->tokenCan(Abilities::REPLACE_RECIPE)) {
-            return true;
-        } else if ($user->tokenCan(Abilities::REPLACE_OWN_RECIPE)) {
+        if ($user->tokenCan(Abilities::REPLACE_OWN_RECIPE)) {
             return $user->id === $recipe->user_id;
         }
-        return false;
+        return $user->tokenCan(Abilities::REPLACE_RECIPE);
     }
 
     public function delete(User $user, Recipe $recipe) : bool
     {
-        if ($user->tokenCan(Abilities::DELETE_RECIPE)) {
-            return true;
-        } else if ($user->tokenCan(Abilities::DELETE_OWN_RECIPE)) {
+        if ($user->tokenCan(Abilities::DELETE_OWN_RECIPE)) {
             return $user->id === $recipe->user_id;
         }
-        return false;
+        return $user->tokenCan(Abilities::DELETE_RECIPE);
     }
 }
