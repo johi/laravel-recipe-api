@@ -52,8 +52,10 @@ class IngredientsController extends ApiController
         return new IngredientResource($ingredient);
     }
 
-    public function destroy(Ingredient $ingredient)
+    public function destroy(Recipe $recipe, Ingredient $ingredient)
     {
-        //
+        Gate::authorize('delete', $recipe);
+        $ingredient->delete();
+        return $this->ok('Ingredient successfully deleted');
     }
 }
