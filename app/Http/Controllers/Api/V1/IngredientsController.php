@@ -20,9 +20,10 @@ class IngredientsController extends Controller
         //
     }
 
-    public function show(Ingredient $ingredient)
+    public function show(int $recipeId, int $ingredientId)
     {
-
+        $ingredient = Ingredient::where('recipe_id', $recipeId)->where('id', $ingredientId)->firstOrFail();
+        return new IngredientResource($ingredient);
     }
 
     public function update(UpdateIngredientRequest $request, Ingredient $ingredient)

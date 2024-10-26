@@ -22,6 +22,9 @@ class IngredientResource extends JsonResource
                 'title' => $this->title,
                 'quantity' => $this->quantity,
                 'unit' => $this->unit,
+            ],
+            'links' => [
+                'self' => route('ingredients.index', ['recipe' => $request->route('recipe')]),
             ]
         ];
     }
