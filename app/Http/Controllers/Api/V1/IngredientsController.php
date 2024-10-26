@@ -24,8 +24,7 @@ class IngredientsController extends ApiController
     {
         Gate::authorize('storeRelated', $recipe);
         $attributes = $request->mappedAttributes();
-        $attributes['recipe_id'] = $recipe->id;
-        return new IngredientResource(Ingredient::create($attributes));
+        return new IngredientResource($recipe->ingredients()->create($attributes));
     }
 
     public function show(int $recipeId, int $ingredientId)

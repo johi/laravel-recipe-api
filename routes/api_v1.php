@@ -9,22 +9,37 @@ use App\Http\Controllers\Api\V1\AuthorsController;
 use App\Http\Controllers\Api\V1\UsersController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/categories', [CategoriesController::class, 'index'])->name('categories.index');
-Route::get('recipes', [RecipesController::class, 'index'])->name('recipes.index');
-Route::get('recipes/{recipe}', [RecipesController::class, 'show'])->name('recipes.show');
-Route::get('authors', [AuthorsController::class, 'index'])->name('authors.index');
-Route::get('authors/{author}', [AuthorsController::class, 'show'])->name('authors.show');
-Route::get('authors/{author}/recipes', [AuthorsRecipesController::class, 'index'])->name('recipes.index');
-Route::get('recipes/{recipe}/ingredients', [IngredientsController::class, 'index'])->name('ingredients.index');
+Route::get('/categories', [CategoriesController::class, 'index'])
+    ->name('categories.index');
+Route::get('recipes', [RecipesController::class, 'index'])
+    ->name('recipes.index');
+Route::get('recipes/{recipe}', [RecipesController::class, 'show'])
+    ->name('recipes.show');
+Route::get('authors', [AuthorsController::class, 'index'])
+    ->name('authors.index');
+Route::get('authors/{author}', [AuthorsController::class, 'show'])
+    ->name('authors.show');
+Route::get('authors/{author}/recipes', [AuthorsRecipesController::class, 'index'])
+    ->name('recipes.index');
+Route::get('recipes/{recipe}/ingredients', [IngredientsController::class, 'index'])
+    ->name('ingredients.index');
 Route::get('recipes/{recipe}/ingredients/{ingredient}', [IngredientsController::class, 'show'])
     ->name('ingredients.show');
+Route::get('recipes/{recipe}/instructions', [InstructionsController::class, 'index'])
+    ->name('instructions.index');
+Route::get('recipes/{recipe}/instructions/{instruction}', [InstructionsController::class, 'show'])
+    ->name('instructions.show');
 
 Route::middleware('auth:sanctum')->group(function () {
 
-    Route::post('recipes', [RecipesController::class, 'store'])->name('recipes.store');
-    Route::delete('recipes/{recipe}', [RecipesController::class, 'destroy'])->name('recipes.destroy');
-    Route::put('recipes/{recipe}', [RecipesController::class, 'replace'])->name('recipes.replace');
-    Route::patch('recipes/{recipe}', [RecipesController::class, 'update'])->name('recipes.update');
+    Route::post('recipes', [RecipesController::class, 'store'])
+        ->name('recipes.store');
+    Route::delete('recipes/{recipe}', [RecipesController::class, 'destroy'])
+        ->name('recipes.destroy');
+    Route::put('recipes/{recipe}', [RecipesController::class, 'replace'])
+        ->name('recipes.replace');
+    Route::patch('recipes/{recipe}', [RecipesController::class, 'update'])
+        ->name('recipes.update');
 
     Route::apiResource('users', UsersController::class)->except(['update']);
     Route::put('users/{user}', [UsersController::class, 'replace']);
@@ -41,13 +56,11 @@ Route::middleware('auth:sanctum')->group(function () {
         ->name('ingredients.destroy');
 
     // instructions
-    Route::get('recipes/{recipe}/instructions', [InstructionsController::class, 'index'])
-        ->name('instructions.index');
     Route::post('recipes/{recipe}/instructions', [InstructionsController::class, 'store'])
         ->name('instructions.store');
-    Route::get('recipes/{recipe}/instructions/{instruction}', [InstructionsController::class, 'show'])
-        ->name('instructions.show');
-    Route::put('recipes/{recipe}/instructions/{instruction}', [InstructionsController::class, 'update'])
+    Route::put('recipes/{recipe}/instructions/{instruction}', [InstructionsController::class, 'replace'])
+        ->name('instructions.replace');
+    Route::patch('recipes/{recipe}/instructions/{instruction}', [InstructionsController::class, 'update'])
         ->name('instructions.update');
     Route::delete('recipes/{recipe}/instructions/{instruction}', [InstructionsController::class, 'destroy'])
         ->name('instructions.destroy');
