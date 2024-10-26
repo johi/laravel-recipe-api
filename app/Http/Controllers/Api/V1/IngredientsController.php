@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Http\Requests\Api\V1\ReplaceIngredientRequest;
 use App\Http\Requests\Api\V1\StoreIngredientRequest;
 use App\Http\Requests\Api\V1\UpdateIngredientRequest;
 use App\Http\Resources\V1\IngredientResource;
@@ -33,9 +34,22 @@ class IngredientsController extends ApiController
         return new IngredientResource($ingredient);
     }
 
-    public function update(UpdateIngredientRequest $request, Ingredient $ingredient)
+    public function update(UpdateIngredientRequest $request, Recipe $recipe, Ingredient $ingredient)
     {
-        //
+        Gate::authorize('update', $recipe);
+        $attributes = $request->mappedAttributes();
+        $attributes['recipe_id'] = $recipe->id;
+        $ingredient->update($attributes);
+        return new IngredientResource($ingredient);
+    }
+
+    public function replace(ReplaceIngredientRequest $request, Recipe $recipe, Ingredient $ingredient)
+    {
+        Gate::authorize('replace', $recipe);
+        $attributes = $request->mappedAttributes();
+        $attributes['recipe_id'] = $recipe->id;
+        $ingredient->update($attributes);
+        return new IngredientResource($ingredient);
     }
 
     public function destroy(Ingredient $ingredient)
