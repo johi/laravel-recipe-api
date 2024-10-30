@@ -12,9 +12,7 @@ class RecipesControllerSeeder extends Seeder
 {
     const RECIPES_TO_CREATE = 20;
 
-
-
-    public function run()
+    public function run(): void
     {
         $user1 = User::factory(1)->create([
             'email' => 'test1@example.com',
