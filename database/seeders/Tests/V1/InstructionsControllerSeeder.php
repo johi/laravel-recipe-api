@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Seeders\Tests;
+namespace Database\Seeders\Tests\V1;
 
 use App\Models\Instruction;
 use App\Models\Recipe;

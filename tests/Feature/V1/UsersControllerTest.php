@@ -4,7 +4,7 @@ namespace Tests\Feature\V1;
 
 use App\Http\Controllers\Api\AuthController;
 use App\Models\User;
-use Database\Seeders\Tests\UsersControllerSeeder;
+use Database\Seeders\Tests\V1\UsersControllerSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 

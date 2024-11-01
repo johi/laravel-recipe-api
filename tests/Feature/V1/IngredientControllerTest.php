@@ -6,7 +6,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Models\Ingredient;
 use App\Models\Recipe;
 use App\Models\User;
-use Database\Seeders\Tests\IngredientControllerSeeder;
+use Database\Seeders\Tests\V1\IngredientControllerSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 

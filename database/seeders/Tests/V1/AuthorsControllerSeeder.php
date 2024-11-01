@@ -1,12 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Database\Seeders\Tests;
+namespace Database\Seeders\Tests\V1;
 
 use App\Models\Recipe;
 use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 
 class AuthorsControllerSeeder extends Seeder
 {

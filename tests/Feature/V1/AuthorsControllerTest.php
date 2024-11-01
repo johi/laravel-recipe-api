@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\V1;
 
-use Database\Seeders\Tests\AuthorsControllerSeeder;
+use Database\Seeders\Tests\V1\AuthorsControllerSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
