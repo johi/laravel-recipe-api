@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Http\Requests\Api\V1\ReplaceInstructionRequest;
 use App\Http\Requests\Api\V1\StoreInstructionRequest;
 use App\Http\Requests\Api\V1\UpdateInstructionRequest;
 use App\Http\Resources\V1\InstructionResource;
@@ -32,13 +33,28 @@ class InstructionsController extends ApiController
         return new InstructionResource($instruction);
     }
 
-    public function update(UpdateInstructionRequest $request, Instruction $instruction)
+    public function replace(ReplaceInstructionRequest $request, Recipe $recipe, Instruction $instruction)
     {
-
+        Gate::authorize('replace', $recipe);
+        $attributes = $request->mappedAttributes();
+        $attributes['recipe_id'] = $recipe->id;
+        $instruction->update($attributes);
+        return new InstructionResource($instruction);
     }
 
-    public function destroy(Instruction $instruction)
+    public function update(UpdateInstructionRequest $request, Recipe $recipe, Instruction $instruction)
     {
-        //
+        Gate::authorize('update', $recipe);
+        $attributes = $request->mappedAttributes();
+//        $attributes['recipe_id'] = $recipe->id;
+        $instruction->update($attributes);
+        return new InstructionResource($instruction);
+    }
+
+    public function destroy(Recipe $recipe, Instruction $instruction)
+    {
+        Gate::authorize('delete', $recipe);
+        $instruction->delete();
+        return $this->ok('Instruction successfully deleted');
     }
 }

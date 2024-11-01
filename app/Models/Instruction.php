@@ -11,6 +11,12 @@ class Instruction extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'recipe_id',
+        'description',
+        'order',
+    ];
+
     public function recipe() : BelongsTo
     {
         return $this->belongsTo(Recipe::class);
