@@ -15,11 +15,21 @@ class InstructionsController extends ApiController
 {
     protected string $policyClass = RecipePolicy::class;
 
+    /**
+     * Get all instructions for a recipe
+     *
+     * @group Recipe management
+     */
     public function index(int $recipeId)
     {
         return InstructionResource::collection(Instruction::where('recipe_id', $recipeId)->get());
     }
 
+    /**
+     * Add instruction to recipe
+     *
+     * @group Recipe management
+     */
     public function store(StoreInstructionRequest $request, Recipe $recipe)
     {
         Gate::authorize('storeRelated', $recipe);
@@ -27,30 +37,48 @@ class InstructionsController extends ApiController
         return new InstructionResource($recipe->instructions()->create($attributes));
     }
 
+    /**
+     * Get a single instruction
+     *
+     * @group Recipe management
+     */
     public function show(int $recipeId, int $ingredientId)
     {
         $instruction = Instruction::where('recipe_id', $recipeId)->where('id', $ingredientId)->firstOrFail();
         return new InstructionResource($instruction);
     }
 
+    /**
+     * Replace an instruction
+     *
+     * @group Recipe management
+     */
     public function replace(ReplaceInstructionRequest $request, Recipe $recipe, Instruction $instruction)
     {
         Gate::authorize('replace', $recipe);
         $attributes = $request->mappedAttributes();
-        $attributes['recipe_id'] = $recipe->id;
         $instruction->update($attributes);
         return new InstructionResource($instruction);
     }
 
+    /**
+     * Update an instruction
+     *
+     * @group Recipe management
+     */
     public function update(UpdateInstructionRequest $request, Recipe $recipe, Instruction $instruction)
     {
         Gate::authorize('update', $recipe);
         $attributes = $request->mappedAttributes();
-//        $attributes['recipe_id'] = $recipe->id;
         $instruction->update($attributes);
         return new InstructionResource($instruction);
     }
 
+    /**
+     * Delete an instruction
+     *
+     * @group Recipe management
+     */
     public function destroy(Recipe $recipe, Instruction $instruction)
     {
         Gate::authorize('delete', $recipe);

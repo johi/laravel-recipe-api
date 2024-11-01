@@ -15,11 +15,21 @@ class IngredientsController extends ApiController
 {
     protected string $policyClass = RecipePolicy::class;
 
+    /**
+     * Get all ingredients for a recipe
+     *
+     * @group Recipe management
+     */
     public function index(int $recipeId)
     {
         return IngredientResource::collection(Ingredient::where('recipe_id', $recipeId)->get());
     }
 
+    /**
+     * Add ingredient to recipe
+     *
+     * @group Recipe management
+     */
     public function store(StoreIngredientRequest $request, Recipe $recipe)
     {
         Gate::authorize('storeRelated', $recipe);
@@ -27,12 +37,22 @@ class IngredientsController extends ApiController
         return new IngredientResource($recipe->ingredients()->create($attributes));
     }
 
+    /**
+     * Get a single ingredient
+     *
+     * @group Recipe management
+     */
     public function show(int $recipeId, int $ingredientId)
     {
         $ingredient = Ingredient::where('recipe_id', $recipeId)->where('id', $ingredientId)->firstOrFail();
         return new IngredientResource($ingredient);
     }
 
+    /**
+     * Update an ingredient
+     *
+     * @group Recipe management
+     */
     public function update(UpdateIngredientRequest $request, Recipe $recipe, Ingredient $ingredient)
     {
         Gate::authorize('update', $recipe);
@@ -42,6 +62,11 @@ class IngredientsController extends ApiController
         return new IngredientResource($ingredient);
     }
 
+    /**
+     * Replace an ingredient
+     *
+     * @group Recipe management
+     */
     public function replace(ReplaceIngredientRequest $request, Recipe $recipe, Ingredient $ingredient)
     {
         Gate::authorize('replace', $recipe);
@@ -51,6 +76,11 @@ class IngredientsController extends ApiController
         return new IngredientResource($ingredient);
     }
 
+    /**
+     * Delete an ingredient
+     *
+     * @group Recipe management
+     */
     public function destroy(Recipe $recipe, Ingredient $ingredient)
     {
         Gate::authorize('delete', $recipe);

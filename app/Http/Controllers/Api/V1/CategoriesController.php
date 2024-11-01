@@ -10,6 +10,11 @@ use App\Models\Category;
 class CategoriesController extends Controller
 {
 
+    /**
+     * Get all categories
+     *
+     * @group Categories
+     */
     public function index()
     {
         return CategoryResource::collection(Category::all());

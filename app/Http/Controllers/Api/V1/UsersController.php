@@ -10,15 +10,18 @@ use App\Http\Requests\Api\V1\UpdateUserRequest;
 use App\Http\Resources\V1\UserResource;
 use App\Models\User;
 use App\Policies\V1\UserPolicy;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Gate;
-use Mockery\Exception;
 
 class UsersController extends ApiController
 {
     protected string $policyClass = UserPolicy::class;
     private $possibleIncludes = ['recipes'];
 
+    /**
+     * Get all users
+     *
+     * @group User management
+     */
     public function index(AuthorFilter $filters)
     {
         return UserResource::collection(
@@ -28,12 +31,22 @@ class UsersController extends ApiController
         );
     }
 
+    /**
+     * Create a user
+     *
+     * @group User management
+     */
     public function store(StoreUserRequest $request)
     {
         Gate::authorize('store', User::class);
         return new UserResource(User::create($request->mappedAttributes()));
     }
 
+    /**
+     * Get a single user
+     *
+     * @group User management
+     */
     public function show(int $userId)
     {
         return new UserResource(User::with($this->includes($this->possibleIncludes))
@@ -42,6 +55,11 @@ class UsersController extends ApiController
         );
     }
 
+    /**
+     * Update a user
+     *
+     * @group User management
+     */
     public function update(UpdateUserRequest $request, User $user)
     {
         Gate::authorize('update', $user);
@@ -49,6 +67,11 @@ class UsersController extends ApiController
         return new UserResource($user);
     }
 
+    /**
+     * Replace a user
+     *
+     * @group User management
+     */
     public function replace(ReplaceUserRequest $request, User $user)
     {
         Gate::authorize('replace', $user);
@@ -56,6 +79,11 @@ class UsersController extends ApiController
         return new UserResource($user);
     }
 
+    /**
+     * Delete a user
+     *
+     * @group User management
+     */
     public function destroy(User $user)
     {
         Gate::authorize('delete', $user);

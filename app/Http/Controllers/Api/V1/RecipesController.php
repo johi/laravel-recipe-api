@@ -21,7 +21,7 @@ class RecipesController extends ApiController
     /**
      * Get all recipes
      *
-     * @group Manage recipes
+     * @group Recipe management
      * @queryParam sort string Data field(s) to sort by. Separate multiple with commas.
      * Denote descending sort with a minus sign. Example: sort=title,-createdAt
      * @queryParam filter[createdAt] Filter by created date Example: filter[createdAt]=2024-10-13
@@ -38,8 +38,7 @@ class RecipesController extends ApiController
     /**
      * Create a recipe
      *
-     * @group Manage recipes
-     *
+     * @group Recipe management
      */
     public function store(StoreRecipeRequest $request)
     {
@@ -48,6 +47,11 @@ class RecipesController extends ApiController
         return new RecipeResource(Recipe::create($request->mappedAttributes()));
     }
 
+    /**
+     * Get a single recipe
+     *
+     * @group Recipe management
+     */
     public function show(int $recipeId)
     {
         return new RecipeResource(Recipe::with($this->includes($this->possibleIncludes))
@@ -56,6 +60,11 @@ class RecipesController extends ApiController
         );
     }
 
+    /**
+     * Update a recipe
+     *
+     * @group Recipe management
+     */
     public function update(UpdateRecipeRequest $request, Recipe $recipe)
     {
         Gate::authorize('update', $recipe);
@@ -67,6 +76,11 @@ class RecipesController extends ApiController
         return new RecipeResource($recipe);
     }
 
+    /**
+     * Replace a recipe
+     *
+     * @group Recipe management
+     */
     public function replace(ReplaceRecipeRequest $request, Recipe $recipe)
     {
         Gate::authorize('replace', $recipe);
@@ -75,6 +89,11 @@ class RecipesController extends ApiController
         return new RecipeResource($recipe);
     }
 
+    /**
+     * Delete a recipe
+     *
+     * @group Recipe management
+     */
     public function destroy(Recipe $recipe)
     {
         Gate::authorize('delete', $recipe);

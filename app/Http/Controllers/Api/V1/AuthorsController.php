@@ -11,6 +11,11 @@ class AuthorsController extends ApiController
 {
     private $possibleIncludes = ['recipes'];
 
+    /**
+     * Get all authors
+     *
+     * @group Authors
+     */
     public function index(AuthorFilter $filters)
     {
         return UserResource::collection(
@@ -22,6 +27,11 @@ class AuthorsController extends ApiController
         );
     }
 
+    /**
+     * Get single author
+     *
+     * @group Authors
+     */
     public function show(int $user_id)
     {
         return new UserResource(
