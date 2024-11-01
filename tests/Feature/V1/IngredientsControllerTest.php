@@ -10,7 +10,7 @@ use Database\Seeders\Tests\V1\IngredientControllerSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class IngredientControllerTest extends TestCase
+class IngredientsControllerTest extends TestCase
 {
     use RefreshDatabase;
 
