@@ -52,8 +52,7 @@ class AuthController extends Controller
     /**
      * Register
      *
-     * Registers and creates a new user
-     *
+     * @hideFromAPIDocumentation
      * @unauthenticated
      * @group Authentication
      * @response 200
