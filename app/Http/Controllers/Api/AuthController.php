@@ -23,14 +23,7 @@ class AuthController extends Controller
      *
      * @unauthenticated
      * @group Authentication
-     * @response 200
-     {
-      "data": {
-      "token": "{YOUR_AUTH_KEY}"
-      },
-      "message": "Authenticated",
-      "status": 200
-        }
+     * @response {"data":{"token":"{YOUR_AUTH_KEY}"},"message":"Authenticated","status":200}
      */
     public function login(LoginUserRequest $request) {
         $request->validated($request->all());
@@ -55,13 +48,7 @@ class AuthController extends Controller
      * @hideFromAPIDocumentation
      * @unauthenticated
      * @group Authentication
-     * @response 200
-    {
-    "data": {
-    },
-    "message": "Registered",
-    "status": 200
-    }
+     * @response {"data":{},"message":"Registered","status":200}
      */
     public function register() {
         return $this->ok('Registered');
@@ -73,12 +60,7 @@ class AuthController extends Controller
      * Logs out the user and invalidates token
      *
      * @group Authentication
-     * @response 200
-     {
-      "data": [],
-      "message": "",
-      "status": 200
-      }
+     * @response {"data":[],"message":"","status":200}
      */
     public function logout(Request $request) {
         Auth::user()->currentAccessToken()->delete();

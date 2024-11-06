@@ -30,6 +30,8 @@ class AuthorsController extends ApiController
      * @queryParam include Include related resources, possible values: recipes Example: include=recipes
      * @queryParam sort Data field(s) to sort by: name, email, createdAt, updatedAt. Separate multiple
      * with commas. Denote descending sort with a minus sign. Example: sort: name,-createdAt
+     * @response {"data":[{"type":"user","id":1,"attributes":{"name":"Admin","email":"admin@example.com","isAdmin":1,"emailVerifiedAt":"2024-10-19T11:06:00.000000Z","createdAt":"2024-10-19T11:06:00.000000Z","updatedAt":"2024-10-19T11:06:00.000000Z","included":[]},"links":[{"self":"http://localhost:3001/api/v1/authors/1"}]},{"type":"user","id":2,"attributes":{"name":"Mrs. Eulah Schaefer V","email":"mabel.kris@example.com","isAdmin":0,"emailVerifiedAt":"2024-10-19T11:06:00.000000Z","createdAt":"2024-10-19T11:06:00.000000Z","updatedAt":"2024-10-19T11:06:00.000000Z","included":[]},"links":[{"self":"http://localhost:3001/api/v1/authors/2"}]}],"links":{"first":"http://localhost:3001/api/v1/authors?page=1","last":"http://localhost:3001/api/v1/authors?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"http://localhost:3001/api/v1/authors?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"http://localhost:3001/api/v1/authors","per_page":15,"to":11,"total":11}}
+     *
      */
     public function index(AuthorFilter $filters)
     {
@@ -46,7 +48,9 @@ class AuthorsController extends ApiController
      * Get single author
      *
      * @group Authors
+     * @urlParam id int required Example: 1
      * @queryParam include Include related resources, possible values: recipes Example: include=recipes
+     * @response {"data":{"type":"user","id":1,"attributes":{"name":"Admin","email":"admin@example.com","isAdmin":1,"emailVerifiedAt":"2024-10-19T11:06:00.000000Z","createdAt":"2024-10-19T11:06:00.000000Z","updatedAt":"2024-10-19T11:06:00.000000Z","included":[]},"links":[{"self":"http://localhost:3001/api/v1/authors/1"}]}}
      */
     public function show(int $user_id)
     {
