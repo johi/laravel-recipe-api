@@ -36,6 +36,7 @@ class UsersController extends ApiController
      * @queryParam include Include related resources, possible values: recipes Example: include=recipes
      * @queryParam sort Data field(s) to sort by: name, email, createdAt, updatedAt. Separate multiple
      *  with commas. Denote descending sort with a minus sign. Example: sort: name,-createdAt
+     * @response {"data":[{"type":"user","id":1,"attributes":{"name":"Admin","email":"admin@example.com","isAdmin":1,"included":[]},"links":[{"self":"http://localhost:3001/api/v1/authors/1"}]},{"type":"user","id":2,"attributes":{"name":"Mrs. Eulah Schaefer V","email":"mabel.kris@example.com","isAdmin":0,"included":[]},"links":[{"self":"http://localhost:3001/api/v1/authors/2"}]}],"links":{"first":"http://localhost:3001/api/v1/users?page=1","last":"http://localhost:3001/api/v1/users?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"http://localhost:3001/api/v1/users?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"http://localhost:3001/api/v1/users","per_page":15,"to":11,"total":11}}
      */
     public function index(AuthorFilter $filters)
     {
@@ -49,6 +50,8 @@ class UsersController extends ApiController
     /**
      * Create a user
      *
+     * Creates a user
+     *
      * @group User management
      * @bodyParam data array required
      * @bodyParam data.attributes array required
@@ -56,6 +59,7 @@ class UsersController extends ApiController
      * @bodyParam data.attributes.email string required example: john.doe@example.com
      * @bodyParam data.attributes.isAdmin bool required example: true
      * @bodyParam data.attributes.password string required
+     * @response {"data":{"type":"user","id":12,"attributes":{"name":"Test User","email":"test@example.com","isAdmin":null,"included":[]},"links":[{"self":"http://localhost:3001/api/v1/authors/12"}]}}
      */
     public function store(StoreUserRequest $request)
     {
@@ -67,6 +71,9 @@ class UsersController extends ApiController
      * Get a single user
      *
      * @group User management
+     * @urlParam id int required Example: 1
+     * @queryParam include Include related resources, possible values: recipes Example: include=recipes
+     * @response {"data":{"type":"user","id":3,"attributes":{"name":"Miss Roxane Barton","email":"okey67@example.org","isAdmin":0,"included":[]},"links":[{"self":"http://localhost:3001/api/v1/authors/3"}]}}
      */
     public function show(int $userId)
     {
@@ -80,6 +87,13 @@ class UsersController extends ApiController
      * Update a user
      *
      * @group User management
+     * @bodyParam data array required
+     * @bodyParam data.attributes array required
+     * @bodyParam data.attributes.name string optional
+     * @bodyParam data.attributes.email string optional example: john.doe@example.com
+     * @bodyParam data.attributes.isAdmin bool optional example: true
+     * @bodyParam data.attributes.password string optional
+     * @response {"data":{"type":"user","id":3,"attributes":{"name":"Miss Roxane Barton","email":"okey67@example.org","isAdmin":0,"included":[]},"links":[{"self":"http://localhost:3001/api/v1/authors/3"}]}}
      */
     public function update(UpdateUserRequest $request, User $user)
     {
@@ -92,6 +106,13 @@ class UsersController extends ApiController
      * Replace a user
      *
      * @group User management
+     * @bodyParam data array required
+     * @bodyParam data.attributes array required
+     * @bodyParam data.attributes.name string required
+     * @bodyParam data.attributes.email string required example: john.doe@example.com
+     * @bodyParam data.attributes.isAdmin bool required example: true
+     * @bodyParam data.attributes.password string required
+     * @response {"data":{"type":"user","id":3,"attributes":{"name":"Miss Roxane Barton","email":"okey67@example.org","isAdmin":0,"included":[]},"links":[{"self":"http://localhost:3001/api/v1/authors/3"}]}}
      */
     public function replace(ReplaceUserRequest $request, User $user)
     {
@@ -104,6 +125,7 @@ class UsersController extends ApiController
      * Delete a user
      *
      * @group User management
+     * @response {"data":[],"message":"User successfully deleted","status":200}
      */
     public function destroy(User $user)
     {

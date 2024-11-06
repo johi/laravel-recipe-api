@@ -52,10 +52,10 @@ class AuthorsController extends ApiController
      * @queryParam include Include related resources, possible values: recipes Example: include=recipes
      * @response {"data":{"type":"user","id":1,"attributes":{"name":"Admin","email":"admin@example.com","isAdmin":1,"emailVerifiedAt":"2024-10-19T11:06:00.000000Z","createdAt":"2024-10-19T11:06:00.000000Z","updatedAt":"2024-10-19T11:06:00.000000Z","included":[]},"links":[{"self":"http://localhost:3001/api/v1/authors/1"}]}}
      */
-    public function show(int $user_id)
+    public function show(int $userId)
     {
         return new UserResource(
-            User::where('id', $user_id)
+            User::where('id', $userId)
                 ->with($this->includes($this->possibleIncludes))
                 ->firstOrFail()
         );
