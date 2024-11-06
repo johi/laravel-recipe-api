@@ -21,10 +21,22 @@ class RecipesController extends ApiController
     /**
      * Get all recipes
      *
+     * This retrieves all recipes. Please refer to laravel documentation on how
+     * to use pagination: https://laravel.com/docs/11.x/pagination
+     *
      * @group Recipe management
-     * @queryParam sort string Data field(s) to sort by. Separate multiple with commas.
+     * @queryParam filter[createdAt] Filter by created date (iso: YYYY-MM-DD)  Example: exact date
+     *   filter[createdAt]=2024-10-13 or between dates filter[createdAt]=2024-10-13,2024-11-13
+     * @queryParam filter[updatedAt] Filter by updated date (iso: YYYY-MM-DD) Example: exact date
+     *   filter[updatedAt]=2024-10-13 or between dates filter[updatedAt]=2024-10-13,2024-11-13
+     * @queryParam filter[preparationTimeMinutes] Filter by preparationTimeMinutes Example:  less than or equal to
+     * filter[preparationTimeMinutes]=20 or between filter[preparationTimeMinutes]=15,45
+     * @queryParam filter[title] Filter by title, works with or without use of wildcard Example:
+     *   filter[title]=`*`Carbonara
+     * @queryParam include Include related resources, possible values: category, ingredients, instructions  Example: include=instructions,ingredients
+     * @queryParam sort string Data field(s) to sort by: title, preparationTimeMinutes, createdAt, updatedAT  Separate multiple with commas.
      * Denote descending sort with a minus sign. Example: sort=title,-createdAt
-     * @queryParam filter[createdAt] Filter by created date Example: filter[createdAt]=2024-10-13
+     * @response {"data":[{"type":"recipe","id":1,"attributes":{"title":"sed maiores sint","preparationTimeMinutes":85,"servings":4,"imageUrl":"https://via.placeholder.com/640x480.png/0055aa?text=velit","createdAt":"2024-10-19T11:06:00.000000Z","updatedAt":"2024-10-19T11:06:00.000000Z"},"relationships":{"author":{"data":{"type":"user","id":4},"links":{"self":"http://localhost:3001/api/v1/authors/4"}},"category":{"data":{"type":"category","id":5},"links":{"self":"http://localhost:3001/api/v1/categories"}},"ingredients":{"links":{"self":"http://localhost:3001/api/v1/recipes/1/ingredients"}}},"included":{"author":{"type":"user","id":4,"attributes":{"name":"Dr. Osbaldo Bednar Jr.","email":"fbeier@example.net","isAdmin":0,"included":[]},"links":[{"self":"http://localhost:3001/api/v1/authors/4"}]}},"links":{"self":"http://localhost:3001/api/v1/recipes/1"}},{"type":"recipe","id":2,"attributes":{"title":"quia possimus fugit","preparationTimeMinutes":70,"servings":4,"imageUrl":"https://via.placeholder.com/640x480.png/0099ff?text=inventore","createdAt":"2024-10-19T11:06:00.000000Z","updatedAt":"2024-10-19T11:06:00.000000Z"},"relationships":{"author":{"data":{"type":"user","id":9},"links":{"self":"http://localhost:3001/api/v1/authors/9"}},"category":{"data":{"type":"category","id":1},"links":{"self":"http://localhost:3001/api/v1/categories"}},"ingredients":{"links":{"self":"http://localhost:3001/api/v1/recipes/2/ingredients"}}},"included":{"author":{"type":"user","id":9,"attributes":{"name":"Ms. Joanne Leuschke","email":"becker.rachel@example.org","isAdmin":0,"included":[]},"links":[{"self":"http://localhost:3001/api/v1/authors/9"}]}},"links":{"self":"http://localhost:3001/api/v1/recipes/2"}}],"links":{"first":"http://localhost:3001/api/v1/recipes?page=1","last":"http://localhost:3001/api/v1/recipes?page=8","prev":null,"next":"http://localhost:3001/api/v1/recipes?page=2"},"meta":{"current_page":1,"from":1,"last_page":8,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"http://localhost:3001/api/v1/recipes?page=1","label":"1","active":true},{"url":"http://localhost:3001/api/v1/recipes?page=2","label":"2","active":false},{"url":"http://localhost:3001/api/v1/recipes?page=3","label":"3","active":false},{"url":"http://localhost:3001/api/v1/recipes?page=4","label":"4","active":false},{"url":"http://localhost:3001/api/v1/recipes?page=5","label":"5","active":false},{"url":"http://localhost:3001/api/v1/recipes?page=6","label":"6","active":false},{"url":"http://localhost:3001/api/v1/recipes?page=7","label":"7","active":false},{"url":"http://localhost:3001/api/v1/recipes?page=8","label":"8","active":false},{"url":"http://localhost:3001/api/v1/recipes?page=2","label":"Next &raquo;","active":false}],"path":"http://localhost:3001/api/v1/recipes","per_page":15,"to":15,"total":112}}
      */
     public function index(RecipeFilter $filters)
     {
@@ -38,7 +50,22 @@ class RecipesController extends ApiController
     /**
      * Create a recipe
      *
+     * Creates a recipe
+     *
      * @group Recipe management
+     * @bodyParam data array required
+     * @bodyParam data.attributes array required
+     * @bodyParam data.attributes.title string required
+     * @bodyParam data.attributes.description string required
+     * @bodyParam data.attributes.preparationTimeMinutes string required
+     * @bodyParam data.attributes.servings int required
+     * @bodyParam data.attributes.imageUrl string optional
+     * @bodyParam data array required
+     * @bodyParam data.relationships array required
+     * @bodyParam data.relationships.author array required
+     * @bodyParam data.relationships.author.data array required
+     * @bodyParam data.relationships.author.data.id int required
+     * @response {"data":{"type":"recipe","id":113,"attributes":{"title":"libero et dolor","description":"Lorem Ipsum Dolor Sit Amet","preparationTimeMinutes":60,"servings":4,"imageUrl":"https://via.placeholder.com/640x480.png/006688?text=soluta","createdAt":"2024-11-06T10:27:37.000000Z","updatedAt":"2024-11-06T10:27:37.000000Z"},"relationships":{"author":{"data":{"type":"user","id":1},"links":{"self":"http://localhost:3001/api/v1/authors/1"}},"category":{"data":{"type":"category","id":2},"links":{"self":"http://localhost:3001/api/v1/categories"}},"ingredients":{"links":{"self":"http://localhost:3001/api/v1/recipes/113/ingredients"}}},"included":{"author":{"type":"user","id":1,"attributes":{"name":"Admin","email":"admin@example.com","isAdmin":1,"included":[]},"links":[{"self":"http://localhost:3001/api/v1/authors/1"}]}},"links":{"self":"http://localhost:3001/api/v1/recipes/113"}}}
      */
     public function store(StoreRecipeRequest $request)
     {
@@ -51,6 +78,9 @@ class RecipesController extends ApiController
      * Get a single recipe
      *
      * @group Recipe management
+     * @urlParam id int required Example: 1
+     * @queryParam include Include related resources, possible values: category, ingredients, instructions  Example: include=instructions,ingredients
+     * @response {"data":{"type":"recipe","id":11,"attributes":{"title":"non quidem quas","description":"Commodi dolore quod iste. Expedita est aut veniam eligendi qui voluptas rerum. Et occaecati quas sapiente sunt deleniti assumenda. Tempore enim voluptatem id ipsa.","preparationTimeMinutes":5,"servings":4,"imageUrl":"https://via.placeholder.com/640x480.png/0066ff?text=eius","createdAt":"2024-10-19T11:06:00.000000Z","updatedAt":"2024-10-19T11:06:00.000000Z"},"relationships":{"author":{"data":{"type":"user","id":2},"links":{"self":"http://localhost:3001/api/v1/authors/2"}},"category":{"data":{"type":"category","id":5},"links":{"self":"http://localhost:3001/api/v1/categories"}},"ingredients":{"links":{"self":"http://localhost:3001/api/v1/recipes/11/ingredients"}}},"included":{"author":{"type":"user","id":2,"attributes":{"name":"Mrs. Eulah Schaefer V","email":"mabel.kris@example.com","isAdmin":0,"included":[]},"links":[{"self":"http://localhost:3001/api/v1/authors/2"}]},"ingredients":[{"type":"ingredient","id":56,"attributes":{"title":"PATCH Ingredient","quantity":50,"unit":"g"},"relationships":{"recipe":{"data":{"type":"recipe","id":"11"},"links":{"self":"http://localhost:3001/api/v1/recipes/11"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/11/ingredients"}},{"type":"ingredient","id":57,"attributes":{"title":"asperiores","quantity":69,"unit":"cl"},"relationships":{"recipe":{"data":{"type":"recipe","id":"11"},"links":{"self":"http://localhost:3001/api/v1/recipes/11"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/11/ingredients"}}]},"links":{"self":"http://localhost:3001/api/v1/recipes/11"}}}
      */
     public function show(int $recipeId)
     {
@@ -64,6 +94,19 @@ class RecipesController extends ApiController
      * Update a recipe
      *
      * @group Recipe management
+     * @bodyParam data array optional
+     * @bodyParam data.attributes array optional
+     * @bodyParam data.attributes.title string optional
+     * @bodyParam data.attributes.description string optional
+     * @bodyParam data.attributes.preparationTimeMinutes string optional
+     * @bodyParam data.attributes.servings int optional
+     * @bodyParam data.attributes.imageUrl string optional
+     * @bodyParam data array optional
+     * @bodyParam data.relationships array optional
+     * @bodyParam data.relationships.author array optional
+     * @bodyParam data..relationships.author.data array optional
+     * @bodyParam data.relationships.author.data.id int optional
+     * @response {"data":{"type":"recipe","id":11,"attributes":{"title":"non quidem quas","description":"Commodi dolore quod iste. Expedita est aut veniam eligendi qui voluptas rerum. Et occaecati quas sapiente sunt deleniti assumenda. Tempore enim voluptatem id ipsa.","preparationTimeMinutes":5,"servings":4,"imageUrl":"https://via.placeholder.com/640x480.png/0066ff?text=eius","createdAt":"2024-10-19T11:06:00.000000Z","updatedAt":"2024-10-19T11:06:00.000000Z"},"relationships":{"author":{"data":{"type":"user","id":2},"links":{"self":"http://localhost:3001/api/v1/authors/2"}},"category":{"data":{"type":"category","id":5},"links":{"self":"http://localhost:3001/api/v1/categories"}},"ingredients":{"links":{"self":"http://localhost:3001/api/v1/recipes/11/ingredients"}}},"included":{"author":{"type":"user","id":2,"attributes":{"name":"Mrs. Eulah Schaefer V","email":"mabel.kris@example.com","isAdmin":0,"included":[]},"links":[{"self":"http://localhost:3001/api/v1/authors/2"}]},"ingredients":[{"type":"ingredient","id":56,"attributes":{"title":"PATCH Ingredient","quantity":50,"unit":"g"},"relationships":{"recipe":{"data":{"type":"recipe","id":"11"},"links":{"self":"http://localhost:3001/api/v1/recipes/11"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/11/ingredients"}},{"type":"ingredient","id":57,"attributes":{"title":"asperiores","quantity":69,"unit":"cl"},"relationships":{"recipe":{"data":{"type":"recipe","id":"11"},"links":{"self":"http://localhost:3001/api/v1/recipes/11"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/11/ingredients"}}]},"links":{"self":"http://localhost:3001/api/v1/recipes/11"}}}
      */
     public function update(UpdateRecipeRequest $request, Recipe $recipe)
     {
@@ -80,6 +123,19 @@ class RecipesController extends ApiController
      * Replace a recipe
      *
      * @group Recipe management
+     * @bodyParam data array required
+     * @bodyParam data.attributes array required
+     * @bodyParam data.attributes.title string required
+     * @bodyParam data.attributes.description string required
+     * @bodyParam data.attributes.preparationTimeMinutes string required
+     * @bodyParam data.attributes.servings int required
+     * @bodyParam data.attributes.imageUrl string optional
+     * @bodyParam data array required
+     * @bodyParam data.relationships array required
+     * @bodyParam data.relationships.author array required
+     * @bodyParam data..relationships.author.data array required
+     * @bodyParam data.relationships.author.data.id int required
+     * @response {"data":{"type":"recipe","id":113,"attributes":{"title":"libero et dolor","description":"Lorem Ipsum Dolor Sit Amet","preparationTimeMinutes":60,"servings":4,"imageUrl":"https://via.placeholder.com/640x480.png/006688?text=soluta","createdAt":"2024-11-06T10:27:37.000000Z","updatedAt":"2024-11-06T10:27:37.000000Z"},"relationships":{"author":{"data":{"type":"user","id":1},"links":{"self":"http://localhost:3001/api/v1/authors/1"}},"category":{"data":{"type":"category","id":2},"links":{"self":"http://localhost:3001/api/v1/categories"}},"ingredients":{"links":{"self":"http://localhost:3001/api/v1/recipes/113/ingredients"}}},"included":{"author":{"type":"user","id":1,"attributes":{"name":"Admin","email":"admin@example.com","isAdmin":1,"included":[]},"links":[{"self":"http://localhost:3001/api/v1/authors/1"}]}},"links":{"self":"http://localhost:3001/api/v1/recipes/113"}}}
      */
     public function replace(ReplaceRecipeRequest $request, Recipe $recipe)
     {
@@ -93,6 +149,7 @@ class RecipesController extends ApiController
      * Delete a recipe
      *
      * @group Recipe management
+     * @response {"data":[],"message":"Recipe successfully deleted","status":200}
      */
     public function destroy(Recipe $recipe)
     {
