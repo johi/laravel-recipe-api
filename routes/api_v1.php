@@ -24,11 +24,11 @@ Route::get('authors/{author}/recipes', [AuthorsRecipesController::class, 'index'
 Route::get('recipes/{recipe}/ingredients', [IngredientsController::class, 'index'])
     ->name('ingredients.index');
 Route::get('recipes/{recipe}/ingredients/{ingredient}', [IngredientsController::class, 'show'])
-    ->name('ingredients.show');
+    ->name('ingredients.show')->scopeBindings();
 Route::get('recipes/{recipe}/instructions', [InstructionsController::class, 'index'])
     ->name('instructions.index');
 Route::get('recipes/{recipe}/instructions/{instruction}', [InstructionsController::class, 'show'])
-    ->name('instructions.show');
+    ->name('instructions.show')->scopeBindings();
 
 Route::middleware('auth:sanctum')->group(function () {
 
@@ -49,20 +49,20 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('recipes/{recipe}/ingredients', [IngredientsController::class, 'store'])
         ->name('ingredients.store');
     Route::put('recipes/{recipe}/ingredients/{ingredient}', [IngredientsController::class, 'replace'])
-        ->name('ingredients.replace');
+        ->name('ingredients.replace')->scopeBindings();
     Route::patch('recipes/{recipe}/ingredients/{ingredient}', [IngredientsController::class, 'update'])
-        ->name('ingredients.update');
+        ->name('ingredients.update')->scopeBindings();
     Route::delete('recipes/{recipe}/ingredients/{ingredient}', [IngredientsController::class, 'destroy'])
-        ->name('ingredients.destroy');
+        ->name('ingredients.destroy')->scopeBindings();
 
     // instructions
     Route::post('recipes/{recipe}/instructions', [InstructionsController::class, 'store'])
         ->name('instructions.store');
     Route::put('recipes/{recipe}/instructions/{instruction}', [InstructionsController::class, 'replace'])
-        ->name('instructions.replace');
+        ->name('instructions.replace')->scopeBindings();
     Route::patch('recipes/{recipe}/instructions/{instruction}', [InstructionsController::class, 'update'])
-        ->name('instructions.update');
+        ->name('instructions.update')->scopeBindings();
     Route::delete('recipes/{recipe}/instructions/{instruction}', [InstructionsController::class, 'destroy'])
-        ->name('instructions.destroy');
+        ->name('instructions.destroy')->scopeBindings();
 });
 

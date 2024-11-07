@@ -20,9 +20,9 @@ class InstructionsController extends ApiController
      *
      * @group Recipe management
      */
-    public function index(int $recipeId)
+    public function index(Recipe $recipe)
     {
-        return InstructionResource::collection(Instruction::where('recipe_id', $recipeId)->get());
+        return InstructionResource::collection($recipe->instructions);
     }
 
     /**
@@ -42,9 +42,8 @@ class InstructionsController extends ApiController
      *
      * @group Recipe management
      */
-    public function show(int $recipeId, int $ingredientId)
+    public function show(Recipe $recipe, Instruction $instruction)
     {
-        $instruction = Instruction::where('recipe_id', $recipeId)->where('id', $ingredientId)->firstOrFail();
         return new InstructionResource($instruction);
     }
 
