@@ -301,6 +301,17 @@ class UsersControllerTest extends TestCase
         $response->assertStatus(400);
     }
 
+    public function test_as_admin_i_can_for_delete_a_user_with_attached_recipes(): void
+    {
+        $user = User::factory()->create(['is_admin' => true]);
+        $response = $this->delete(
+            self::ENDPOINT_PREFIX . '/users/1?strategy=force',
+            [],
+            ['Authorization' => 'Bearer ' . AuthController::createToken($user)]
+        );
+        $response->assertStatus(200);
+    }
+
     public function test_trying_to_delete_a_non_existent_user_gives_404(): void
     {
         $user = User::factory()->create(['is_admin' => true]);

@@ -11,6 +11,7 @@ use App\Http\Resources\V1\UserResource;
 use App\Models\User;
 use App\Policies\V1\UserPolicy;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Http\Request;
 
 class UsersController extends ApiController
 {
@@ -127,10 +128,10 @@ class UsersController extends ApiController
      * @group User management
      * @response {"data":[],"message":"User successfully deleted","status":200}
      */
-    public function destroy(User $user)
+    public function destroy(Request $request, User $user)
     {
         Gate::authorize('delete', $user);
-        if ($user->recipes()->exists()) {
+        if ($user->recipes()->exists() && !($request->get('strategy') == 'force')) {
             return $this->error('User has associated recipes and cannot be deleted.', 400);
         }
         $user->delete();
