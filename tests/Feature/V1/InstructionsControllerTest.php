@@ -255,6 +255,55 @@ class InstructionsControllerTest extends TestCase
             ->assertJsonPath('data.attributes.description', $changedDescription);
     }
 
+    public function test_update_order_successfully()
+    {
+        $user = User::factory()->create(['is_admin' => true]);
+        $recipe = Recipe::factory()->create(['user_id' => $user->id]);
+        $instructions = Instruction::factory()->count(3)->create([
+            'recipe_id' => $recipe->id,
+        ]);
+        $payload = [
+            'instructions' => [
+                ['id' => $instructions[0]->id, 'order' => 2],
+                ['id' => $instructions[1]->id, 'order' => 1],
+                ['id' => $instructions[2]->id, 'order' => 3],
+            ]
+        ];
+        $response = $this->post(
+            self::ENDPOINT_PREFIX . '/recipes/' . $recipe->id . '/instructions/update-order',
+            $payload,
+            ['Authorization' => 'Bearer ' . AuthController::createToken($user)]
+        );
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'data' => [
+                    0 => $this->getInstructionStructure()
+                ]
+            ]);
+        $this->assertDatabaseHas('instructions', ['id' => $instructions[0]->id, 'order' => 2]);
+        $this->assertDatabaseHas('instructions', ['id' => $instructions[1]->id, 'order' => 1]);
+        $this->assertDatabaseHas('instructions', ['id' => $instructions[2]->id, 'order' => 3]);
+    }
+
+    public function test_update_order_returns_an_error_if_any_instructions_are_missing_from_request()
+    {
+        $user = User::factory()->create();
+        $recipe = Recipe::factory()->create(['user_id' => $user->id]);
+        $instructions = Instruction::factory()->count(3)->create([
+            'recipe_id' => $recipe->id,
+        ]);
+        $this->actingAs($user);
+        $payload = [
+            'instructions' => [
+                ['id' => $instructions[0]->id, 'order' => 2],
+                ['id' => $instructions[1]->id, 'order' => 1],
+                // Missing the third instruction
+            ]
+        ];
+        $response = $this->postJson(route('instructions.update.order', $recipe), $payload);
+        $response->assertStatus(400);
+    }
+
     public function test_trying_to_update_a_non_existing_instruction_gives_404(): void
     {
         $changedDescription = 'PATCHED Instruction';

@@ -64,5 +64,7 @@ Route::middleware('auth:sanctum')->group(function () {
         ->name('instructions.update')->scopeBindings();
     Route::delete('recipes/{recipe}/instructions/{instruction}', [InstructionsController::class, 'destroy'])
         ->name('instructions.destroy')->scopeBindings();
+    Route::post('recipes/{recipe}/instructions/update-order', [InstructionsController::class, 'updateOrder'])
+        ->name('instructions.update.order');
 });
 

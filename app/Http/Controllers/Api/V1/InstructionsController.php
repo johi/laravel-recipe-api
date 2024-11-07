@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Requests\Api\V1\ReplaceInstructionRequest;
 use App\Http\Requests\Api\V1\StoreInstructionRequest;
+use App\Http\Requests\Api\V1\UpdateInstructionOrderRequest;
 use App\Http\Requests\Api\V1\UpdateInstructionRequest;
 use App\Http\Resources\V1\InstructionResource;
 use App\Models\Instruction;
 use App\Models\Recipe;
 use App\Policies\V1\RecipePolicy;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
 class InstructionsController extends ApiController
@@ -73,6 +75,27 @@ class InstructionsController extends ApiController
         $attributes = $request->mappedAttributes();
         $instruction->update($attributes);
         return new InstructionResource($instruction);
+    }
+
+    public function updateOrder(UpdateInstructionOrderRequest $request, Recipe $recipe)
+    {
+        Gate::authorize('update', $recipe);
+        $recipeId = $recipe->id;
+        $instructionIds = Instruction::where('recipe_id', $recipeId)->pluck('id')->toArray();
+        $providedIds = array_column($request->instructions, 'id');
+
+        if (array_diff($instructionIds, $providedIds)) {
+            return $this->error('All instructions must be included in the update.', 400);
+        }
+
+        DB::transaction(function () use ($request, $recipeId) {
+            foreach ($request->instructions as $data) {
+                Instruction::where('id', $data['id'])
+                    ->where('recipe_id', $recipeId)
+                    ->update(['order' => $data['order']]);
+            }
+        });
+        return InstructionResource::collection($recipe->instructions);
     }
 
     /**
