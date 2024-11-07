@@ -40,7 +40,7 @@ class DevelopmentSeeder extends Seeder
                 Instruction::factory(1)
                     ->create([
                         'recipe_id' => $recipe->id,
-                        'order' => $i
+                        'order' => $i+1
                     ]);
             }
         }

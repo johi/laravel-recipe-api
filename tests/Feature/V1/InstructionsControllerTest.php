@@ -34,6 +34,33 @@ class InstructionsControllerTest extends TestCase
             ]);
     }
 
+    public function test_list_of_all_instructions_yields_correct_order()
+    {
+        $recipe = Recipe::factory()->create();
+        Instruction::factory()->create([
+            'recipe_id' => $recipe->id,
+            'order' => 2,
+            'description' => 'Instruction 2',
+        ]);
+        Instruction::factory()->create([
+            'recipe_id' => $recipe->id,
+            'order' => 1,
+            'description' => 'Instruction 1',
+        ]);
+        Instruction::factory()->create([
+            'recipe_id' => $recipe->id,
+            'order' => 3,
+            'description' => 'Instruction 3',
+        ]);
+        $response = $this->get(self::ENDPOINT_PREFIX . '/recipes/' . $recipe->id . '/instructions');
+        $response->assertStatus(200);
+        $instructions = $response->json()['data'];
+
+        $this->assertEquals(1, $instructions[0]['attributes']['order']);
+        $this->assertEquals(2, $instructions[1]['attributes']['order']);
+        $this->assertEquals(3, $instructions[2]['attributes']['order']);
+    }
+
     // GET SINGLE
     public function test_as_anonymous_i_get_a_single_instruction(): void
     {
