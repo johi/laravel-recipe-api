@@ -24,7 +24,7 @@ class StoreInstructionRequest extends BaseInstructionRequest
     {
         return [
             'data.attributes.description' => 'required|string',
-            'data.attributes.order' => 'required|int',
+            'data.attributes.order' => 'prohibited',
         ];
     }
 }

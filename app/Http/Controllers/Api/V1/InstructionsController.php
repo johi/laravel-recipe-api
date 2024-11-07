@@ -34,6 +34,8 @@ class InstructionsController extends ApiController
     {
         Gate::authorize('storeRelated', $recipe);
         $attributes = $request->mappedAttributes();
+        $nextOrder = $recipe->instructions()->max('order') + 1;
+        $attributes['order'] = $nextOrder;
         return new InstructionResource($recipe->instructions()->create($attributes));
     }
 

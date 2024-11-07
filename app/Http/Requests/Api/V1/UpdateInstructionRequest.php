@@ -24,7 +24,7 @@ class UpdateInstructionRequest extends BaseInstructionRequest
     {
         return [
             'data.attributes.description' => 'sometimes|string',
-            'data.attributes.order' => 'sometimes|int',
+            'data.attributes.order' => 'prohibited',
         ];
     }
 }

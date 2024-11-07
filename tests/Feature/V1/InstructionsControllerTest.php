@@ -96,6 +96,35 @@ class InstructionsControllerTest extends TestCase
         $response->assertStatus(201);
     }
 
+    public function test_creating_an_instruction_assigns_correct_order_to_each_new_instruction()
+    {
+        $user = User::factory()->create(['is_admin' => false]);
+        $recipe = Recipe::factory()->create(['user_id' => $user->id]);
+
+        $response = $this->post(
+            self::ENDPOINT_PREFIX . '/recipes/' . $recipe->id . '/instructions',
+            $this->getInstructionPayload($recipe->id),
+            ['Authorization' => 'Bearer ' . AuthController::createToken($user)]
+        );
+
+        $this->assertEquals(1, Instruction::where('recipe_id', $recipe->id)->first()->order);
+
+        $response = $this->post(
+            self::ENDPOINT_PREFIX . '/recipes/' . $recipe->id . '/instructions',
+            $this->getInstructionPayload($recipe->id),
+            ['Authorization' => 'Bearer ' . AuthController::createToken($user)]
+        );
+        $this->assertEquals(2, Instruction::where('recipe_id', $recipe->id)->latest('id')->first()->order);
+
+        $response = $this->post(
+            self::ENDPOINT_PREFIX . '/recipes/' . $recipe->id . '/instructions',
+            $this->getInstructionPayload($recipe->id),
+            ['Authorization' => 'Bearer ' . AuthController::createToken($user)]
+        );
+
+        $this->assertEquals(3, Instruction::where('recipe_id', $recipe->id)->latest('id')->first()->order);
+    }
+
     public function test_as_user_i_cannot_create_someone_else_instruction(): void
     {
         $user = User::factory()->create(['is_admin' => false]);
@@ -296,8 +325,7 @@ class InstructionsControllerTest extends TestCase
         return [
             'data' => [
                 'attributes' => [
-                    'description' => 'Test Instruction',
-                    'order' => 1
+                    'description' => 'Test Instruction'
                 ],
                 'relationships' => [
                     'recipe' => [
