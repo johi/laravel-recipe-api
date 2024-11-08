@@ -495,6 +495,26 @@ paths:
             example: '`*`Carbonara'
         -
           in: query
+          name: 'filter[category]'
+          description: 'Filter by category.title, works with or without use of wildcard'
+          example: 'start`*`'
+          required: false
+          schema:
+            type: string
+            description: 'Filter by category.title, works with or without use of wildcard'
+            example: 'start`*`'
+        -
+          in: query
+          name: 'filter[ingredient]'
+          description: 'Filter by ingredient.title, works with or without use of wildcard'
+          example: 'chicken`*`'
+          required: false
+          schema:
+            type: string
+            description: 'Filter by ingredient.title, works with or without use of wildcard'
+            example: 'chicken`*`'
+        -
+          in: query
           name: include
           description: 'Include related resources, possible values: category, ingredients, instructions'
           example: 'instructions,ingredients'
@@ -2444,7 +2464,7 @@ paths:
                         title:
                           type: string
                           description: ''
-                          example: modi
+                          example: veniam
                         quantity:
                           type: integer
                           description: ''
@@ -2452,7 +2472,7 @@ paths:
                         unit:
                           type: integer
                           description: ''
-                          example: 5
+                          example: 19
               required:
                 - data
     parameters:
@@ -2645,15 +2665,15 @@ paths:
                         title:
                           type: string
                           description: optional
-                          example: et
+                          example: enim
                         quantity:
                           type: integer
                           description: optional
-                          example: 2
+                          example: 16
                         unit:
                           type: integer
                           description: optional
-                          example: 20
+                          example: 5
               required:
                 - data
     delete:
@@ -2802,15 +2822,15 @@ paths:
                         title:
                           type: string
                           description: ''
-                          example: qui
+                          example: voluptates
                         quantity:
                           type: integer
                           description: ''
-                          example: 16
+                          example: 12
                         unit:
                           type: integer
                           description: ''
-                          example: 3
+                          example: 2
               required:
                 - data
     parameters:
@@ -3142,7 +3162,7 @@ paths:
                         description:
                           type: string
                           description: ''
-                          example: 'Ducimus minima facilis quia facere adipisci repudiandae.'
+                          example: 'Quo quae voluptatem molestiae molestiae.'
               required:
                 - data
     parameters:
@@ -3327,7 +3347,7 @@ paths:
                         description:
                           type: string
                           description: ''
-                          example: 'Iure fuga dolores voluptate laudantium.'
+                          example: 'Qui non id totam sed sunt possimus dolorem.'
               required:
                 - data
     delete:
@@ -3472,7 +3492,7 @@ paths:
                         description:
                           type: string
                           description: ''
-                          example: 'Dolores nobis neque exercitationem aut et quis aut.'
+                          example: 'Aut quia eligendi tempora voluptas.'
               required:
                 - data
     parameters:
@@ -3587,7 +3607,7 @@ paths:
                       id:
                         type: integer
                         description: ''
-                        example: 18
+                        example: 16
                       attributes:
                         type: object
                         description: ''
@@ -3596,7 +3616,7 @@ paths:
                           order:
                             type: integer
                             description: ''
-                            example: 6
+                            example: 8
                     required:
                       - id
                       - attributes
@@ -3708,7 +3728,7 @@ paths:
                         order:
                           type: integer
                           description: ''
-                          example: 11
+                          example: 10
               required:
                 - data
     parameters:
@@ -3774,6 +3794,26 @@ paths:
             type: string
             description: 'Filter by title, works with or without use of wildcard'
             example: '`*`Carbonara'
+        -
+          in: query
+          name: 'filter[category]'
+          description: 'Filter by category.title, works with or without use of wildcard'
+          example: 'start`*`'
+          required: false
+          schema:
+            type: string
+            description: 'Filter by category.title, works with or without use of wildcard'
+            example: 'start`*`'
+        -
+          in: query
+          name: 'filter[ingredient]'
+          description: 'Filter by ingredient.title, works with or without use of wildcard'
+          example: 'chicken`*`'
+          required: false
+          schema:
+            type: string
+            description: 'Filter by ingredient.title, works with or without use of wildcard'
+            example: 'chicken`*`'
         -
           in: query
           name: include
@@ -4439,23 +4479,23 @@ paths:
                         title:
                           type: string
                           description: ''
-                          example: maxime
+                          example: est
                         description:
                           type: string
                           description: ''
-                          example: 'Non sint quae ut debitis et.'
+                          example: 'Sequi vel et nisi.'
                         preparationTimeMinutes:
                           type: integer
                           description: ''
-                          example: 13
+                          example: 15
                         servings:
                           type: integer
                           description: ''
-                          example: 7
+                          example: 19
                         imageUrl:
                           type: string
                           description: optional
-                          example: 'http://crist.net/molestias-iure-corporis-velit-qui.html'
+                          example: 'http://www.schamberger.com/'
                     relationships:
                       type: array
                       description: ''
@@ -4477,7 +4517,7 @@ paths:
                                   id:
                                     type: integer
                                     description: ''
-                                    example: 12
+                                    example: 11
                         required:
                           - author
               required:
@@ -5107,15 +5147,15 @@ paths:
                         title:
                           type: string
                           description: optional
-                          example: quo
+                          example: sint
                         description:
                           type: string
                           description: optional
-                          example: 'Cumque voluptas ut sint eius.'
+                          example: 'Nesciunt labore culpa omnis mollitia ullam asperiores est quis.'
                         preparationTimeMinutes:
                           type: integer
                           description: optional
-                          example: 18
+                          example: 17
                         servings:
                           type: integer
                           description: optional
@@ -5123,7 +5163,7 @@ paths:
                         imageUrl:
                           type: string
                           description: optional
-                          example: 'https://runolfsson.biz/voluptatem-voluptas-voluptas-et-voluptatem.html'
+                          example: 'http://terry.net/'
                     relationships:
                       type: array
                       description: optional
@@ -5136,7 +5176,7 @@ paths:
                             type: array
                             description: optional
                             example:
-                              - beatae
+                              - quia
                             items:
                               type: string
               required:
@@ -5146,7 +5186,7 @@ paths:
         in: path
         name: id
         description: ''
-        example: 17
+        example: 18
         required: true
         schema:
           type: integer
@@ -5353,23 +5393,23 @@ paths:
                         title:
                           type: string
                           description: ''
-                          example: est
+                          example: aliquam
                         description:
                           type: string
                           description: ''
-                          example: 'Aliquam vel nihil enim omnis est voluptatem exercitationem.'
+                          example: 'Et dolores modi mollitia rerum rerum recusandae in.'
                         preparationTimeMinutes:
                           type: integer
                           description: ''
-                          example: 19
+                          example: 10
                         servings:
                           type: integer
                           description: ''
-                          example: 19
+                          example: 16
                         imageUrl:
                           type: string
                           description: optional
-                          example: 'http://pfeffer.com/'
+                          example: 'http://anderson.info/'
                     relationships:
                       type: array
                       description: ''
@@ -5382,7 +5422,7 @@ paths:
                             type: array
                             description: ''
                             example:
-                              - commodi
+                              - id
                             items:
                               type: string
                         required:
@@ -5742,11 +5782,11 @@ paths:
                         name:
                           type: string
                           description: ''
-                          example: possimus
+                          example: amet
                         email:
                           type: string
                           description: 'example: john.doe@example.com'
-                          example: thea60@example.com
+                          example: albin88@example.net
                         isAdmin:
                           type: boolean
                           description: 'example: true'
@@ -5754,7 +5794,7 @@ paths:
                         password:
                           type: string
                           description: ''
-                          example: '*t;IsM,(_p'
+                          example: 'MzjP9y?8`@#'
               required:
                 - data
   '/api/v1/users/{id}':
@@ -5950,11 +5990,11 @@ paths:
                         name:
                           type: string
                           description: ''
-                          example: voluptatem
+                          example: iste
                         email:
                           type: string
                           description: 'example: john.doe@example.com'
-                          example: valentine25@example.com
+                          example: quigley.tressa@example.com
                         isAdmin:
                           type: boolean
                           description: 'example: true'
@@ -5962,7 +6002,7 @@ paths:
                         password:
                           type: string
                           description: ''
-                          example: '#{$m]/y'
+                          example: "'GdQG*^^x]N`TMcF_#"
               required:
                 - data
     patch:
@@ -6047,11 +6087,11 @@ paths:
                         name:
                           type: string
                           description: optional
-                          example: est
+                          example: modi
                         email:
                           type: string
                           description: 'optional example: john.doe@example.com'
-                          example: boehm.layla@example.net
+                          example: okessler@example.org
                         isAdmin:
                           type: boolean
                           description: 'optional example: true'
@@ -6059,7 +6099,7 @@ paths:
                         password:
                           type: string
                           description: optional
-                          example: 'e@sWL^k{AhG^{1'
+                          example: 'yrA$-4>E}t~'
               required:
                 - data
     parameters:

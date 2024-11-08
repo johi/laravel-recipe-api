@@ -48,4 +48,20 @@ class RecipeFilter extends QueryFilter
         $likeStr = str_replace('*', '%', $value);
         return $this->builder->where('title', 'like', $likeStr);
     }
+
+    public function category($value)
+    {
+        return $this->builder->whereHas('category', function ($query) use ($value) {
+            $likeStr = str_replace('*', '%', strtolower($value));
+            $query->whereRaw('LOWER(title) LIKE ?', [$likeStr]);
+        });
+    }
+
+    public function ingredient($value)
+    {
+        return $this->builder->whereHas('ingredients', function ($query) use ($value) {
+            $likeStr = str_replace('*', '%', strtolower($value));
+            $query->whereRaw('LOWER(title) LIKE ?', [$likeStr]);
+        });
+    }
 }

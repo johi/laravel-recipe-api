@@ -10,7 +10,7 @@
     ],
     "info": {
         "name": "Recipe Manager API Documentation",
-        "_postman_id": "e4a34524-fb6c-43fb-93af-ce3527b7d574",
+        "_postman_id": "9fe08f6d-650b-4916-b149-723ae2a9ad5c",
         "description": "",
         "schema": "https:\/\/schema.getpostman.com\/json\/collection\/v2.1.0\/collection.json"
     },
@@ -246,6 +246,18 @@
                                     "disabled": false
                                 },
                                 {
+                                    "key": "filter%5Bcategory%5D",
+                                    "value": "start%60%2A%60",
+                                    "description": "Filter by category.title, works with or without use of wildcard",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "filter%5Bingredient%5D",
+                                    "value": "chicken%60%2A%60",
+                                    "description": "Filter by ingredient.title, works with or without use of wildcard",
+                                    "disabled": false
+                                },
+                                {
                                     "key": "include",
                                     "value": "instructions%2Cingredients",
                                     "description": "Include related resources, possible values: category, ingredients, instructions",
@@ -258,7 +270,7 @@
                                     "disabled": false
                                 }
                             ],
-                            "raw": "{{baseUrl}}\/api\/v1\/authors\/:author_id\/recipes?filter%5BcreatedAt%5D=2024-10-13%2C2024-11-13&filter%5BupdatedAt%5D=2024-10-13%2C2024-11-13&filter%5BpreparationTimeMinutes%5D=15%2C45&filter%5Btitle%5D=%60%2A%60Carbonara&include=instructions%2Cingredients&sort=title%2C-createdAt",
+                            "raw": "{{baseUrl}}\/api\/v1\/authors\/:author_id\/recipes?filter%5BcreatedAt%5D=2024-10-13%2C2024-11-13&filter%5BupdatedAt%5D=2024-10-13%2C2024-11-13&filter%5BpreparationTimeMinutes%5D=15%2C45&filter%5Btitle%5D=%60%2A%60Carbonara&filter%5Bcategory%5D=start%60%2A%60&filter%5Bingredient%5D=chicken%60%2A%60&include=instructions%2Cingredients&sort=title%2C-createdAt",
                             "variable": [
                                 {
                                     "id": "author_id",
@@ -464,7 +476,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"data\":{\"attributes\":{\"title\":\"modi\",\"quantity\":15,\"unit\":5}}}"
+                            "raw": "{\"data\":{\"attributes\":{\"title\":\"veniam\",\"quantity\":15,\"unit\":19}}}"
                         },
                         "description": ""
                     },
@@ -513,7 +525,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"data\":{\"attributes\":{\"title\":\"qui\",\"quantity\":16,\"unit\":3}}}"
+                            "raw": "{\"data\":{\"attributes\":{\"title\":\"voluptates\",\"quantity\":12,\"unit\":2}}}"
                         },
                         "description": ""
                     },
@@ -562,7 +574,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"data\":{\"attributes\":{\"title\":\"et\",\"quantity\":2,\"unit\":20}}}"
+                            "raw": "{\"data\":{\"attributes\":{\"title\":\"enim\",\"quantity\":16,\"unit\":5}}}"
                         },
                         "description": ""
                     },
@@ -743,7 +755,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"data\":{\"attributes\":{\"description\":\"Ducimus minima facilis quia facere adipisci repudiandae.\"}}}"
+                            "raw": "{\"data\":{\"attributes\":{\"description\":\"Quo quae voluptatem molestiae molestiae.\"}}}"
                         },
                         "description": ""
                     },
@@ -792,7 +804,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"data\":{\"attributes\":{\"description\":\"Dolores nobis neque exercitationem aut et quis aut.\"}}}"
+                            "raw": "{\"data\":{\"attributes\":{\"description\":\"Aut quia eligendi tempora voluptas.\"}}}"
                         },
                         "description": ""
                     },
@@ -841,7 +853,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"data\":{\"attributes\":{\"description\":\"Iure fuga dolores voluptate laudantium.\"}}}"
+                            "raw": "{\"data\":{\"attributes\":{\"description\":\"Qui non id totam sed sunt possimus dolorem.\"}}}"
                         },
                         "description": ""
                     },
@@ -930,7 +942,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"data\":[{\"id\":18,\"attributes\":{\"order\":6}}]}"
+                            "raw": "{\"data\":[{\"id\":16,\"attributes\":{\"order\":8}}]}"
                         },
                         "description": "Bulk update operation for a recipes instructions, here all the recipes instructions must be provided,\notherwise we get an error."
                     },
@@ -979,7 +991,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"data\":{\"attributes\":{\"order\":11}}}"
+                            "raw": "{\"data\":{\"attributes\":{\"order\":10}}}"
                         },
                         "description": "Assign a new order to a single instruction, either moving it up or down"
                     },
@@ -1030,6 +1042,18 @@
                                     "disabled": false
                                 },
                                 {
+                                    "key": "filter%5Bcategory%5D",
+                                    "value": "start%60%2A%60",
+                                    "description": "Filter by category.title, works with or without use of wildcard",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "filter%5Bingredient%5D",
+                                    "value": "chicken%60%2A%60",
+                                    "description": "Filter by ingredient.title, works with or without use of wildcard",
+                                    "disabled": false
+                                },
+                                {
                                     "key": "include",
                                     "value": "instructions%2Cingredients",
                                     "description": "Include related resources, possible values: category, ingredients, instructions",
@@ -1042,7 +1066,7 @@
                                     "disabled": false
                                 }
                             ],
-                            "raw": "{{baseUrl}}\/api\/v1\/recipes?filter%5BcreatedAt%5D=2024-10-13%2C2024-11-13&filter%5BupdatedAt%5D=2024-10-13%2C2024-11-13&filter%5BpreparationTimeMinutes%5D=15%2C45&filter%5Btitle%5D=%60%2A%60Carbonara&include=instructions%2Cingredients&sort=title%2C-createdAt"
+                            "raw": "{{baseUrl}}\/api\/v1\/recipes?filter%5BcreatedAt%5D=2024-10-13%2C2024-11-13&filter%5BupdatedAt%5D=2024-10-13%2C2024-11-13&filter%5BpreparationTimeMinutes%5D=15%2C45&filter%5Btitle%5D=%60%2A%60Carbonara&filter%5Bcategory%5D=start%60%2A%60&filter%5Bingredient%5D=chicken%60%2A%60&include=instructions%2Cingredients&sort=title%2C-createdAt"
                         },
                         "method": "GET",
                         "header": [
@@ -1086,7 +1110,7 @@
                                 {
                                     "id": "id",
                                     "key": "id",
-                                    "value": "17",
+                                    "value": "18",
                                     "description": ""
                                 }
                             ]
@@ -1136,7 +1160,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"data\":{\"attributes\":{\"title\":\"maxime\",\"description\":\"Non sint quae ut debitis et.\",\"preparationTimeMinutes\":13,\"servings\":7,\"imageUrl\":\"http:\\\/\\\/crist.net\\\/molestias-iure-corporis-velit-qui.html\"},\"relationships\":[{\"author\":{\"data\":{\"id\":12}}}]}}"
+                            "raw": "{\"data\":{\"attributes\":{\"title\":\"est\",\"description\":\"Sequi vel et nisi.\",\"preparationTimeMinutes\":15,\"servings\":19,\"imageUrl\":\"http:\\\/\\\/www.schamberger.com\\\/\"},\"relationships\":[{\"author\":{\"data\":{\"id\":11}}}]}}"
                         },
                         "description": "Creates a recipe"
                     },
@@ -1219,7 +1243,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"data\":{\"attributes\":{\"title\":\"est\",\"description\":\"Aliquam vel nihil enim omnis est voluptatem exercitationem.\",\"preparationTimeMinutes\":19,\"servings\":19,\"imageUrl\":\"http:\\\/\\\/pfeffer.com\\\/\"},\"relationships\":[{\"author\":[\"commodi\"]}]}}"
+                            "raw": "{\"data\":{\"attributes\":{\"title\":\"aliquam\",\"description\":\"Et dolores modi mollitia rerum rerum recusandae in.\",\"preparationTimeMinutes\":10,\"servings\":16,\"imageUrl\":\"http:\\\/\\\/anderson.info\\\/\"},\"relationships\":[{\"author\":[\"id\"]}]}}"
                         },
                         "description": ""
                     },
@@ -1262,7 +1286,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"data\":{\"attributes\":{\"title\":\"quo\",\"description\":\"Cumque voluptas ut sint eius.\",\"preparationTimeMinutes\":18,\"servings\":4,\"imageUrl\":\"https:\\\/\\\/runolfsson.biz\\\/voluptatem-voluptas-voluptas-et-voluptatem.html\"},\"relationships\":[{\"author\":[\"beatae\"]}]}}"
+                            "raw": "{\"data\":{\"attributes\":{\"title\":\"sint\",\"description\":\"Nesciunt labore culpa omnis mollitia ullam asperiores est quis.\",\"preparationTimeMinutes\":17,\"servings\":4,\"imageUrl\":\"http:\\\/\\\/terry.net\\\/\"},\"relationships\":[{\"author\":[\"quia\"]}]}}"
                         },
                         "description": ""
                     },
@@ -1378,7 +1402,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"data\":{\"attributes\":{\"name\":\"possimus\",\"email\":\"thea60@example.com\",\"isAdmin\":true,\"password\":\"*t;IsM,(_p\"}}}"
+                            "raw": "{\"data\":{\"attributes\":{\"name\":\"amet\",\"email\":\"albin88@example.net\",\"isAdmin\":true,\"password\":\"MzjP9y?8`@#\"}}}"
                         },
                         "description": ""
                     },
@@ -1508,7 +1532,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"data\":{\"attributes\":{\"name\":\"voluptatem\",\"email\":\"valentine25@example.com\",\"isAdmin\":true,\"password\":\"#{$m]\\\/y\"}}}"
+                            "raw": "{\"data\":{\"attributes\":{\"name\":\"iste\",\"email\":\"quigley.tressa@example.com\",\"isAdmin\":true,\"password\":\"'GdQG*^^x]N`TMcF_#\"}}}"
                         },
                         "description": ""
                     },
@@ -1551,7 +1575,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"data\":{\"attributes\":{\"name\":\"est\",\"email\":\"boehm.layla@example.net\",\"isAdmin\":false,\"password\":\"e@sWL^k{AhG^{1\"}}}"
+                            "raw": "{\"data\":{\"attributes\":{\"name\":\"modi\",\"email\":\"okessler@example.org\",\"isAdmin\":false,\"password\":\"yrA$-4>E}t~\"}}}"
                         },
                         "description": ""
                     },

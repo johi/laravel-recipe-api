@@ -29,6 +29,8 @@ class RecipesController extends ApiController
      * @queryParam filter[updatedAt] Filter by exact (single value) or between created iso-date (comma separated) Example: 2024-10-13,2024-11-13
      * @queryParam filter[preparationTimeMinutes] Filter by preparationTimeMinutes single value less than, or between Example: 15,45
      * @queryParam filter[title] Filter by title, works with or without use of wildcard Example: `*`Carbonara
+     * @queryParam filter[category] Filter by category.title, works with or without use of wildcard Example: start`*`
+     * @queryParam filter[ingredient] Filter by ingredient.title, works with or without use of wildcard Example: chicken`*`
      * @queryParam include Include related resources, possible values: category, ingredients, instructions  Example: instructions,ingredients
      * @queryParam sort string Data field(s) to sort by: title, preparationTimeMinutes, createdAt, updatedAT  Separate multiple with commas.
      * Denote descending sort with a minus sign. Example: title,-createdAt

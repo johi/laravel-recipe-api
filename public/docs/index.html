@@ -987,7 +987,7 @@ to use pagination: <a href="https://laravel.com/docs/11.x/pagination">https://la
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:3001/api/v1/authors/1/recipes?filter%5BcreatedAt%5D=2024-10-13%2C2024-11-13&amp;filter%5BupdatedAt%5D=2024-10-13%2C2024-11-13&amp;filter%5BpreparationTimeMinutes%5D=15%2C45&amp;filter%5Btitle%5D=%60%2A%60Carbonara&amp;include=instructions%2Cingredients&amp;sort=title%2C-createdAt" \
+    --get "http://localhost:3001/api/v1/authors/1/recipes?filter%5BcreatedAt%5D=2024-10-13%2C2024-11-13&amp;filter%5BupdatedAt%5D=2024-10-13%2C2024-11-13&amp;filter%5BpreparationTimeMinutes%5D=15%2C45&amp;filter%5Btitle%5D=%60%2A%60Carbonara&amp;filter%5Bcategory%5D=start%60%2A%60&amp;filter%5Bingredient%5D=chicken%60%2A%60&amp;include=instructions%2Cingredients&amp;sort=title%2C-createdAt" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -1003,6 +1003,8 @@ const params = {
     "filter[updatedAt]": "2024-10-13,2024-11-13",
     "filter[preparationTimeMinutes]": "15,45",
     "filter[title]": "`*`Carbonara",
+    "filter[category]": "start`*`",
+    "filter[ingredient]": "chicken`*`",
     "include": "instructions,ingredients",
     "sort": "title,-createdAt",
 };
@@ -2064,6 +2066,28 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <p>Filter by title, works with or without use of wildcard Example: <code>`*</code>Carbonara`</p>
             </div>
                                     <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>filter[category]</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="filter[category]"                data-endpoint="GETapi-v1-authors--author_id--recipes"
+               value="start`*`"
+               data-component="query">
+    <br>
+<p>Filter by category.title, works with or without use of wildcard Example: <code>start</code>*``</p>
+            </div>
+                                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>filter[ingredient]</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="filter[ingredient]"                data-endpoint="GETapi-v1-authors--author_id--recipes"
+               value="chicken`*`"
+               data-component="query">
+    <br>
+<p>Filter by ingredient.title, works with or without use of wildcard Example: <code>chicken</code>*``</p>
+            </div>
+                                    <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>include</code></b>&nbsp;&nbsp;
 <small>string</small>&nbsp;
 <i>optional</i> &nbsp;
@@ -2774,9 +2798,9 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"data\": {
         \"attributes\": {
-            \"title\": \"modi\",
+            \"title\": \"veniam\",
             \"quantity\": 15,
-            \"unit\": 5
+            \"unit\": 19
         }
     }
 }"
@@ -2797,9 +2821,9 @@ const headers = {
 let body = {
     "data": {
         "attributes": {
-            "title": "modi",
+            "title": "veniam",
             "quantity": 15,
-            "unit": 5
+            "unit": 19
         }
     }
 };
@@ -2962,10 +2986,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="data.attributes.title"                data-endpoint="POSTapi-v1-recipes--recipe_id--ingredients"
-               value="modi"
+               value="veniam"
                data-component="body">
     <br>
-<p>Example: <code>modi</code></p>
+<p>Example: <code>veniam</code></p>
                     </div>
                                                                 <div style="margin-left: 28px; clear: unset;">
                         <b style="line-height: 2;"><code>quantity</code></b>&nbsp;&nbsp;
@@ -2984,10 +3008,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="data.attributes.unit"                data-endpoint="POSTapi-v1-recipes--recipe_id--ingredients"
-               value="5"
+               value="19"
                data-component="body">
     <br>
-<p>Example: <code>5</code></p>
+<p>Example: <code>19</code></p>
                     </div>
                                     </details>
         </div>
@@ -3016,9 +3040,9 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"data\": {
         \"attributes\": {
-            \"title\": \"qui\",
-            \"quantity\": 16,
-            \"unit\": 3
+            \"title\": \"voluptates\",
+            \"quantity\": 12,
+            \"unit\": 2
         }
     }
 }"
@@ -3039,9 +3063,9 @@ const headers = {
 let body = {
     "data": {
         "attributes": {
-            "title": "qui",
-            "quantity": 16,
-            "unit": 3
+            "title": "voluptates",
+            "quantity": 12,
+            "unit": 2
         }
     }
 };
@@ -3215,10 +3239,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="data.attributes.title"                data-endpoint="PUTapi-v1-recipes--recipe_id--ingredients--ingredient_id-"
-               value="qui"
+               value="voluptates"
                data-component="body">
     <br>
-<p>Example: <code>qui</code></p>
+<p>Example: <code>voluptates</code></p>
                     </div>
                                                                 <div style="margin-left: 28px; clear: unset;">
                         <b style="line-height: 2;"><code>quantity</code></b>&nbsp;&nbsp;
@@ -3226,10 +3250,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="data.attributes.quantity"                data-endpoint="PUTapi-v1-recipes--recipe_id--ingredients--ingredient_id-"
-               value="16"
+               value="12"
                data-component="body">
     <br>
-<p>Example: <code>16</code></p>
+<p>Example: <code>12</code></p>
                     </div>
                                                                 <div style="margin-left: 28px; clear: unset;">
                         <b style="line-height: 2;"><code>unit</code></b>&nbsp;&nbsp;
@@ -3237,10 +3261,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="data.attributes.unit"                data-endpoint="PUTapi-v1-recipes--recipe_id--ingredients--ingredient_id-"
-               value="3"
+               value="2"
                data-component="body">
     <br>
-<p>Example: <code>3</code></p>
+<p>Example: <code>2</code></p>
                     </div>
                                     </details>
         </div>
@@ -3269,9 +3293,9 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"data\": {
         \"attributes\": {
-            \"title\": \"et\",
-            \"quantity\": 2,
-            \"unit\": 20
+            \"title\": \"enim\",
+            \"quantity\": 16,
+            \"unit\": 5
         }
     }
 }"
@@ -3292,9 +3316,9 @@ const headers = {
 let body = {
     "data": {
         "attributes": {
-            "title": "et",
-            "quantity": 2,
-            "unit": 20
+            "title": "enim",
+            "quantity": 16,
+            "unit": 5
         }
     }
 };
@@ -3468,10 +3492,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
                 <input type="text" style="display: none"
                               name="data.attributes.title"                data-endpoint="PATCHapi-v1-recipes--recipe_id--ingredients--id-"
-               value="et"
+               value="enim"
                data-component="body">
     <br>
-<p>optional Example: <code>et</code></p>
+<p>optional Example: <code>enim</code></p>
                     </div>
                                                                 <div style="margin-left: 28px; clear: unset;">
                         <b style="line-height: 2;"><code>quantity</code></b>&nbsp;&nbsp;
@@ -3479,10 +3503,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="data.attributes.quantity"                data-endpoint="PATCHapi-v1-recipes--recipe_id--ingredients--id-"
-               value="2"
+               value="16"
                data-component="body">
     <br>
-<p>optional Example: <code>2</code></p>
+<p>optional Example: <code>16</code></p>
                     </div>
                                                                 <div style="margin-left: 28px; clear: unset;">
                         <b style="line-height: 2;"><code>unit</code></b>&nbsp;&nbsp;
@@ -3490,10 +3514,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="data.attributes.unit"                data-endpoint="PATCHapi-v1-recipes--recipe_id--ingredients--id-"
-               value="20"
+               value="5"
                data-component="body">
     <br>
-<p>optional Example: <code>20</code></p>
+<p>optional Example: <code>5</code></p>
                     </div>
                                     </details>
         </div>
@@ -4111,7 +4135,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"data\": {
         \"attributes\": {
-            \"description\": \"Ducimus minima facilis quia facere adipisci repudiandae.\"
+            \"description\": \"Quo quae voluptatem molestiae molestiae.\"
         }
     }
 }"
@@ -4132,7 +4156,7 @@ const headers = {
 let body = {
     "data": {
         "attributes": {
-            "description": "Ducimus minima facilis quia facere adipisci repudiandae."
+            "description": "Quo quae voluptatem molestiae molestiae."
         }
     }
 };
@@ -4294,10 +4318,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="data.attributes.description"                data-endpoint="POSTapi-v1-recipes--recipe_id--instructions"
-               value="Ducimus minima facilis quia facere adipisci repudiandae."
+               value="Quo quae voluptatem molestiae molestiae."
                data-component="body">
     <br>
-<p>Example: <code>Ducimus minima facilis quia facere adipisci repudiandae.</code></p>
+<p>Example: <code>Quo quae voluptatem molestiae molestiae.</code></p>
                     </div>
                                     </details>
         </div>
@@ -4326,7 +4350,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"data\": {
         \"attributes\": {
-            \"description\": \"Dolores nobis neque exercitationem aut et quis aut.\"
+            \"description\": \"Aut quia eligendi tempora voluptas.\"
         }
     }
 }"
@@ -4347,7 +4371,7 @@ const headers = {
 let body = {
     "data": {
         "attributes": {
-            "description": "Dolores nobis neque exercitationem aut et quis aut."
+            "description": "Aut quia eligendi tempora voluptas."
         }
     }
 };
@@ -4520,10 +4544,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="data.attributes.description"                data-endpoint="PUTapi-v1-recipes--recipe_id--instructions--instruction_id-"
-               value="Dolores nobis neque exercitationem aut et quis aut."
+               value="Aut quia eligendi tempora voluptas."
                data-component="body">
     <br>
-<p>Example: <code>Dolores nobis neque exercitationem aut et quis aut.</code></p>
+<p>Example: <code>Aut quia eligendi tempora voluptas.</code></p>
                     </div>
                                     </details>
         </div>
@@ -4552,7 +4576,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"data\": {
         \"attributes\": {
-            \"description\": \"Iure fuga dolores voluptate laudantium.\"
+            \"description\": \"Qui non id totam sed sunt possimus dolorem.\"
         }
     }
 }"
@@ -4573,7 +4597,7 @@ const headers = {
 let body = {
     "data": {
         "attributes": {
-            "description": "Iure fuga dolores voluptate laudantium."
+            "description": "Qui non id totam sed sunt possimus dolorem."
         }
     }
 };
@@ -4746,10 +4770,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="data.attributes.description"                data-endpoint="PATCHapi-v1-recipes--recipe_id--instructions--id-"
-               value="Iure fuga dolores voluptate laudantium."
+               value="Qui non id totam sed sunt possimus dolorem."
                data-component="body">
     <br>
-<p>Example: <code>Iure fuga dolores voluptate laudantium.</code></p>
+<p>Example: <code>Qui non id totam sed sunt possimus dolorem.</code></p>
                     </div>
                                     </details>
         </div>
@@ -4935,9 +4959,9 @@ otherwise we get an error.</p>
     --data "{
     \"data\": [
         {
-            \"id\": 18,
+            \"id\": 16,
             \"attributes\": {
-                \"order\": 6
+                \"order\": 8
             }
         }
     ]
@@ -4959,9 +4983,9 @@ const headers = {
 let body = {
     "data": [
         {
-            "id": 18,
+            "id": 16,
             "attributes": {
-                "order": 6
+                "order": 8
             }
         }
     ]
@@ -5115,10 +5139,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="data.0.id"                data-endpoint="POSTapi-v1-recipes--recipe_id--instructions-update-order"
-               value="18"
+               value="16"
                data-component="body">
     <br>
-<p>Example: <code>18</code></p>
+<p>Example: <code>16</code></p>
                     </div>
                                                                 <div style=" margin-left: 14px; clear: unset;">
         <details>
@@ -5135,10 +5159,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="data.0.attributes.order"                data-endpoint="POSTapi-v1-recipes--recipe_id--instructions-update-order"
-               value="6"
+               value="8"
                data-component="body">
     <br>
-<p>Example: <code>6</code></p>
+<p>Example: <code>8</code></p>
                     </div>
                                     </details>
         </div>
@@ -5167,7 +5191,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"data\": {
         \"attributes\": {
-            \"order\": 11
+            \"order\": 10
         }
     }
 }"
@@ -5188,7 +5212,7 @@ const headers = {
 let body = {
     "data": {
         "attributes": {
-            "order": 11
+            "order": 10
         }
     }
 };
@@ -5361,10 +5385,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="data.attributes.order"                data-endpoint="POSTapi-v1-recipes--recipe_id--instructions--instruction_id--assign-order"
-               value="11"
+               value="10"
                data-component="body">
     <br>
-<p>Example: <code>11</code></p>
+<p>Example: <code>10</code></p>
                     </div>
                                     </details>
         </div>
@@ -5391,7 +5415,7 @@ to use pagination: <a href="https://laravel.com/docs/11.x/pagination">https://la
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:3001/api/v1/recipes?filter%5BcreatedAt%5D=2024-10-13%2C2024-11-13&amp;filter%5BupdatedAt%5D=2024-10-13%2C2024-11-13&amp;filter%5BpreparationTimeMinutes%5D=15%2C45&amp;filter%5Btitle%5D=%60%2A%60Carbonara&amp;include=instructions%2Cingredients&amp;sort=title%2C-createdAt" \
+    --get "http://localhost:3001/api/v1/recipes?filter%5BcreatedAt%5D=2024-10-13%2C2024-11-13&amp;filter%5BupdatedAt%5D=2024-10-13%2C2024-11-13&amp;filter%5BpreparationTimeMinutes%5D=15%2C45&amp;filter%5Btitle%5D=%60%2A%60Carbonara&amp;filter%5Bcategory%5D=start%60%2A%60&amp;filter%5Bingredient%5D=chicken%60%2A%60&amp;include=instructions%2Cingredients&amp;sort=title%2C-createdAt" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -5407,6 +5431,8 @@ const params = {
     "filter[updatedAt]": "2024-10-13,2024-11-13",
     "filter[preparationTimeMinutes]": "15,45",
     "filter[title]": "`*`Carbonara",
+    "filter[category]": "start`*`",
+    "filter[ingredient]": "chicken`*`",
     "include": "instructions,ingredients",
     "sort": "title,-createdAt",
 };
@@ -5745,6 +5771,28 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <p>Filter by title, works with or without use of wildcard Example: <code>`*</code>Carbonara`</p>
             </div>
                                     <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>filter[category]</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="filter[category]"                data-endpoint="GETapi-v1-recipes"
+               value="start`*`"
+               data-component="query">
+    <br>
+<p>Filter by category.title, works with or without use of wildcard Example: <code>start</code>*``</p>
+            </div>
+                                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>filter[ingredient]</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="filter[ingredient]"                data-endpoint="GETapi-v1-recipes"
+               value="chicken`*`"
+               data-component="query">
+    <br>
+<p>Filter by ingredient.title, works with or without use of wildcard Example: <code>chicken</code>*``</p>
+            </div>
+                                    <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>include</code></b>&nbsp;&nbsp;
 <small>string</small>&nbsp;
 <i>optional</i> &nbsp;
@@ -5783,7 +5831,7 @@ Denote descending sort with a minus sign. Example: <code>title,-createdAt</code>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:3001/api/v1/recipes/17?include=instructions%2Cingredients" \
+    --get "http://localhost:3001/api/v1/recipes/18?include=instructions%2Cingredients" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -5791,7 +5839,7 @@ Denote descending sort with a minus sign. Example: <code>title,-createdAt</code>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:3001/api/v1/recipes/17"
+    "http://localhost:3001/api/v1/recipes/18"
 );
 
 const params = {
@@ -6016,10 +6064,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="id"                data-endpoint="GETapi-v1-recipes--id-"
-               value="17"
+               value="18"
                data-component="url">
     <br>
-<p>Example: <code>17</code></p>
+<p>Example: <code>18</code></p>
             </div>
                         <h4 class="fancy-heading-panel"><b>Query Parameters</b></h4>
                                     <div style="padding-left: 28px; clear: unset;">
@@ -6056,17 +6104,17 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"data\": {
         \"attributes\": {
-            \"title\": \"maxime\",
-            \"description\": \"Non sint quae ut debitis et.\",
-            \"preparationTimeMinutes\": 13,
-            \"servings\": 7,
-            \"imageUrl\": \"http:\\/\\/crist.net\\/molestias-iure-corporis-velit-qui.html\"
+            \"title\": \"est\",
+            \"description\": \"Sequi vel et nisi.\",
+            \"preparationTimeMinutes\": 15,
+            \"servings\": 19,
+            \"imageUrl\": \"http:\\/\\/www.schamberger.com\\/\"
         },
         \"relationships\": [
             {
                 \"author\": {
                     \"data\": {
-                        \"id\": 12
+                        \"id\": 11
                     }
                 }
             }
@@ -6090,17 +6138,17 @@ const headers = {
 let body = {
     "data": {
         "attributes": {
-            "title": "maxime",
-            "description": "Non sint quae ut debitis et.",
-            "preparationTimeMinutes": 13,
-            "servings": 7,
-            "imageUrl": "http:\/\/crist.net\/molestias-iure-corporis-velit-qui.html"
+            "title": "est",
+            "description": "Sequi vel et nisi.",
+            "preparationTimeMinutes": 15,
+            "servings": 19,
+            "imageUrl": "http:\/\/www.schamberger.com\/"
         },
         "relationships": [
             {
                 "author": {
                     "data": {
-                        "id": 12
+                        "id": 11
                     }
                 }
             }
@@ -6289,10 +6337,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="data.attributes.title"                data-endpoint="POSTapi-v1-recipes"
-               value="maxime"
+               value="est"
                data-component="body">
     <br>
-<p>Example: <code>maxime</code></p>
+<p>Example: <code>est</code></p>
                     </div>
                                                                 <div style="margin-left: 28px; clear: unset;">
                         <b style="line-height: 2;"><code>description</code></b>&nbsp;&nbsp;
@@ -6300,10 +6348,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="data.attributes.description"                data-endpoint="POSTapi-v1-recipes"
-               value="Non sint quae ut debitis et."
+               value="Sequi vel et nisi."
                data-component="body">
     <br>
-<p>Example: <code>Non sint quae ut debitis et.</code></p>
+<p>Example: <code>Sequi vel et nisi.</code></p>
                     </div>
                                                                 <div style="margin-left: 28px; clear: unset;">
                         <b style="line-height: 2;"><code>preparationTimeMinutes</code></b>&nbsp;&nbsp;
@@ -6311,10 +6359,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="data.attributes.preparationTimeMinutes"                data-endpoint="POSTapi-v1-recipes"
-               value="13"
+               value="15"
                data-component="body">
     <br>
-<p>Example: <code>13</code></p>
+<p>Example: <code>15</code></p>
                     </div>
                                                                 <div style="margin-left: 28px; clear: unset;">
                         <b style="line-height: 2;"><code>servings</code></b>&nbsp;&nbsp;
@@ -6322,10 +6370,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="data.attributes.servings"                data-endpoint="POSTapi-v1-recipes"
-               value="7"
+               value="19"
                data-component="body">
     <br>
-<p>Example: <code>7</code></p>
+<p>Example: <code>19</code></p>
                     </div>
                                                                 <div style="margin-left: 28px; clear: unset;">
                         <b style="line-height: 2;"><code>imageUrl</code></b>&nbsp;&nbsp;
@@ -6333,10 +6381,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
                 <input type="text" style="display: none"
                               name="data.attributes.imageUrl"                data-endpoint="POSTapi-v1-recipes"
-               value="http://crist.net/molestias-iure-corporis-velit-qui.html"
+               value="http://www.schamberger.com/"
                data-component="body">
     <br>
-<p>optional Example: <code>http://crist.net/molestias-iure-corporis-velit-qui.html</code></p>
+<p>optional Example: <code>http://www.schamberger.com/</code></p>
                     </div>
                                     </details>
         </div>
@@ -6373,10 +6421,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="data.relationships.0.author.data.id"                data-endpoint="POSTapi-v1-recipes"
-               value="12"
+               value="11"
                data-component="body">
     <br>
-<p>Example: <code>12</code></p>
+<p>Example: <code>11</code></p>
                     </div>
                                     </details>
         </div>
@@ -6554,16 +6602,16 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"data\": {
         \"attributes\": {
-            \"title\": \"est\",
-            \"description\": \"Aliquam vel nihil enim omnis est voluptatem exercitationem.\",
-            \"preparationTimeMinutes\": 19,
-            \"servings\": 19,
-            \"imageUrl\": \"http:\\/\\/pfeffer.com\\/\"
+            \"title\": \"aliquam\",
+            \"description\": \"Et dolores modi mollitia rerum rerum recusandae in.\",
+            \"preparationTimeMinutes\": 10,
+            \"servings\": 16,
+            \"imageUrl\": \"http:\\/\\/anderson.info\\/\"
         },
         \"relationships\": [
             {
                 \"author\": [
-                    \"commodi\"
+                    \"id\"
                 ]
             }
         ]
@@ -6586,16 +6634,16 @@ const headers = {
 let body = {
     "data": {
         "attributes": {
-            "title": "est",
-            "description": "Aliquam vel nihil enim omnis est voluptatem exercitationem.",
-            "preparationTimeMinutes": 19,
-            "servings": 19,
-            "imageUrl": "http:\/\/pfeffer.com\/"
+            "title": "aliquam",
+            "description": "Et dolores modi mollitia rerum rerum recusandae in.",
+            "preparationTimeMinutes": 10,
+            "servings": 16,
+            "imageUrl": "http:\/\/anderson.info\/"
         },
         "relationships": [
             {
                 "author": [
-                    "commodi"
+                    "id"
                 ]
             }
         ]
@@ -6795,10 +6843,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="data.attributes.title"                data-endpoint="PUTapi-v1-recipes--recipe_id-"
-               value="est"
+               value="aliquam"
                data-component="body">
     <br>
-<p>Example: <code>est</code></p>
+<p>Example: <code>aliquam</code></p>
                     </div>
                                                                 <div style="margin-left: 28px; clear: unset;">
                         <b style="line-height: 2;"><code>description</code></b>&nbsp;&nbsp;
@@ -6806,10 +6854,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="data.attributes.description"                data-endpoint="PUTapi-v1-recipes--recipe_id-"
-               value="Aliquam vel nihil enim omnis est voluptatem exercitationem."
+               value="Et dolores modi mollitia rerum rerum recusandae in."
                data-component="body">
     <br>
-<p>Example: <code>Aliquam vel nihil enim omnis est voluptatem exercitationem.</code></p>
+<p>Example: <code>Et dolores modi mollitia rerum rerum recusandae in.</code></p>
                     </div>
                                                                 <div style="margin-left: 28px; clear: unset;">
                         <b style="line-height: 2;"><code>preparationTimeMinutes</code></b>&nbsp;&nbsp;
@@ -6817,10 +6865,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="data.attributes.preparationTimeMinutes"                data-endpoint="PUTapi-v1-recipes--recipe_id-"
-               value="19"
+               value="10"
                data-component="body">
     <br>
-<p>Example: <code>19</code></p>
+<p>Example: <code>10</code></p>
                     </div>
                                                                 <div style="margin-left: 28px; clear: unset;">
                         <b style="line-height: 2;"><code>servings</code></b>&nbsp;&nbsp;
@@ -6828,10 +6876,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="data.attributes.servings"                data-endpoint="PUTapi-v1-recipes--recipe_id-"
-               value="19"
+               value="16"
                data-component="body">
     <br>
-<p>Example: <code>19</code></p>
+<p>Example: <code>16</code></p>
                     </div>
                                                                 <div style="margin-left: 28px; clear: unset;">
                         <b style="line-height: 2;"><code>imageUrl</code></b>&nbsp;&nbsp;
@@ -6839,10 +6887,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
                 <input type="text" style="display: none"
                               name="data.attributes.imageUrl"                data-endpoint="PUTapi-v1-recipes--recipe_id-"
-               value="http://pfeffer.com/"
+               value="http://anderson.info/"
                data-component="body">
     <br>
-<p>optional Example: <code>http://pfeffer.com/</code></p>
+<p>optional Example: <code>http://anderson.info/</code></p>
                     </div>
                                     </details>
         </div>
@@ -6879,10 +6927,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="data.relationships.0.author.data.id"                data-endpoint="PUTapi-v1-recipes--recipe_id-"
-               value="4"
+               value="8"
                data-component="body">
     <br>
-<p>Example: <code>4</code></p>
+<p>Example: <code>8</code></p>
                     </div>
                                     </details>
         </div>
@@ -6915,16 +6963,16 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"data\": {
         \"attributes\": {
-            \"title\": \"quo\",
-            \"description\": \"Cumque voluptas ut sint eius.\",
-            \"preparationTimeMinutes\": 18,
+            \"title\": \"sint\",
+            \"description\": \"Nesciunt labore culpa omnis mollitia ullam asperiores est quis.\",
+            \"preparationTimeMinutes\": 17,
             \"servings\": 4,
-            \"imageUrl\": \"https:\\/\\/runolfsson.biz\\/voluptatem-voluptas-voluptas-et-voluptatem.html\"
+            \"imageUrl\": \"http:\\/\\/terry.net\\/\"
         },
         \"relationships\": [
             {
                 \"author\": [
-                    \"beatae\"
+                    \"quia\"
                 ]
             }
         ]
@@ -6947,16 +6995,16 @@ const headers = {
 let body = {
     "data": {
         "attributes": {
-            "title": "quo",
-            "description": "Cumque voluptas ut sint eius.",
-            "preparationTimeMinutes": 18,
+            "title": "sint",
+            "description": "Nesciunt labore culpa omnis mollitia ullam asperiores est quis.",
+            "preparationTimeMinutes": 17,
             "servings": 4,
-            "imageUrl": "https:\/\/runolfsson.biz\/voluptatem-voluptas-voluptas-et-voluptatem.html"
+            "imageUrl": "http:\/\/terry.net\/"
         },
         "relationships": [
             {
                 "author": [
-                    "beatae"
+                    "quia"
                 ]
             }
         ]
@@ -7204,10 +7252,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
                 <input type="text" style="display: none"
                               name="data.attributes.title"                data-endpoint="PATCHapi-v1-recipes--id-"
-               value="quo"
+               value="sint"
                data-component="body">
     <br>
-<p>optional Example: <code>quo</code></p>
+<p>optional Example: <code>sint</code></p>
                     </div>
                                                                 <div style="margin-left: 28px; clear: unset;">
                         <b style="line-height: 2;"><code>description</code></b>&nbsp;&nbsp;
@@ -7215,10 +7263,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
                 <input type="text" style="display: none"
                               name="data.attributes.description"                data-endpoint="PATCHapi-v1-recipes--id-"
-               value="Cumque voluptas ut sint eius."
+               value="Nesciunt labore culpa omnis mollitia ullam asperiores est quis."
                data-component="body">
     <br>
-<p>optional Example: <code>Cumque voluptas ut sint eius.</code></p>
+<p>optional Example: <code>Nesciunt labore culpa omnis mollitia ullam asperiores est quis.</code></p>
                     </div>
                                                                 <div style="margin-left: 28px; clear: unset;">
                         <b style="line-height: 2;"><code>preparationTimeMinutes</code></b>&nbsp;&nbsp;
@@ -7226,10 +7274,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="data.attributes.preparationTimeMinutes"                data-endpoint="PATCHapi-v1-recipes--id-"
-               value="18"
+               value="17"
                data-component="body">
     <br>
-<p>optional Example: <code>18</code></p>
+<p>optional Example: <code>17</code></p>
                     </div>
                                                                 <div style="margin-left: 28px; clear: unset;">
                         <b style="line-height: 2;"><code>servings</code></b>&nbsp;&nbsp;
@@ -7248,10 +7296,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
                 <input type="text" style="display: none"
                               name="data.attributes.imageUrl"                data-endpoint="PATCHapi-v1-recipes--id-"
-               value="https://runolfsson.biz/voluptatem-voluptas-voluptas-et-voluptatem.html"
+               value="http://terry.net/"
                data-component="body">
     <br>
-<p>optional Example: <code>https://runolfsson.biz/voluptatem-voluptas-voluptas-et-voluptatem.html</code></p>
+<p>optional Example: <code>http://terry.net/</code></p>
                     </div>
                                     </details>
         </div>
@@ -7288,10 +7336,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="data.relationships.0.author.data.id"                data-endpoint="PATCHapi-v1-recipes--id-"
-               value="20"
+               value="9"
                data-component="body">
     <br>
-<p>optional Example: <code>20</code></p>
+<p>optional Example: <code>9</code></p>
                     </div>
                                     </details>
         </div>
@@ -7613,10 +7661,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"data\": {
         \"attributes\": {
-            \"name\": \"possimus\",
-            \"email\": \"thea60@example.com\",
+            \"name\": \"amet\",
+            \"email\": \"albin88@example.net\",
             \"isAdmin\": true,
-            \"password\": \"*t;IsM,(_p\"
+            \"password\": \"MzjP9y?8`@#\"
         }
     }
 }"
@@ -7637,10 +7685,10 @@ const headers = {
 let body = {
     "data": {
         "attributes": {
-            "name": "possimus",
-            "email": "thea60@example.com",
+            "name": "amet",
+            "email": "albin88@example.net",
             "isAdmin": true,
-            "password": "*t;IsM,(_p"
+            "password": "MzjP9y?8`@#"
         }
     }
 };
@@ -7783,10 +7831,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="data.attributes.name"                data-endpoint="POSTapi-v1-users"
-               value="possimus"
+               value="amet"
                data-component="body">
     <br>
-<p>Example: <code>possimus</code></p>
+<p>Example: <code>amet</code></p>
                     </div>
                                                                 <div style="margin-left: 28px; clear: unset;">
                         <b style="line-height: 2;"><code>email</code></b>&nbsp;&nbsp;
@@ -7794,10 +7842,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="data.attributes.email"                data-endpoint="POSTapi-v1-users"
-               value="thea60@example.com"
+               value="albin88@example.net"
                data-component="body">
     <br>
-<p>example: john.doe@example.com Example: <code>thea60@example.com</code></p>
+<p>example: john.doe@example.com Example: <code>albin88@example.net</code></p>
                     </div>
                                                                 <div style="margin-left: 28px; clear: unset;">
                         <b style="line-height: 2;"><code>isAdmin</code></b>&nbsp;&nbsp;
@@ -7826,10 +7874,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="data.attributes.password"                data-endpoint="POSTapi-v1-users"
-               value="*t;IsM,(_p"
+               value="MzjP9y?8`@#"
                data-component="body">
     <br>
-<p>Example: <code>*t;IsM,(_p</code></p>
+<p>Example: <code>MzjP9y?8</code>@#`</p>
                     </div>
                                     </details>
         </div>
@@ -8178,10 +8226,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"data\": {
         \"attributes\": {
-            \"name\": \"voluptatem\",
-            \"email\": \"valentine25@example.com\",
+            \"name\": \"iste\",
+            \"email\": \"quigley.tressa@example.com\",
             \"isAdmin\": true,
-            \"password\": \"#{$m]\\/y\"
+            \"password\": \"\'GdQG*^^x]N`TMcF_#\"
         }
     }
 }"
@@ -8202,10 +8250,10 @@ const headers = {
 let body = {
     "data": {
         "attributes": {
-            "name": "voluptatem",
-            "email": "valentine25@example.com",
+            "name": "iste",
+            "email": "quigley.tressa@example.com",
             "isAdmin": true,
-            "password": "#{$m]\/y"
+            "password": "'GdQG*^^x]N`TMcF_#"
         }
     }
 };
@@ -8360,10 +8408,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="data.attributes.name"                data-endpoint="PUTapi-v1-users--user_id-"
-               value="voluptatem"
+               value="iste"
                data-component="body">
     <br>
-<p>Example: <code>voluptatem</code></p>
+<p>Example: <code>iste</code></p>
                     </div>
                                                                 <div style="margin-left: 28px; clear: unset;">
                         <b style="line-height: 2;"><code>email</code></b>&nbsp;&nbsp;
@@ -8371,10 +8419,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="data.attributes.email"                data-endpoint="PUTapi-v1-users--user_id-"
-               value="valentine25@example.com"
+               value="quigley.tressa@example.com"
                data-component="body">
     <br>
-<p>example: john.doe@example.com Example: <code>valentine25@example.com</code></p>
+<p>example: john.doe@example.com Example: <code>quigley.tressa@example.com</code></p>
                     </div>
                                                                 <div style="margin-left: 28px; clear: unset;">
                         <b style="line-height: 2;"><code>isAdmin</code></b>&nbsp;&nbsp;
@@ -8403,10 +8451,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="data.attributes.password"                data-endpoint="PUTapi-v1-users--user_id-"
-               value="#{$m]/y"
+               value="'GdQG*^^x]N`TMcF_#"
                data-component="body">
     <br>
-<p>Example: <code>#{$m]/y</code></p>
+<p>Example: <code>'GdQG*^^x]N</code>TMcF_#`</p>
                     </div>
                                     </details>
         </div>
@@ -8435,10 +8483,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"data\": {
         \"attributes\": {
-            \"name\": \"est\",
-            \"email\": \"boehm.layla@example.net\",
+            \"name\": \"modi\",
+            \"email\": \"okessler@example.org\",
             \"isAdmin\": false,
-            \"password\": \"e@sWL^k{AhG^{1\"
+            \"password\": \"yrA$-4&gt;E}t~\"
         }
     }
 }"
@@ -8459,10 +8507,10 @@ const headers = {
 let body = {
     "data": {
         "attributes": {
-            "name": "est",
-            "email": "boehm.layla@example.net",
+            "name": "modi",
+            "email": "okessler@example.org",
             "isAdmin": false,
-            "password": "e@sWL^k{AhG^{1"
+            "password": "yrA$-4&gt;E}t~"
         }
     }
 };
@@ -8617,10 +8665,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
                 <input type="text" style="display: none"
                               name="data.attributes.name"                data-endpoint="PATCHapi-v1-users--user_id-"
-               value="est"
+               value="modi"
                data-component="body">
     <br>
-<p>optional Example: <code>est</code></p>
+<p>optional Example: <code>modi</code></p>
                     </div>
                                                                 <div style="margin-left: 28px; clear: unset;">
                         <b style="line-height: 2;"><code>email</code></b>&nbsp;&nbsp;
@@ -8628,10 +8676,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
                 <input type="text" style="display: none"
                               name="data.attributes.email"                data-endpoint="PATCHapi-v1-users--user_id-"
-               value="boehm.layla@example.net"
+               value="okessler@example.org"
                data-component="body">
     <br>
-<p>optional example: john.doe@example.com Example: <code>boehm.layla@example.net</code></p>
+<p>optional example: john.doe@example.com Example: <code>okessler@example.org</code></p>
                     </div>
                                                                 <div style="margin-left: 28px; clear: unset;">
                         <b style="line-height: 2;"><code>isAdmin</code></b>&nbsp;&nbsp;
@@ -8660,10 +8708,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
                 <input type="text" style="display: none"
                               name="data.attributes.password"                data-endpoint="PATCHapi-v1-users--user_id-"
-               value="e@sWL^k{AhG^{1"
+               value="yrA$-4>E}t~"
                data-component="body">
     <br>
-<p>optional Example: <code>e@sWL^k{AhG^{1</code></p>
+<p>optional Example: <code>yrA$-4&gt;E}t~</code></p>
                     </div>
                                     </details>
         </div>
