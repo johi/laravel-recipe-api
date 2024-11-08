@@ -208,7 +208,7 @@ INTRO
         'urlParameters' => [
             Strategies\UrlParameters\GetFromLaravelAPI::class,
 //            Strategies\UrlParameters\GetFromUrlParamAttribute::class,
-//            Strategies\UrlParameters\GetFromUrlParamTag::class,
+            Strategies\UrlParameters\GetFromUrlParamTag::class,
         ],
         'queryParameters' => [
             Strategies\QueryParameters\GetFromFormRequest::class,

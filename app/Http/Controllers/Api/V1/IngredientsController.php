@@ -19,7 +19,6 @@ class IngredientsController extends ApiController
      * Get all ingredients for a recipe
      *
      * @group Recipe/Ingredient management
-     * @urlParam recipe int required
      * @response {"data":[{"type":"ingredient","id":11,"attributes":{"title":"et","quantity":20,"unit":"dl"},"relationships":{"recipe":{"data":{"type":"recipe","id":"2"},"links":{"self":"http://localhost:3001/api/v1/recipes/2"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/2/ingredients"}},{"type":"ingredient","id":12,"attributes":{"title":"laudantium","quantity":1,"unit":"tsp"},"relationships":{"recipe":{"data":{"type":"recipe","id":"2"},"links":{"self":"http://localhost:3001/api/v1/recipes/2"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/2/ingredients"}},{"type":"ingredient","id":13,"attributes":{"title":"laboriosam","quantity":34,"unit":"cl"},"relationships":{"recipe":{"data":{"type":"recipe","id":"2"},"links":{"self":"http://localhost:3001/api/v1/recipes/2"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/2/ingredients"}},{"type":"ingredient","id":14,"attributes":{"title":"expedita","quantity":13,"unit":"cl"},"relationships":{"recipe":{"data":{"type":"recipe","id":"2"},"links":{"self":"http://localhost:3001/api/v1/recipes/2"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/2/ingredients"}},{"type":"ingredient","id":15,"attributes":{"title":"non","quantity":85,"unit":"dl"},"relationships":{"recipe":{"data":{"type":"recipe","id":"2"},"links":{"self":"http://localhost:3001/api/v1/recipes/2"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/2/ingredients"}},{"type":"ingredient","id":16,"attributes":{"title":"ipsa","quantity":93,"unit":"tsp"},"relationships":{"recipe":{"data":{"type":"recipe","id":"2"},"links":{"self":"http://localhost:3001/api/v1/recipes/2"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/2/ingredients"}}]}
      */
     public function index(Recipe $recipe)
@@ -31,12 +30,11 @@ class IngredientsController extends ApiController
      * Add ingredient to recipe
      *
      * @group Recipe/Ingredient management
-     * @urlParam recipe int required
-     * @bodyParam data array required
-     * @bodyParam data.attributes array required
+     * @bodyParam data object required
+     * @bodyParam data.attributes object required
      * @bodyParam data.attributes.title string required
-     * @bodyParam data.attributes.quantity int required
-     * @bodyParam data.attributes.unit int required
+     * @bodyParam data.attributes.quantity integer required
+     * @bodyParam data.attributes.unit integer required
      * @response {"data":{"type":"ingredient","id":584,"attributes":{"title":"Test Ingredient","quantity":5,"unit":"g"},"relationships":{"recipe":{"data":{"type":"recipe","id":10},"links":{"self":"http://localhost:3001/api/v1/recipes/10"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/10/ingredients"}}}
      */
     public function store(StoreIngredientRequest $request, Recipe $recipe)
@@ -50,8 +48,6 @@ class IngredientsController extends ApiController
      * Get a single ingredient
      *
      * @group Recipe/Ingredient management
-     * @urlParam recipeId int required
-     * @urlParam ingredientId int required
      * @response {"data":{"type":"ingredient","id":56,"attributes":{"title":"PATCH Ingredient","quantity":50,"unit":"g"},"relationships":{"recipe":{"data":{"type":"recipe","id":"11"},"links":{"self":"http://localhost:3001/api/v1/recipes/11"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/11/ingredients"}}}
      */
     public function show(Recipe $recipe, Ingredient $ingredient)
@@ -63,12 +59,11 @@ class IngredientsController extends ApiController
      * Update an ingredient
      *
      * @group Recipe/Ingredient management
-     * @urlParam recipe int required
-     * @bodyParam data array required
-     * @bodyParam data.attributes array required
+     * @bodyParam data object required
+     * @bodyParam data.attributes object required
      * @bodyParam data.attributes.title string optional
-     * @bodyParam data.attributes.quantity int optional
-     * @bodyParam data.attributes.unit int optional
+     * @bodyParam data.attributes.quantity integer optional
+     * @bodyParam data.attributes.unit integer optional
      * @response {"data":{"type":"ingredient","id":584,"attributes":{"title":"Test Ingredient","quantity":5,"unit":"g"},"relationships":{"recipe":{"data":{"type":"recipe","id":10},"links":{"self":"http://localhost:3001/api/v1/recipes/10"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/10/ingredients"}}}
      */
     public function update(UpdateIngredientRequest $request, Recipe $recipe, Ingredient $ingredient)
@@ -84,12 +79,11 @@ class IngredientsController extends ApiController
      * Replace an ingredient
      *
      * @group Recipe/Ingredient management
-     * @urlParam recipe int required
-     * @bodyParam data array required
-     * @bodyParam data.attributes array required
+     * @bodyParam data object required
+     * @bodyParam data.attributes object required
      * @bodyParam data.attributes.title string required
-     * @bodyParam data.attributes.quantity int required
-     * @bodyParam data.attributes.unit int required
+     * @bodyParam data.attributes.quantity integer required
+     * @bodyParam data.attributes.unit integer required
      * @response {"data":{"type":"ingredient","id":584,"attributes":{"title":"Test Ingredient","quantity":5,"unit":"g"},"relationships":{"recipe":{"data":{"type":"recipe","id":10},"links":{"self":"http://localhost:3001/api/v1/recipes/10"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/10/ingredients"}}}
      */
     public function replace(ReplaceIngredientRequest $request, Recipe $recipe, Ingredient $ingredient)
@@ -105,7 +99,6 @@ class IngredientsController extends ApiController
      * Delete an ingredient
      *
      * @group Recipe/Ingredient management
-     * @urlParam recipe int required
      * @response {"data":[],"message":"Ingredient successfully deleted","status":200}
      */
     public function destroy(Recipe $recipe, Ingredient $ingredient)
