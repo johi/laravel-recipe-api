@@ -3,6 +3,9 @@
 /public/build
 /public/hot
 /public/storage
+/public/docs/collection.json
+/public/docs/index.html
+/public/docs/openapi.yaml
 /storage/*.key
 /vendor
 .env
