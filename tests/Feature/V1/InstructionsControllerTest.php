@@ -319,30 +319,23 @@ class InstructionsControllerTest extends TestCase
     {
         $user = User::factory()->create();
         $recipe = Recipe::factory()->create(['user_id' => $user->id]);
-
         $instructions = Instruction::factory()->count(3)->create([
             'recipe_id' => $recipe->id,
         ])->each(function ($instruction, $index) {
             $instruction->update(['order' => $index + 1]);
         });
-
         $instructionToMove = $instructions->first();
         $newOrder = 3;
-
         $this->actingAs($user);
-
         $response = $this->postJson(
             route('instructions.assign.order', [
                 'recipe' => $recipe->id,
                 'instruction' => $instructionToMove->id
             ]),
-            ['order' => $newOrder]
+            ['data' => ['attributes' => ['order' => $newOrder]]]
         );
-
         $response->assertStatus(200);
-
         $updatedInstructions = Instruction::where('recipe_id', $recipe->id)->get();
-
         $this->assertEquals(3, $updatedInstructions->where('id', $instructions[0]->id)->first()->order);
         $this->assertEquals(1, $updatedInstructions->where('id', $instructions[1]->id)->first()->order);
         $this->assertEquals(2, $updatedInstructions->where('id', $instructions[2]->id)->first()->order);
@@ -352,34 +345,23 @@ class InstructionsControllerTest extends TestCase
     {
         $user = User::factory()->create();
         $recipe = Recipe::factory()->create(['user_id' => $user->id]);
-
         $instructions = Instruction::factory()->count(3)->create([
             'recipe_id' => $recipe->id,
         ])->each(function ($instruction, $index) {
             $instruction->update(['order' => $index + 1]);
         });
-
         $instructionToMove = $instructions->last();
         $newOrder = 1;
-
-        // Set authorization token
         $this->actingAs($user);
-
-        // Act
         $response = $this->postJson(
             route('instructions.assign.order', [
                 'recipe' => $recipe->id,
                 'instruction' => $instructionToMove->id
             ]),
-            ['order' => $newOrder]
+            ['data' => ['attributes' => ['order' => $newOrder]]]
         );
-
-        // Assert response
         $response->assertStatus(200);
-
-        // Verify updated order for each instruction
         $updatedInstructions = Instruction::where('recipe_id', $recipe->id)->get();
-
         $this->assertEquals(2, $updatedInstructions->where('id', $instructions[0]->id)->first()->order);
         $this->assertEquals(3, $updatedInstructions->where('id', $instructions[1]->id)->first()->order);
         $this->assertEquals(1, $updatedInstructions->where('id', $instructions[2]->id)->first()->order);

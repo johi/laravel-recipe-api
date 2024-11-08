@@ -104,7 +104,7 @@ class InstructionsController extends ApiController
     {
         Gate::authorize('update', $recipe);
         $currentOrder = $instruction->order;
-        $newOrder = $request->order;
+        $newOrder = $request->input('data')['attributes']['order'];
         $recipeId = $recipe->id;
         DB::transaction(function () use ($recipeId, $instruction, $currentOrder, $newOrder) {
             if ($currentOrder < $newOrder) {

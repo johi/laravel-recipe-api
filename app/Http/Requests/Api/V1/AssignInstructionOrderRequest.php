@@ -22,7 +22,9 @@ class AssignInstructionOrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'order' => 'required|integer|min:1',
+            'data' => 'required|array',
+            'data.attributes' => 'required|array',
+            'data.attributes.order' => 'required|integer|min:1',
         ];
     }
 }
