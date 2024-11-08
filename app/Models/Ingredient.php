@@ -24,13 +24,10 @@ class Ingredient extends Model
     }
     protected static function booted()
     {
-        // Hook into the saved event
         static::saved(function ($ingredient) {
-            // Update the related recipe's updated_at timestamp
             $ingredient->recipe->touch();
         });
 
-        // Hook into the deleted event (if needed)
         static::deleted(function ($ingredient) {
             $ingredient->recipe->touch();
         });
