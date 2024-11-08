@@ -117,6 +117,16 @@ class InstructionsController extends ApiController
             return $this->error('All instructions must be included in the update.', 400);
         }
 
+        // Get total number of instructions
+        $instructionCount = Instruction::where('recipe_id', $recipeId)->count();
+
+        // Check if all provided orders are within the valid range (1 to total count)
+        foreach ($instructionsData as $data) {
+            if ($data['attributes']['order'] > $instructionCount) {
+                return $this->error('Order values must be within the valid range.', 400);
+            }
+        }
+
         DB::transaction(function () use ($instructionsData, $recipeId) {
             foreach ($instructionsData as $data) {
                 Instruction::where('id', $data['id'])
@@ -144,6 +154,12 @@ class InstructionsController extends ApiController
         $currentOrder = $instruction->order;
         $newOrder = $request->input('data')['attributes']['order'];
         $recipeId = $recipe->id;
+
+        $instructionCount = Instruction::where('recipe_id', $recipeId)->count();
+        if ($newOrder < 1 || $newOrder > $instructionCount) {
+            return $this->error('Order must be between 1 and ' . $instructionCount . '.', 400);
+        }
+
         DB::transaction(function () use ($recipeId, $instruction, $currentOrder, $newOrder) {
             if ($currentOrder < $newOrder) {
                 Instruction::where('recipe_id', $recipeId)

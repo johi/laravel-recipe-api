@@ -314,6 +314,25 @@ class InstructionsControllerTest extends TestCase
         $response->assertStatus(400);
     }
 
+    public function test_update_order_out_of_range(): void
+    {
+        $user = User::factory()->create();
+        $recipe = Recipe::factory()->create(['user_id' => $user->id]);
+        $instructions = Instruction::factory()->count(3)->create(['recipe_id' => $recipe->id]);
+
+        $payload = [
+            'data' => [
+                ['id' => $instructions[0]->id, 'attributes' => ['order' => 2]],
+                ['id' => $instructions[1]->id, 'attributes' => ['order' => 1]],
+                ['id' => $instructions[2]->id, 'attributes' => ['order' => 5]], // out of bounds
+            ]
+        ];
+        $this->actingAs($user);
+        $response = $this->postJson(route('instructions.update.order', $recipe), $payload);
+        $response->assertStatus(400)
+            ->assertJson(['message' => 'Order values must be within the valid range.']);
+    }
+
     // Assign Order
     public function test_assign_order_reorders_instructions_correctly_when_moving_up()
     {
@@ -365,6 +384,24 @@ class InstructionsControllerTest extends TestCase
         $this->assertEquals(2, $updatedInstructions->where('id', $instructions[0]->id)->first()->order);
         $this->assertEquals(3, $updatedInstructions->where('id', $instructions[1]->id)->first()->order);
         $this->assertEquals(1, $updatedInstructions->where('id', $instructions[2]->id)->first()->order);
+    }
+
+    public function test_assign_order_out_of_range(): void
+    {
+        $user = User::factory()->create();
+        $recipe = Recipe::factory()->create(['user_id' => $user->id]);
+        $instructions = Instruction::factory(3)->create(['recipe_id' => $recipe->id]);
+        $newOrder = 5; // out of bounds
+        $this->actingAs($user);
+        $response = $this->postJson(
+            route('instructions.assign.order', [
+                'recipe' => $recipe->id,
+                'instruction' => $instructions[2]->id
+            ]),
+            ['data' => ['attributes' => ['order' => $newOrder]]]
+        );
+        $response->assertStatus(400)
+            ->assertJson(['message' => 'Order must be between 1 and 3.']);
     }
 
     // DELETE
