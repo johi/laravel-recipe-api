@@ -276,17 +276,14 @@ class InstructionsControllerTest extends TestCase
             'recipe_id' => $recipe->id,
         ]);
         $payload = [
-            'instructions' => [
-                ['id' => $instructions[0]->id, 'order' => 2],
-                ['id' => $instructions[1]->id, 'order' => 1],
-                ['id' => $instructions[2]->id, 'order' => 3],
+            'data' => [
+                ['id' => $instructions[0]->id, 'attributes' => ['order' => 2]],
+                ['id' => $instructions[1]->id, 'attributes' => ['order' => 1]],
+                ['id' => $instructions[2]->id, 'attributes' => ['order' => 3]],
             ]
         ];
-        $response = $this->post(
-            self::ENDPOINT_PREFIX . '/recipes/' . $recipe->id . '/instructions/update-order',
-            $payload,
-            ['Authorization' => 'Bearer ' . AuthController::createToken($user)]
-        );
+        $this->actingAs($user);
+        $response = $this->postJson(route('instructions.update.order', $recipe), $payload);
         $response->assertStatus(200)
             ->assertJsonStructure([
                 'data' => [
@@ -307,9 +304,9 @@ class InstructionsControllerTest extends TestCase
         ]);
         $this->actingAs($user);
         $payload = [
-            'instructions' => [
-                ['id' => $instructions[0]->id, 'order' => 2],
-                ['id' => $instructions[1]->id, 'order' => 1],
+            'data' => [
+                ['id' => $instructions[0]->id, 'attributes' => ['order' => 2]],
+                ['id' => $instructions[1]->id, 'attributes' => ['order' => 1]],
                 // Missing the third instruction
             ]
         ];

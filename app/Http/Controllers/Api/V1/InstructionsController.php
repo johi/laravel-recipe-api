@@ -83,17 +83,18 @@ class InstructionsController extends ApiController
         Gate::authorize('update', $recipe);
         $recipeId = $recipe->id;
         $instructionIds = Instruction::where('recipe_id', $recipeId)->pluck('id')->toArray();
-        $providedIds = array_column($request->instructions, 'id');
+        $instructionsData = $request->input('data');
+        $providedIds = array_column($instructionsData, 'id');
 
         if (array_diff($instructionIds, $providedIds)) {
             return $this->error('All instructions must be included in the update.', 400);
         }
 
-        DB::transaction(function () use ($request, $recipeId) {
-            foreach ($request->instructions as $data) {
+        DB::transaction(function () use ($instructionsData, $recipeId) {
+            foreach ($instructionsData as $data) {
                 Instruction::where('id', $data['id'])
                     ->where('recipe_id', $recipeId)
-                    ->update(['order' => $data['order']]);
+                    ->update(['order' => $data['attributes']['order']]);
             }
         });
         return InstructionResource::collection($recipe->instructions);

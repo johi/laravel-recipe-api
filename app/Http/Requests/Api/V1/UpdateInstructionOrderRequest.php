@@ -22,9 +22,9 @@ class UpdateInstructionOrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'instructions' => 'required|array',
-            'instructions.*.id' => 'required|integer|exists:instructions,id',
-            'instructions.*.order' => 'required|integer|min:1',
+            'data' => 'required|array',
+            'data.*.id' => 'required|integer|exists:instructions,id',
+            'data.*.attributes.order' => 'required|integer|min:1',
         ];
     }
 }
