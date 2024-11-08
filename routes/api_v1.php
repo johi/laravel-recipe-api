@@ -20,7 +20,7 @@ Route::get('authors', [AuthorsController::class, 'index'])
 Route::get('authors/{author}', [AuthorsController::class, 'show'])
     ->name('authors.show');
 Route::get('authors/{author}/recipes', [AuthorsRecipesController::class, 'index'])
-    ->name('recipes.index');
+    ->name('authors.recipes.index');
 Route::get('recipes/{recipe}/ingredients', [IngredientsController::class, 'index'])
     ->name('ingredients.index');
 Route::get('recipes/{recipe}/ingredients/{ingredient}', [IngredientsController::class, 'show'])
