@@ -23,7 +23,7 @@ class UpdateInstructionRequest extends BaseInstructionRequest
     public function rules(): array
     {
         return [
-            'data.attributes.description' => 'sometimes|string',
+            'data.attributes.description' => 'required|string', // since we only have one data field it's required
             'data.attributes.order' => 'prohibited',
         ];
     }
