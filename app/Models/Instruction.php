@@ -21,4 +21,18 @@ class Instruction extends Model
     {
         return $this->belongsTo(Recipe::class);
     }
+
+    protected static function booted()
+    {
+        // Hook into the saved event
+        static::saved(function ($instruction) {
+            // Update the related recipe's updated_at timestamp
+            $instruction->recipe->touch();
+        });
+
+        // Hook into the deleted event (if needed)
+        static::deleted(function ($instruction) {
+            $instruction->recipe->touch();
+        });
+    }
 }
