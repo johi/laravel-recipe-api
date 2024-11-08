@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Http\Requests\Api\V1\AssignInstructionOrderRequest;
 use App\Http\Requests\Api\V1\ReplaceInstructionRequest;
 use App\Http\Requests\Api\V1\StoreInstructionRequest;
 use App\Http\Requests\Api\V1\UpdateInstructionOrderRequest;
@@ -94,6 +95,27 @@ class InstructionsController extends ApiController
                     ->where('recipe_id', $recipeId)
                     ->update(['order' => $data['order']]);
             }
+        });
+        return InstructionResource::collection($recipe->instructions);
+    }
+
+    public function assignOrder(AssignInstructionOrderRequest $request, Recipe $recipe, Instruction $instruction)
+    {
+        Gate::authorize('update', $recipe);
+        $currentOrder = $instruction->order;
+        $newOrder = $request->order;
+        $recipeId = $recipe->id;
+        DB::transaction(function () use ($recipeId, $instruction, $currentOrder, $newOrder) {
+            if ($currentOrder < $newOrder) {
+                Instruction::where('recipe_id', $recipeId)
+                    ->whereBetween('order', [$currentOrder + 1, $newOrder])
+                    ->decrement('order');
+            } elseif ($currentOrder > $newOrder) {
+                Instruction::where('recipe_id', $recipeId)
+                    ->whereBetween('order', [$newOrder, $currentOrder - 1])
+                    ->increment('order');
+            }
+            $instruction->update(['order' => $newOrder]);
         });
         return InstructionResource::collection($recipe->instructions);
     }

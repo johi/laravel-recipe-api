@@ -255,6 +255,19 @@ class InstructionsControllerTest extends TestCase
             ->assertJsonPath('data.attributes.description', $changedDescription);
     }
 
+    public function test_trying_to_update_a_non_existing_instruction_gives_404(): void
+    {
+        $changedDescription = 'PATCHED Instruction';
+        $user = User::factory()->create(['is_admin' => true]);
+        $response = $this->patch(
+            self::ENDPOINT_PREFIX . '/recipes/1' . '/instructions/99',
+            ['data' => ['attributes' => ['description' => $changedDescription]]],
+            ['Authorization' => 'Bearer ' . AuthController::createToken($user)]
+        );
+        $response->assertStatus(404);
+    }
+
+    // Update-Order
     public function test_update_order_successfully()
     {
         $user = User::factory()->create(['is_admin' => true]);
@@ -304,16 +317,75 @@ class InstructionsControllerTest extends TestCase
         $response->assertStatus(400);
     }
 
-    public function test_trying_to_update_a_non_existing_instruction_gives_404(): void
+    // Assign Order
+    public function test_assign_order_reorders_instructions_correctly_when_moving_up()
     {
-        $changedDescription = 'PATCHED Instruction';
-        $user = User::factory()->create(['is_admin' => true]);
-        $response = $this->patch(
-            self::ENDPOINT_PREFIX . '/recipes/1' . '/instructions/99',
-            ['data' => ['attributes' => ['description' => $changedDescription]]],
-            ['Authorization' => 'Bearer ' . AuthController::createToken($user)]
+        $user = User::factory()->create();
+        $recipe = Recipe::factory()->create(['user_id' => $user->id]);
+
+        $instructions = Instruction::factory()->count(3)->create([
+            'recipe_id' => $recipe->id,
+        ])->each(function ($instruction, $index) {
+            $instruction->update(['order' => $index + 1]);
+        });
+
+        $instructionToMove = $instructions->first();
+        $newOrder = 3;
+
+        $this->actingAs($user);
+
+        $response = $this->postJson(
+            route('instructions.assign.order', [
+                'recipe' => $recipe->id,
+                'instruction' => $instructionToMove->id
+            ]),
+            ['order' => $newOrder]
         );
-        $response->assertStatus(404);
+
+        $response->assertStatus(200);
+
+        $updatedInstructions = Instruction::where('recipe_id', $recipe->id)->get();
+
+        $this->assertEquals(3, $updatedInstructions->where('id', $instructions[0]->id)->first()->order);
+        $this->assertEquals(1, $updatedInstructions->where('id', $instructions[1]->id)->first()->order);
+        $this->assertEquals(2, $updatedInstructions->where('id', $instructions[2]->id)->first()->order);
+    }
+
+    public function test_assign_order_reorders_instructions_correctly_when_moving_down()
+    {
+        $user = User::factory()->create();
+        $recipe = Recipe::factory()->create(['user_id' => $user->id]);
+
+        $instructions = Instruction::factory()->count(3)->create([
+            'recipe_id' => $recipe->id,
+        ])->each(function ($instruction, $index) {
+            $instruction->update(['order' => $index + 1]);
+        });
+
+        $instructionToMove = $instructions->last();
+        $newOrder = 1;
+
+        // Set authorization token
+        $this->actingAs($user);
+
+        // Act
+        $response = $this->postJson(
+            route('instructions.assign.order', [
+                'recipe' => $recipe->id,
+                'instruction' => $instructionToMove->id
+            ]),
+            ['order' => $newOrder]
+        );
+
+        // Assert response
+        $response->assertStatus(200);
+
+        // Verify updated order for each instruction
+        $updatedInstructions = Instruction::where('recipe_id', $recipe->id)->get();
+
+        $this->assertEquals(2, $updatedInstructions->where('id', $instructions[0]->id)->first()->order);
+        $this->assertEquals(3, $updatedInstructions->where('id', $instructions[1]->id)->first()->order);
+        $this->assertEquals(1, $updatedInstructions->where('id', $instructions[2]->id)->first()->order);
     }
 
     // DELETE
@@ -369,6 +441,7 @@ class InstructionsControllerTest extends TestCase
         );
         $response->assertStatus(404);
     }
+
     private function getInstructionPayload(int $recipeId = 1): array
     {
         return [

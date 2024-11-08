@@ -66,5 +66,6 @@ Route::middleware('auth:sanctum')->group(function () {
         ->name('instructions.destroy')->scopeBindings();
     Route::post('recipes/{recipe}/instructions/update-order', [InstructionsController::class, 'updateOrder'])
         ->name('instructions.update.order');
+    Route::post('recipes/{recipe}/instructions/{instruction}/assign-order', [InstructionsController::class, 'assignOrder'])
+        ->name('instructions.assign.order')->scopeBindings();
 });
-
