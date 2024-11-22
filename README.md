@@ -34,14 +34,14 @@ Now you need to create an environment file.
 ```
 cp .env.example .env
 ```
-Next you should make sure that you install dependencies via composer install. The PHP version used is 8.2, if you have 
+Next you should make sure that you install dependencies via composer install. The PHP version used is 8.3, if you have 
 that locally you could probably just run `composer install` but I would always recommend using docker for that, so you
 install dependencies via docker in this manner:
 ```
 docker run --rm \
     -v $(pwd):/var/www/html \
     -w /var/www/html \
-    laravelsail/php82-composer:latest \
+    laravelsail/php83-composer:latest \
     composer install
 ```
 When that has completed you can start your containers like so:
@@ -50,11 +50,13 @@ When that has completed you can start your containers like so:
 ```
 
 ### Documentation
-I have pregenerated some documentation using the excellent library 
-[scribe](https://packagist.org/packages/knuckleswtf/scribe) if you followed the installation instructions, you see the
-docs here: [http://localhost:3001/docs](http://localhost:3001/docs)
 
-*...missing: some notes on generating documentation...*
+I have pregenerated some documentation using the excellent library 
+[scribe](https://packagist.org/packages/knuckleswtf/scribe). You can generate documentation with the following command: 
+```
+./vendor/bin/sail artisan scribe:generate    
+```
+You should now be able to see the docs here: [http://localhost:3001/docs](http://localhost:3001/docs)
 
 ### Testing
 I have done some end-to-end test for the endpoints in this API demo, you can run the tests as so:
