@@ -48,6 +48,10 @@ When that has completed you can start your containers like so:
 ```
 ./vendor/bin/sail up -d
 ```
+To migrate database migrations and seed it with some development data, just run:
+```
+./vendor/bin/sail artisan migrate:fresh --seed
+```
 
 ### Documentation
 
