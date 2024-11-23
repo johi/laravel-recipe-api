@@ -24,7 +24,7 @@ class RecipesController extends ApiController
      * This retrieves all recipes. Please refer to laravel documentation on how
      * to use pagination: https://laravel.com/docs/11.x/pagination
      *
-     * @group Recipe management
+     * @group Recipes
      * @queryParam filter[createdAt] Filter by exact (single value) or between created iso-date (comma separated) Example: 2024-10-13,2024-11-13
      * @queryParam filter[updatedAt] Filter by exact (single value) or between created iso-date (comma separated) Example: 2024-10-13,2024-11-13
      * @queryParam filter[preparationTimeMinutes] Filter by preparationTimeMinutes single value less than, or between Example: 15,45
@@ -50,7 +50,7 @@ class RecipesController extends ApiController
      *
      * Creates a recipe
      *
-     * @group Recipe management
+     * @group Recipes
      * @bodyParam data object required
      * @bodyParam data.attributes object required
      * @bodyParam data.attributes.title string required
@@ -74,7 +74,7 @@ class RecipesController extends ApiController
     /**
      * Get a single recipe
      *
-     * @group Recipe management
+     * @group Recipes
      * @urlParam id integer required
      * @queryParam include Include related resources, possible values: category, ingredients, instructions  Example: instructions,ingredients
      * @response {"data":{"type":"recipe","id":11,"attributes":{"title":"non quidem quas","description":"Commodi dolore quod iste. Expedita est aut veniam eligendi qui voluptas rerum. Et occaecati quas sapiente sunt deleniti assumenda. Tempore enim voluptatem id ipsa.","preparationTimeMinutes":5,"servings":4,"imageUrl":"https://via.placeholder.com/640x480.png/0066ff?text=eius","createdAt":"2024-10-19T11:06:00.000000Z","updatedAt":"2024-10-19T11:06:00.000000Z"},"relationships":{"author":{"data":{"type":"user","id":2},"links":{"self":"http://localhost:3001/api/v1/authors/2"}},"category":{"data":{"type":"category","id":5},"links":{"self":"http://localhost:3001/api/v1/categories"}},"ingredients":{"links":{"self":"http://localhost:3001/api/v1/recipes/11/ingredients"}}},"included":{"author":{"type":"user","id":2,"attributes":{"name":"Mrs. Eulah Schaefer V","email":"mabel.kris@example.com","isAdmin":0,"included":[]},"links":[{"self":"http://localhost:3001/api/v1/authors/2"}]},"ingredients":[{"type":"ingredient","id":56,"attributes":{"title":"PATCH Ingredient","quantity":50,"unit":"g"},"relationships":{"recipe":{"data":{"type":"recipe","id":"11"},"links":{"self":"http://localhost:3001/api/v1/recipes/11"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/11/ingredients"}},{"type":"ingredient","id":57,"attributes":{"title":"asperiores","quantity":69,"unit":"cl"},"relationships":{"recipe":{"data":{"type":"recipe","id":"11"},"links":{"self":"http://localhost:3001/api/v1/recipes/11"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/11/ingredients"}}]},"links":{"self":"http://localhost:3001/api/v1/recipes/11"}}}
@@ -90,7 +90,7 @@ class RecipesController extends ApiController
     /**
      * Update a recipe
      *
-     * @group Recipe management
+     * @group Recipes
      * @bodyParam data object required
      * @bodyParam data.attributes object required
      * @bodyParam data.attributes.title string optional
@@ -118,7 +118,7 @@ class RecipesController extends ApiController
     /**
      * Replace a recipe
      *
-     * @group Recipe management
+     * @group Recipes
      * @bodyParam data object required
      * @bodyParam data.attributes object required
      * @bodyParam data.attributes.title string required
@@ -143,7 +143,7 @@ class RecipesController extends ApiController
     /**
      * Delete a recipe
      *
-     * @group Recipe management
+     * @group Recipes
      * @response {"data":[],"message":"Recipe successfully deleted","status":200}
      */
     public function destroy(Recipe $recipe)

@@ -24,7 +24,7 @@ class UsersController extends ApiController
      * This retrieves all users. Please refer to laravel documentation on how
      *  to use pagination: https://laravel.com/docs/11.x/pagination
      *
-     * @group User management
+     * @group Users
      * @queryParam filter[createdAt] Filter by exact (single value) or between created iso-date (comma separated) Example: 2024-10-13,2024-11-13
      * @queryParam filter[updatedAt] Filter by exact (single value) or between created iso-date (comma separated) Example: 2024-10-13,2024-11-13
      * @queryParam filter[id] Filter by comma separated list of id's Example: 1,2,3
@@ -46,7 +46,7 @@ class UsersController extends ApiController
     /**
      * Create a user
      *
-     * @group User management
+     * @group Users
      * @bodyParam data object required
      * @bodyParam data.attributes object required
      * @bodyParam data.attributes.name string required
@@ -64,7 +64,7 @@ class UsersController extends ApiController
     /**
      * Get a single user
      *
-     * @group User management
+     * @group Users
      * @urlParam id int required Example: 1
      * @queryParam include Include related resources, possible values: recipes Example: recipes
      * @response {"data":{"type":"user","id":3,"attributes":{"name":"Miss Roxane Barton","email":"okey67@example.org","isAdmin":0,"included":[]},"links":[{"self":"http://localhost:3001/api/v1/authors/3"}]}}
@@ -80,7 +80,7 @@ class UsersController extends ApiController
     /**
      * Update a user
      *
-     * @group User management
+     * @group Users
      * @bodyParam data object required
      * @bodyParam data.attributes object required
      * @bodyParam data.attributes.name string optional
@@ -99,7 +99,7 @@ class UsersController extends ApiController
     /**
      * Replace a user
      *
-     * @group User management
+     * @group Users
      * @bodyParam data object required
      * @bodyParam data.attributes object required
      * @bodyParam data.attributes.name string required
@@ -118,7 +118,7 @@ class UsersController extends ApiController
     /**
      * Delete a user
      *
-     * @group User management
+     * @group Users
      * @response {"data":[],"message":"User successfully deleted","status":200}
      */
     public function destroy(Request $request, User $user)
