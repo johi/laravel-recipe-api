@@ -43,6 +43,12 @@ class Recipe extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    public function images() : HasMany
+    {
+        return $this->hasMany(RecipeImage::class);
+    }
+
+
     public function scopeFilter(Builder $builder, QueryFilter $filters)
     {
         return $filters->apply($builder);

@@ -56,7 +56,7 @@ To migrate database migrations and seed it with some development data, just run:
 ### Documentation
 
 I have pregenerated some documentation using the excellent library 
-[scribe](https://packagist.org/packages/knuckleswtf/scribe). You can generate documentation with the following command: 
+[scribe](https://github.com/knuckleswtf/scribe). You can generate documentation with the following command: 
 ```
 ./vendor/bin/sail artisan scribe:generate    
 ```

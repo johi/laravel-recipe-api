@@ -47,7 +47,8 @@ trait ApiResponses {
         }
 
         return response()->json([
-            'errors' => $errors
+            'errors' => $errors,
+            'status' => $statusCode
         ], $statusCode);
     }
 
