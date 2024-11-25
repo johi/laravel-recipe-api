@@ -25,7 +25,6 @@ class RecipeFactory extends Factory
             'description' => $this->faker->paragraph(),
             'preparation_time_minutes' => range(5, 120, 5)[array_rand(range(5, 120, 5), 1)],
             'servings' => 4,
-            'image_url' => $this->faker->imageUrl(),
         ];
     }
 }

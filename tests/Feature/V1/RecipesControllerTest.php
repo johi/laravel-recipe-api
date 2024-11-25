@@ -322,7 +322,6 @@ class RecipesControllerTest extends TestCase
 //                'description',
                 'preparationTimeMinutes',
                 'servings',
-                'imageUrl',
                 'createdAt',
                 'updatedAt',
             ],

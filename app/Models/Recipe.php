@@ -21,7 +21,6 @@ class Recipe extends Model
         'description',
         'preparation_time_minutes',
         'servings',
-        'image_url',
     ];
     public function category() : BelongsTo
     {
