@@ -19,7 +19,7 @@ class RecipeImageFactory extends Factory
     {
         return [
             'recipe_id' => Recipe::factory(),
-            'image_url' => $this->faker->imageUrl(),
+            'file_path' => $this->faker->imageUrl(),
         ];
     }
 }

@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\StoreRecipeImageRequest;
 use App\Http\Resources\V1\RecipeImageResource;
 use App\Models\Recipe;
 use App\Models\RecipeImage;
-use Illuminate\Support\Facades\DB;
+use App\Policies\V1\RecipePolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 
 class RecipeImagesController extends ApiController
 {
+    protected string $policyClass = RecipePolicy::class;
+
     /**
      * Get all images for a recipe
      * @group RecipeImages
@@ -60,14 +61,10 @@ class RecipeImagesController extends ApiController
     public function destroy(Recipe $recipe, RecipeImage $image)
     {
         Gate::authorize('delete', $recipe);
-        DB::transaction(function () use ($image) {
-            if (Storage::exists($image->file_path)) {
-                Storage::delete($image->file_path);
-            }
-            $image->delete();
-            return $this->ok('Recipe Image successfully deleted');
-        });
-        return $this->error('Could not delete recipe image');
-
+        if (Storage::disk('public')->exists($image->file_path)) {
+            Storage::disk('public')->delete($image->file_path);
+        }
+        $image->delete();
+        return $this->ok('Recipe Image successfully deleted');
     }
 }
