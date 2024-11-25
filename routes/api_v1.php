@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\V1\AuthorsRecipesController;
 use App\Http\Controllers\Api\V1\CategoriesController;
 use App\Http\Controllers\Api\V1\IngredientsController;
 use App\Http\Controllers\Api\V1\InstructionsController;
+use App\Http\Controllers\Api\V1\RecipeImagesController;
 use App\Http\Controllers\Api\V1\RecipesController;
 use App\Http\Controllers\Api\V1\AuthorsController;
 use App\Http\Controllers\Api\V1\UsersController;
@@ -29,6 +30,10 @@ Route::get('recipes/{recipe}/instructions', [InstructionsController::class, 'ind
     ->name('instructions.index');
 Route::get('recipes/{recipe}/instructions/{instruction}', [InstructionsController::class, 'show'])
     ->name('instructions.show')->scopeBindings();
+Route::get('recipes/{recipe}/images', [RecipeImagesController::class, 'index'])
+    ->name('recipes.images.index');
+Route::get('recipes/{recipe}/images/{image}', [RecipeImagesController::class, 'show'])
+    ->name('recipes.images.show')->scopeBindings();
 
 Route::middleware('auth:sanctum')->group(function () {
 
@@ -68,4 +73,9 @@ Route::middleware('auth:sanctum')->group(function () {
         ->name('instructions.update.order');
     Route::post('recipes/{recipe}/instructions/{instruction}/assign-order', [InstructionsController::class, 'assignOrder'])
         ->name('instructions.assign.order')->scopeBindings();
+
+    Route::post('recipes/{recipe}/images', [RecipeImagesController::class, 'store'])
+        ->name('recipes.images.store');
+    Route::delete('recipes/{recipe}/images/{image}', [RecipeImagesController::class, 'destroy'])
+        ->name('recipes.images.destroy')->scopeBindings();
 });

@@ -21,7 +21,7 @@ class InstructionsController extends ApiController
     /**
      * Get all instructions for a recipe
      *
-     * @group Recipe/Instruction management
+     * @group RecipeInstructions
      * @response {"data":[{"type":"instruction","id":3,"attributes":{"description":"Iste maxime odio voluptatem id. Nemo magnam rerum ut ut quis.","order":1},"relationships":{"recipe":{"data":{"type":"recipe","id":2},"links":{"self":"http://localhost:3001/api/v1/recipes/2"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/2/instructions"}},{"type":"instruction","id":4,"attributes":{"description":"Animi nostrum nemo eaque illum. Expedita dolorem qui consequatur officia incidunt facilis dolorum.","order":2},"relationships":{"recipe":{"data":{"type":"recipe","id":2},"links":{"self":"http://localhost:3001/api/v1/recipes/2"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/2/instructions"}},{"type":"instruction","id":5,"attributes":{"description":"Non placeat sit voluptatibus. Quisquam accusamus eos inventore consequatur dolorum doloribus reiciendis aut.","order":3},"relationships":{"recipe":{"data":{"type":"recipe","id":2},"links":{"self":"http://localhost:3001/api/v1/recipes/2"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/2/instructions"}},{"type":"instruction","id":6,"attributes":{"description":"Culpa error vitae voluptatem quaerat accusantium ullam laboriosam.","order":4},"relationships":{"recipe":{"data":{"type":"recipe","id":2},"links":{"self":"http://localhost:3001/api/v1/recipes/2"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/2/instructions"}},{"type":"instruction","id":7,"attributes":{"description":"Sed aliquid officia sunt sit qui. Et architecto veritatis quasi laudantium.","order":5},"relationships":{"recipe":{"data":{"type":"recipe","id":2},"links":{"self":"http://localhost:3001/api/v1/recipes/2"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/2/instructions"}}]}
      */
     public function index(Recipe $recipe)
@@ -32,7 +32,7 @@ class InstructionsController extends ApiController
     /**
      * Add instruction to recipe
      *
-     * @group Recipe/Instruction management
+     * @group RecipeInstructions
      * @bodyParam data object required
      * @bodyParam data.attributes object required
      * @bodyParam data.attributes.description string required
@@ -50,7 +50,7 @@ class InstructionsController extends ApiController
     /**
      * Get a single instruction
      *
-     * @group Recipe/Instruction management
+     * @group RecipeInstructions
      * @response {"data":{"type":"instruction","id":1,"attributes":{"description":"Aperiam consequatur aut perspiciatis non omnis. Eos et corporis ipsa iure aut.","order":1},"relationships":{"recipe":{"data":{"type":"recipe","id":1},"links":{"self":"http://localhost:3001/api/v1/recipes/1"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/1/instructions"}}}
      */
     public function show(Recipe $recipe, Instruction $instruction)
@@ -61,7 +61,7 @@ class InstructionsController extends ApiController
     /**
      * Replace an instruction
      *
-     * @group Recipe/Instruction management
+     * @group RecipeInstructions
      * @bodyParam data object required
      * @bodyParam data.attributes object required
      * @bodyParam data.attributes.description string required
@@ -78,7 +78,7 @@ class InstructionsController extends ApiController
     /**
      * Update an instruction
      *
-     * @group Recipe/Instruction management
+     * @group RecipeInstructions
      * @bodyParam data object required
      * @bodyParam data.attributes object required
      * @bodyParam data.attributes.description string required
@@ -98,7 +98,7 @@ class InstructionsController extends ApiController
      * Bulk update operation for a recipes instructions, here all the recipes instructions must be provided,
      * otherwise we get an error.
      *
-     * @group Recipe/Instruction management
+     * @group RecipeInstructions
      * @bodyParam data object[] required
      * @bodyParam data[].id int required
      * @bodyParam data[].attributes object required
@@ -142,7 +142,7 @@ class InstructionsController extends ApiController
      *
      * Assign a new order to a single instruction, either moving it up or down
      *
-     * @group Recipe/Instruction management
+     * @group RecipeInstructions
      * @bodyParam data object required
      * @bodyParam data.attributes object required
      * @bodyParam data.attributes.order integer required
@@ -178,7 +178,7 @@ class InstructionsController extends ApiController
     /**
      * Delete an instruction
      *
-     * @group Recipe/Instruction management
+     * @group RecipeInstructions
      * @response {"data":[],"message":"Ingredient successfully deleted","status":200}
      */
     public function destroy(Recipe $recipe, Instruction $instruction)

@@ -83,7 +83,7 @@ class Handler
     {
         $exceptions->renderable(
             fn (\Throwable $e) => $this->error(
-                 __('Unknown error'),
+                (config('app.debug') ? $e->getMessage() : __('Unknown error')),
                  400,
             )
         );

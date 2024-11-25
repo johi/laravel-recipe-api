@@ -34,7 +34,6 @@ class StoreRecipeRequest extends BaseRecipeRequest
             'data.attributes.description' => 'required|string',
             'data.attributes.preparationTimeMinutes' => 'required|integer',
             'data.attributes.servings' => 'required|integer',
-            'data.attributes.imageUrl' => 'sometimes|string',
         ];
         $user = Auth::user();
         if ($user) {

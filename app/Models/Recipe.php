@@ -21,7 +21,6 @@ class Recipe extends Model
         'description',
         'preparation_time_minutes',
         'servings',
-        'image_url',
     ];
     public function category() : BelongsTo
     {
@@ -42,6 +41,12 @@ class Recipe extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function images() : HasMany
+    {
+        return $this->hasMany(RecipeImage::class);
+    }
+
 
     public function scopeFilter(Builder $builder, QueryFilter $filters)
     {

@@ -18,7 +18,7 @@ class IngredientsController extends ApiController
     /**
      * Get all ingredients for a recipe
      *
-     * @group Recipe/Ingredient management
+     * @group RecipeIngredients
      * @response {"data":[{"type":"ingredient","id":11,"attributes":{"title":"et","quantity":20,"unit":"dl"},"relationships":{"recipe":{"data":{"type":"recipe","id":"2"},"links":{"self":"http://localhost:3001/api/v1/recipes/2"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/2/ingredients"}},{"type":"ingredient","id":12,"attributes":{"title":"laudantium","quantity":1,"unit":"tsp"},"relationships":{"recipe":{"data":{"type":"recipe","id":"2"},"links":{"self":"http://localhost:3001/api/v1/recipes/2"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/2/ingredients"}},{"type":"ingredient","id":13,"attributes":{"title":"laboriosam","quantity":34,"unit":"cl"},"relationships":{"recipe":{"data":{"type":"recipe","id":"2"},"links":{"self":"http://localhost:3001/api/v1/recipes/2"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/2/ingredients"}},{"type":"ingredient","id":14,"attributes":{"title":"expedita","quantity":13,"unit":"cl"},"relationships":{"recipe":{"data":{"type":"recipe","id":"2"},"links":{"self":"http://localhost:3001/api/v1/recipes/2"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/2/ingredients"}},{"type":"ingredient","id":15,"attributes":{"title":"non","quantity":85,"unit":"dl"},"relationships":{"recipe":{"data":{"type":"recipe","id":"2"},"links":{"self":"http://localhost:3001/api/v1/recipes/2"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/2/ingredients"}},{"type":"ingredient","id":16,"attributes":{"title":"ipsa","quantity":93,"unit":"tsp"},"relationships":{"recipe":{"data":{"type":"recipe","id":"2"},"links":{"self":"http://localhost:3001/api/v1/recipes/2"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/2/ingredients"}}]}
      */
     public function index(Recipe $recipe)
@@ -29,7 +29,7 @@ class IngredientsController extends ApiController
     /**
      * Add ingredient to recipe
      *
-     * @group Recipe/Ingredient management
+     * @group RecipeIngredients
      * @bodyParam data object required
      * @bodyParam data.attributes object required
      * @bodyParam data.attributes.title string required
@@ -47,7 +47,7 @@ class IngredientsController extends ApiController
     /**
      * Get a single ingredient
      *
-     * @group Recipe/Ingredient management
+     * @group RecipeIngredients
      * @response {"data":{"type":"ingredient","id":56,"attributes":{"title":"PATCH Ingredient","quantity":50,"unit":"g"},"relationships":{"recipe":{"data":{"type":"recipe","id":"11"},"links":{"self":"http://localhost:3001/api/v1/recipes/11"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/11/ingredients"}}}
      */
     public function show(Recipe $recipe, Ingredient $ingredient)
@@ -58,7 +58,7 @@ class IngredientsController extends ApiController
     /**
      * Update an ingredient
      *
-     * @group Recipe/Ingredient management
+     * @group RecipeIngredients
      * @bodyParam data object required
      * @bodyParam data.attributes object required
      * @bodyParam data.attributes.title string optional
@@ -78,7 +78,7 @@ class IngredientsController extends ApiController
     /**
      * Replace an ingredient
      *
-     * @group Recipe/Ingredient management
+     * @group RecipeIngredients
      * @bodyParam data object required
      * @bodyParam data.attributes object required
      * @bodyParam data.attributes.title string required
@@ -98,7 +98,7 @@ class IngredientsController extends ApiController
     /**
      * Delete an ingredient
      *
-     * @group Recipe/Ingredient management
+     * @group RecipeIngredients
      * @response {"data":[],"message":"Ingredient successfully deleted","status":200}
      */
     public function destroy(Recipe $recipe, Ingredient $ingredient)

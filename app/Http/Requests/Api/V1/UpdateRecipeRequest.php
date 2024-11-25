@@ -31,7 +31,6 @@ class UpdateRecipeRequest extends BaseRecipeRequest
             'data.attributes.description' => 'sometimes|string',
             'data.attributes.preparationTimeMinutes' => 'sometimes|integer',
             'data.attributes.servings' => 'sometimes|integer',
-            'data.attributes.imageUrl' => 'sometimes|string',
         ];
         $user = Auth::user();
         if ($user) {

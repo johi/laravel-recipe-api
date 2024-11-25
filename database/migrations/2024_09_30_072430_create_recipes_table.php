@@ -31,7 +31,6 @@ return new class extends Migration
             $table->text('description');
             $table->unsignedInteger('preparation_time_minutes');
             $table->unsignedInteger('servings');
-            $table->string('image_url')->nullable();
             $table->timestamps();
         });
 

@@ -28,7 +28,6 @@ class RecipeResource extends JsonResource
                 ),
                 'preparationTimeMinutes' => $this->preparation_time_minutes,
                 'servings' => $this->servings,
-                'imageUrl' => $this->image_url,
                 'createdAt' => $this->created_at,
                 'updatedAt' => $this->updated_at
             ],

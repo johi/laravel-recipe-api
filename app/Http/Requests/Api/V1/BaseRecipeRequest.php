@@ -16,7 +16,6 @@ class BaseRecipeRequest extends FormRequest
             'data.attributes.description' => 'description',
             'data.attributes.preparationTimeMinutes' => 'preparation_time_minutes',
             'data.attributes.servings' => 'servings',
-            'data.attributes.imageUrl' => 'image_url',
         ], $otherAttributes);
         $attributesToUpdate = [];
         foreach ($mappedAttributes as $key => $attribute) {
