@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Requests\Api\V1\ReplaceIngredientRequest;
 use App\Http\Requests\Api\V1\StoreIngredientRequest;
 use App\Http\Requests\Api\V1\UpdateIngredientRequest;
-use App\Http\Resources\V1\IngredientResource;
+use App\Http\Resources\V1\RecipeIngredientResource;
 use App\Models\RecipeIngredient;
 use App\Models\Recipe;
 use App\Policies\V1\RecipePolicy;
@@ -23,7 +23,7 @@ class RecipeIngredientsController extends ApiController
      */
     public function index(Recipe $recipe)
     {
-        return IngredientResource::collection($recipe->ingredients);
+        return RecipeIngredientResource::collection($recipe->ingredients);
     }
 
     /**
@@ -41,7 +41,7 @@ class RecipeIngredientsController extends ApiController
     {
         Gate::authorize('storeRelated', $recipe);
         $attributes = $request->mappedAttributes();
-        return new IngredientResource($recipe->ingredients()->create($attributes));
+        return new RecipeIngredientResource($recipe->ingredients()->create($attributes));
     }
 
     /**
@@ -52,7 +52,7 @@ class RecipeIngredientsController extends ApiController
      */
     public function show(Recipe $recipe, RecipeIngredient $ingredient)
     {
-        return new IngredientResource($ingredient);
+        return new RecipeIngredientResource($ingredient);
     }
 
     /**
@@ -72,7 +72,7 @@ class RecipeIngredientsController extends ApiController
         $attributes = $request->mappedAttributes();
         $attributes['recipe_id'] = $recipe->id;
         $ingredient->update($attributes);
-        return new IngredientResource($ingredient);
+        return new RecipeIngredientResource($ingredient);
     }
 
     /**
@@ -92,7 +92,7 @@ class RecipeIngredientsController extends ApiController
         $attributes = $request->mappedAttributes();
         $attributes['recipe_id'] = $recipe->id;
         $ingredient->update($attributes);
-        return new IngredientResource($ingredient);
+        return new RecipeIngredientResource($ingredient);
     }
 
     /**

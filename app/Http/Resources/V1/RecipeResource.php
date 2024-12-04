@@ -59,8 +59,8 @@ class RecipeResource extends JsonResource
             'included' => [
                 'author' => new UserResource($this->author),
                 'category' => new CategoryResource($this->whenLoaded('category')),
-                'ingredients' => IngredientResource::collection($this->whenLoaded('ingredients')),
-                'instructions' => InstructionResource::collection($this->whenLoaded('instructions')),
+                'ingredients' => RecipeIngredientResource::collection($this->whenLoaded('ingredients')),
+                'instructions' => RecipeInstructionResource::collection($this->whenLoaded('instructions')),
             ],
             'links' => [
                 'self' => route('recipes.show', ['recipe' => $this->id])

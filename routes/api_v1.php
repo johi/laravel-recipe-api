@@ -23,13 +23,13 @@ Route::get('authors/{author}', [AuthorsController::class, 'show'])
 Route::get('authors/{author}/recipes', [AuthorRecipesController::class, 'index'])
     ->name('authors.recipes.index');
 Route::get('recipes/{recipe}/ingredients', [RecipeIngredientsController::class, 'index'])
-    ->name('ingredients.index');
+    ->name('recipes.ingredients.index');
 Route::get('recipes/{recipe}/ingredients/{ingredient}', [RecipeIngredientsController::class, 'show'])
-    ->name('ingredients.show')->scopeBindings();
+    ->name('recipes.ingredients.show')->scopeBindings();
 Route::get('recipes/{recipe}/instructions', [RecipeInstructionsController::class, 'index'])
-    ->name('instructions.index');
+    ->name('recipes.instructions.index');
 Route::get('recipes/{recipe}/instructions/{instruction}', [RecipeInstructionsController::class, 'show'])
-    ->name('instructions.show')->scopeBindings();
+    ->name('recipes.instructions.show')->scopeBindings();
 Route::get('recipes/{recipe}/images', [RecipeImagesController::class, 'index'])
     ->name('recipes.images.index');
 Route::get('recipes/{recipe}/images/{image}', [RecipeImagesController::class, 'show'])
@@ -52,27 +52,27 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // ingredients
     Route::post('recipes/{recipe}/ingredients', [RecipeIngredientsController::class, 'store'])
-        ->name('ingredients.store');
+        ->name('recipes.ingredients.store');
     Route::put('recipes/{recipe}/ingredients/{ingredient}', [RecipeIngredientsController::class, 'replace'])
-        ->name('ingredients.replace')->scopeBindings();
+        ->name('recipes.ingredients.replace')->scopeBindings();
     Route::patch('recipes/{recipe}/ingredients/{ingredient}', [RecipeIngredientsController::class, 'update'])
-        ->name('ingredients.update')->scopeBindings();
+        ->name('recipes.ingredients.update')->scopeBindings();
     Route::delete('recipes/{recipe}/ingredients/{ingredient}', [RecipeIngredientsController::class, 'destroy'])
-        ->name('ingredients.destroy')->scopeBindings();
+        ->name('recipes.ingredients.destroy')->scopeBindings();
 
     // instructions
     Route::post('recipes/{recipe}/instructions', [RecipeInstructionsController::class, 'store'])
-        ->name('instructions.store');
+        ->name('recipes.instructions.store');
     Route::put('recipes/{recipe}/instructions/{instruction}', [RecipeInstructionsController::class, 'replace'])
-        ->name('instructions.replace')->scopeBindings();
+        ->name('recipes.instructions.replace')->scopeBindings();
     Route::patch('recipes/{recipe}/instructions/{instruction}', [RecipeInstructionsController::class, 'update'])
-        ->name('instructions.update')->scopeBindings();
+        ->name('recipes.instructions.update')->scopeBindings();
     Route::delete('recipes/{recipe}/instructions/{instruction}', [RecipeInstructionsController::class, 'destroy'])
-        ->name('instructions.destroy')->scopeBindings();
+        ->name('recipes.instructions.destroy')->scopeBindings();
     Route::post('recipes/{recipe}/instructions/update-order', [RecipeInstructionsController::class, 'updateOrder'])
-        ->name('instructions.update.order');
+        ->name('recipes.instructions.update.order');
     Route::post('recipes/{recipe}/instructions/{instruction}/assign-order', [RecipeInstructionsController::class, 'assignOrder'])
-        ->name('instructions.assign.order')->scopeBindings();
+        ->name('recipes.instructions.assign.order')->scopeBindings();
 
     Route::post('recipes/{recipe}/images', [RecipeImagesController::class, 'store'])
         ->name('recipes.images.store');
