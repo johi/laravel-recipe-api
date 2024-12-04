@@ -3,8 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\Category;
-use App\Models\Ingredient;
-use App\Models\Instruction;
+use App\Models\RecipeIngredient;
+use App\Models\RecipeInstruction;
 use App\Models\Recipe;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -31,13 +31,13 @@ class DevelopmentSeeder extends Seeder
             ->create();
 
         foreach ($recipes as $recipe) {
-            Ingredient::factory(rand(2, 10))
+            RecipeIngredient::factory(rand(2, 10))
                 ->create([
                     'recipe_id' => $recipe->id,
                 ]);
             $amount = rand(1, 10);
             for ($i = 0; $i < $amount; $i++) {
-                Instruction::factory(1)
+                RecipeInstruction::factory(1)
                     ->create([
                         'recipe_id' => $recipe->id,
                         'order' => $i+1

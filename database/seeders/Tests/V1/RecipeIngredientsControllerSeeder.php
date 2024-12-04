@@ -2,14 +2,14 @@
 
 namespace Database\Seeders\Tests\V1;
 
-use App\Models\Instruction;
+use App\Models\RecipeIngredient;
 use App\Models\Recipe;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
-class InstructionsControllerSeeder extends Seeder
+class RecipeIngredientsControllerSeeder extends Seeder
 {
-    const INSTRUCTIONS_TO_CREATE = 10;
+    const INGREDIENTS_TO_CREATE = 10;
 
     public function run(): void
     {
@@ -21,8 +21,8 @@ class InstructionsControllerSeeder extends Seeder
             'user_id' => $user1[0]->id
         ]);
 
-        Instruction::factory(self::INSTRUCTIONS_TO_CREATE)->create([
-            'recipe_id' => $recipe[0]->id
+        RecipeIngredient::factory(self::INGREDIENTS_TO_CREATE)->create([
+           'recipe_id' => $recipe[0]->id
         ]);
     }
 }

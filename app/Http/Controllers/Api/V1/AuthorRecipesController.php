@@ -9,7 +9,7 @@ use App\Models\Recipe;
 use App\Models\User;
 use App\Policies\V1\RecipePolicy;
 
-class AuthorsRecipesController extends ApiController
+class AuthorRecipesController extends ApiController
 {
     protected string $policyClass = RecipePolicy::class;
     private $possibleIncludes = ['category', 'ingredients', 'instructions'];

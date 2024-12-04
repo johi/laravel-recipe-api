@@ -9,8 +9,8 @@ use Illuminate\Database\Seeder;
 
 class UsersControllerSeeder extends Seeder
 {
-    const USERS_TO_CREATE = 25;
-    const RECIPES_TO_CREATE = 5;
+    const USERS_TO_CREATE = 1;
+    const RECIPES_TO_CREATE = 1;
 
     public function run()
     {

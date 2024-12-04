@@ -6,12 +6,12 @@ use App\Http\Requests\Api\V1\ReplaceIngredientRequest;
 use App\Http\Requests\Api\V1\StoreIngredientRequest;
 use App\Http\Requests\Api\V1\UpdateIngredientRequest;
 use App\Http\Resources\V1\IngredientResource;
-use App\Models\Ingredient;
+use App\Models\RecipeIngredient;
 use App\Models\Recipe;
 use App\Policies\V1\RecipePolicy;
 use Illuminate\Support\Facades\Gate;
 
-class IngredientsController extends ApiController
+class RecipeIngredientsController extends ApiController
 {
     protected string $policyClass = RecipePolicy::class;
 
@@ -50,7 +50,7 @@ class IngredientsController extends ApiController
      * @group RecipeIngredients
      * @response {"data":{"type":"ingredient","id":56,"attributes":{"title":"PATCH Ingredient","quantity":50,"unit":"g"},"relationships":{"recipe":{"data":{"type":"recipe","id":"11"},"links":{"self":"http://localhost:3001/api/v1/recipes/11"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/11/ingredients"}}}
      */
-    public function show(Recipe $recipe, Ingredient $ingredient)
+    public function show(Recipe $recipe, RecipeIngredient $ingredient)
     {
         return new IngredientResource($ingredient);
     }
@@ -66,7 +66,7 @@ class IngredientsController extends ApiController
      * @bodyParam data.attributes.unit integer optional
      * @response {"data":{"type":"ingredient","id":584,"attributes":{"title":"Test Ingredient","quantity":5,"unit":"g"},"relationships":{"recipe":{"data":{"type":"recipe","id":10},"links":{"self":"http://localhost:3001/api/v1/recipes/10"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/10/ingredients"}}}
      */
-    public function update(UpdateIngredientRequest $request, Recipe $recipe, Ingredient $ingredient)
+    public function update(UpdateIngredientRequest $request, Recipe $recipe, RecipeIngredient $ingredient)
     {
         Gate::authorize('update', $recipe);
         $attributes = $request->mappedAttributes();
@@ -86,7 +86,7 @@ class IngredientsController extends ApiController
      * @bodyParam data.attributes.unit integer required
      * @response {"data":{"type":"ingredient","id":584,"attributes":{"title":"Test Ingredient","quantity":5,"unit":"g"},"relationships":{"recipe":{"data":{"type":"recipe","id":10},"links":{"self":"http://localhost:3001/api/v1/recipes/10"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/10/ingredients"}}}
      */
-    public function replace(ReplaceIngredientRequest $request, Recipe $recipe, Ingredient $ingredient)
+    public function replace(ReplaceIngredientRequest $request, Recipe $recipe, RecipeIngredient $ingredient)
     {
         Gate::authorize('replace', $recipe);
         $attributes = $request->mappedAttributes();
@@ -101,7 +101,7 @@ class IngredientsController extends ApiController
      * @group RecipeIngredients
      * @response {"data":[],"message":"Ingredient successfully deleted","status":200}
      */
-    public function destroy(Recipe $recipe, Ingredient $ingredient)
+    public function destroy(Recipe $recipe, RecipeIngredient $ingredient)
     {
         Gate::authorize('delete', $recipe);
         $ingredient->delete();

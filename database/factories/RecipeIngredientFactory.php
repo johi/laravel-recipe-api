@@ -6,9 +6,9 @@ use App\Models\Recipe;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Ingredient>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\RecipeIngredient>
  */
-class IngredientFactory extends Factory
+class RecipeIngredientFactory extends Factory
 {
     /**
      * Define the model's default state.
