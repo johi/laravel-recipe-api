@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Models\User;
-use Database\Seeders\Tests\AuthControllerSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -11,32 +10,12 @@ class AuthControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function setUp(): void
-    {
-        parent::setUp();
-        $this->seed(AuthControllerSeeder::class);
-    }
-
-//    public function testEnvironment()
-//    {
-//        $this->assertEquals('testing', app()->environment());
-//    }
-
-//    public function test_apply_test_seeder()
-//    {
-//        $this->assertDatabaseHas('users', [
-//            'email' => 'admin@example.com', // Change to whatever email you expect from the seeder
-//            'is_admin' => true,
-//        ]);
-//        $this->assertDatabaseHas('users', [
-//            'email' => 'user@example.com', // Change to whatever email you expect from the seeder
-//            'is_admin' => false,
-//        ]);
-//        $this->assertDatabaseCount('users', 2); // Example: check if two users have been created
-//    }
-
     public function test_login(): void
     {
+        $user = User::factory()->create([
+            'email' => 'admin@example.com',
+            'password' => 'password'
+        ]);
         $response = $this->post('api/login', [
             'email' => 'admin@example.com',
             'password' => 'password',

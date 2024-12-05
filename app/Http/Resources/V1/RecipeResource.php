@@ -52,7 +52,7 @@ class RecipeResource extends JsonResource
                 ],
                 'ingredients' => [
                     'links' => [
-                        'self' => route('ingredients.index', ['recipe' => $this->id])
+                        'self' => route('recipes.ingredients.index', ['recipe' => $this->id])
                     ]
                 ]
             ],
