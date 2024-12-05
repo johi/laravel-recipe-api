@@ -7,7 +7,7 @@ use App\Http\Requests\Api\V1\ReplaceInstructionRequest;
 use App\Http\Requests\Api\V1\StoreInstructionRequest;
 use App\Http\Requests\Api\V1\UpdateInstructionOrderRequest;
 use App\Http\Requests\Api\V1\UpdateInstructionRequest;
-use App\Http\Resources\V1\InstructionResource;
+use App\Http\Resources\V1\RecipeInstructionResource;
 use App\Models\RecipeInstruction;
 use App\Models\Recipe;
 use App\Policies\V1\RecipePolicy;
@@ -26,7 +26,7 @@ class RecipeInstructionsController extends ApiController
      */
     public function index(Recipe $recipe)
     {
-        return InstructionResource::collection($recipe->instructions);
+        return RecipeInstructionResource::collection($recipe->instructions);
     }
 
     /**
@@ -44,7 +44,7 @@ class RecipeInstructionsController extends ApiController
         $attributes = $request->mappedAttributes();
         $nextOrder = $recipe->instructions()->max('order') + 1;
         $attributes['order'] = $nextOrder;
-        return new InstructionResource($recipe->instructions()->create($attributes));
+        return new RecipeInstructionResource($recipe->instructions()->create($attributes));
     }
 
     /**
@@ -55,7 +55,7 @@ class RecipeInstructionsController extends ApiController
      */
     public function show(Recipe $recipe, RecipeInstruction $instruction)
     {
-        return new InstructionResource($instruction);
+        return new RecipeInstructionResource($instruction);
     }
 
     /**
@@ -72,7 +72,7 @@ class RecipeInstructionsController extends ApiController
         Gate::authorize('replace', $recipe);
         $attributes = $request->mappedAttributes();
         $instruction->update($attributes);
-        return new InstructionResource($instruction);
+        return new RecipeInstructionResource($instruction);
     }
 
     /**
@@ -89,7 +89,7 @@ class RecipeInstructionsController extends ApiController
         Gate::authorize('update', $recipe);
         $attributes = $request->mappedAttributes();
         $instruction->update($attributes);
-        return new InstructionResource($instruction);
+        return new RecipeInstructionResource($instruction);
     }
 
     /**
@@ -107,6 +107,7 @@ class RecipeInstructionsController extends ApiController
      */
     public function updateOrder(UpdateInstructionOrderRequest $request, Recipe $recipe)
     {
+
         Gate::authorize('update', $recipe);
         $recipeId = $recipe->id;
         $instructionIds = RecipeInstruction::where('recipe_id', $recipeId)->pluck('id')->toArray();
@@ -116,17 +117,14 @@ class RecipeInstructionsController extends ApiController
         if (array_diff($instructionIds, $providedIds)) {
             return $this->error('All instructions must be included in the update.', 400);
         }
-
         // Get total number of instructions
         $instructionCount = RecipeInstruction::where('recipe_id', $recipeId)->count();
-
         // Check if all provided orders are within the valid range (1 to total count)
         foreach ($instructionsData as $data) {
             if ($data['attributes']['order'] > $instructionCount) {
                 return $this->error('Order values must be within the valid range.', 400);
             }
         }
-
         DB::transaction(function () use ($instructionsData, $recipeId) {
             foreach ($instructionsData as $data) {
                 RecipeInstruction::where('id', $data['id'])
@@ -134,7 +132,7 @@ class RecipeInstructionsController extends ApiController
                     ->update(['order' => $data['attributes']['order']]);
             }
         });
-        return InstructionResource::collection($recipe->instructions);
+        return RecipeInstructionResource::collection($recipe->instructions);
     }
 
     /**
@@ -172,7 +170,7 @@ class RecipeInstructionsController extends ApiController
             }
             $instruction->update(['order' => $newOrder]);
         });
-        return InstructionResource::collection($recipe->instructions);
+        return RecipeInstructionResource::collection($recipe->instructions);
     }
 
     /**

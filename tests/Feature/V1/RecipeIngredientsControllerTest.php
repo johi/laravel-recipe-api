@@ -2,11 +2,9 @@
 
 namespace Tests\Feature\V1;
 
-use App\Http\Controllers\Api\AuthController;
 use App\Models\RecipeIngredient;
 use App\Models\Recipe;
 use App\Models\User;
-use Database\Seeders\Tests\V1\RecipeIngredientsControllerSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
