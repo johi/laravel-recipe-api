@@ -65,14 +65,13 @@ class UsersController extends ApiController
      * Get a single user
      *
      * @group Users
-     * @urlParam id int required Example: 1
      * @queryParam include Include related resources, possible values: recipes Example: recipes
      * @response {"data":{"type":"user","id":3,"attributes":{"name":"Miss Roxane Barton","email":"okey67@example.org","isAdmin":0,"included":[]},"links":[{"self":"http://localhost:3001/api/v1/authors/3"}]}}
      */
-    public function show(int $userId)
+    public function show(User $user)
     {
         return new UserResource(User::with($this->includes($this->possibleIncludes))
-            ->where('id', $userId)
+            ->where('id', $user->id)
             ->firstOrFail()
         );
     }

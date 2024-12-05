@@ -48,6 +48,11 @@ class User extends Authenticatable
         });
     }
 
+    public function getRouteKeyName()
+    {
+        return 'uuid';
+    }
+
     /**
      * Get the attributes that should be cast.
      *

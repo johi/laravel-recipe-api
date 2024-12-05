@@ -46,9 +46,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('recipes/{recipe}', [RecipesController::class, 'update'])
         ->name('recipes.update');
 
-    Route::apiResource('users', UsersController::class)->except(['update']);
-    Route::put('users/{user}', [UsersController::class, 'replace'])->name('users.replace');
-    Route::patch('users/{user}', [UsersController::class, 'update'])->name('users.update');
+    Route::apiResource('users', UsersController::class)->except(['update', 'show', 'destroy']);
+    Route::get('users/{user:uuid}', [UsersController::class, 'show'])->name('users.show');
+    Route::delete('users/{user:uuid}', [UsersController::class, 'destroy'])->name('users.destroy');
+    Route::put('users/{user:uuid}', [UsersController::class, 'replace'])->name('users.replace');
+    Route::patch('users/{user:uuid}', [UsersController::class, 'update'])->name('users.update');
 
     // ingredients
     Route::post('recipes/{recipe}/ingredients', [RecipeIngredientsController::class, 'store'])
