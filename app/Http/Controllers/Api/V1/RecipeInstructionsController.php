@@ -7,14 +7,14 @@ use App\Http\Requests\Api\V1\ReplaceInstructionRequest;
 use App\Http\Requests\Api\V1\StoreInstructionRequest;
 use App\Http\Requests\Api\V1\UpdateInstructionOrderRequest;
 use App\Http\Requests\Api\V1\UpdateInstructionRequest;
-use App\Http\Resources\V1\InstructionResource;
-use App\Models\Instruction;
+use App\Http\Resources\V1\RecipeInstructionResource;
+use App\Models\RecipeInstruction;
 use App\Models\Recipe;
 use App\Policies\V1\RecipePolicy;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
-class InstructionsController extends ApiController
+class RecipeInstructionsController extends ApiController
 {
     protected string $policyClass = RecipePolicy::class;
 
@@ -26,7 +26,7 @@ class InstructionsController extends ApiController
      */
     public function index(Recipe $recipe)
     {
-        return InstructionResource::collection($recipe->instructions);
+        return RecipeInstructionResource::collection($recipe->instructions);
     }
 
     /**
@@ -44,7 +44,7 @@ class InstructionsController extends ApiController
         $attributes = $request->mappedAttributes();
         $nextOrder = $recipe->instructions()->max('order') + 1;
         $attributes['order'] = $nextOrder;
-        return new InstructionResource($recipe->instructions()->create($attributes));
+        return new RecipeInstructionResource($recipe->instructions()->create($attributes));
     }
 
     /**
@@ -53,9 +53,9 @@ class InstructionsController extends ApiController
      * @group RecipeInstructions
      * @response {"data":{"type":"instruction","id":1,"attributes":{"description":"Aperiam consequatur aut perspiciatis non omnis. Eos et corporis ipsa iure aut.","order":1},"relationships":{"recipe":{"data":{"type":"recipe","id":1},"links":{"self":"http://localhost:3001/api/v1/recipes/1"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/1/instructions"}}}
      */
-    public function show(Recipe $recipe, Instruction $instruction)
+    public function show(Recipe $recipe, RecipeInstruction $instruction)
     {
-        return new InstructionResource($instruction);
+        return new RecipeInstructionResource($instruction);
     }
 
     /**
@@ -67,12 +67,12 @@ class InstructionsController extends ApiController
      * @bodyParam data.attributes.description string required
      * @response {"data":{"type":"instruction","id":1,"attributes":{"description":"Aperiam consequatur aut perspiciatis non omnis. Eos et corporis ipsa iure aut.","order":1},"relationships":{"recipe":{"data":{"type":"recipe","id":1},"links":{"self":"http://localhost:3001/api/v1/recipes/1"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/1/instructions"}}}
      */
-    public function replace(ReplaceInstructionRequest $request, Recipe $recipe, Instruction $instruction)
+    public function replace(ReplaceInstructionRequest $request, Recipe $recipe, RecipeInstruction $instruction)
     {
         Gate::authorize('replace', $recipe);
         $attributes = $request->mappedAttributes();
         $instruction->update($attributes);
-        return new InstructionResource($instruction);
+        return new RecipeInstructionResource($instruction);
     }
 
     /**
@@ -84,12 +84,12 @@ class InstructionsController extends ApiController
      * @bodyParam data.attributes.description string required
      * @response {"data":{"type":"instruction","id":1,"attributes":{"description":"Aperiam consequatur aut perspiciatis non omnis. Eos et corporis ipsa iure aut.","order":1},"relationships":{"recipe":{"data":{"type":"recipe","id":1},"links":{"self":"http://localhost:3001/api/v1/recipes/1"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/1/instructions"}}}
      */
-    public function update(UpdateInstructionRequest $request, Recipe $recipe, Instruction $instruction)
+    public function update(UpdateInstructionRequest $request, Recipe $recipe, RecipeInstruction $instruction)
     {
         Gate::authorize('update', $recipe);
         $attributes = $request->mappedAttributes();
         $instruction->update($attributes);
-        return new InstructionResource($instruction);
+        return new RecipeInstructionResource($instruction);
     }
 
     /**
@@ -107,34 +107,32 @@ class InstructionsController extends ApiController
      */
     public function updateOrder(UpdateInstructionOrderRequest $request, Recipe $recipe)
     {
+
         Gate::authorize('update', $recipe);
         $recipeId = $recipe->id;
-        $instructionIds = Instruction::where('recipe_id', $recipeId)->pluck('id')->toArray();
+        $instructionIds = RecipeInstruction::where('recipe_id', $recipeId)->pluck('id')->toArray();
         $instructionsData = $request->input('data');
         $providedIds = array_column($instructionsData, 'id');
 
         if (array_diff($instructionIds, $providedIds)) {
             return $this->error('All instructions must be included in the update.', 400);
         }
-
         // Get total number of instructions
-        $instructionCount = Instruction::where('recipe_id', $recipeId)->count();
-
+        $instructionCount = RecipeInstruction::where('recipe_id', $recipeId)->count();
         // Check if all provided orders are within the valid range (1 to total count)
         foreach ($instructionsData as $data) {
             if ($data['attributes']['order'] > $instructionCount) {
                 return $this->error('Order values must be within the valid range.', 400);
             }
         }
-
         DB::transaction(function () use ($instructionsData, $recipeId) {
             foreach ($instructionsData as $data) {
-                Instruction::where('id', $data['id'])
+                RecipeInstruction::where('id', $data['id'])
                     ->where('recipe_id', $recipeId)
                     ->update(['order' => $data['attributes']['order']]);
             }
         });
-        return InstructionResource::collection($recipe->instructions);
+        return RecipeInstructionResource::collection($recipe->instructions);
     }
 
     /**
@@ -148,31 +146,31 @@ class InstructionsController extends ApiController
      * @bodyParam data.attributes.order integer required
      * @response {"data":{"type":"instruction","id":533,"attributes":{"description":"Test Instruction Description","order":8},"relationships":{"recipe":{"data":{"type":"recipe","id":10},"links":{"self":"http://localhost:3001/api/v1/recipes/10"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/10/instructions"}}}
      */
-    public function assignOrder(AssignInstructionOrderRequest $request, Recipe $recipe, Instruction $instruction)
+    public function assignOrder(AssignInstructionOrderRequest $request, Recipe $recipe, RecipeInstruction $instruction)
     {
         Gate::authorize('update', $recipe);
         $currentOrder = $instruction->order;
         $newOrder = $request->input('data')['attributes']['order'];
         $recipeId = $recipe->id;
 
-        $instructionCount = Instruction::where('recipe_id', $recipeId)->count();
+        $instructionCount = RecipeInstruction::where('recipe_id', $recipeId)->count();
         if ($newOrder < 1 || $newOrder > $instructionCount) {
             return $this->error('Order must be between 1 and ' . $instructionCount . '.', 400);
         }
 
         DB::transaction(function () use ($recipeId, $instruction, $currentOrder, $newOrder) {
             if ($currentOrder < $newOrder) {
-                Instruction::where('recipe_id', $recipeId)
+                RecipeInstruction::where('recipe_id', $recipeId)
                     ->whereBetween('order', [$currentOrder + 1, $newOrder])
                     ->decrement('order');
             } elseif ($currentOrder > $newOrder) {
-                Instruction::where('recipe_id', $recipeId)
+                RecipeInstruction::where('recipe_id', $recipeId)
                     ->whereBetween('order', [$newOrder, $currentOrder - 1])
                     ->increment('order');
             }
             $instruction->update(['order' => $newOrder]);
         });
-        return InstructionResource::collection($recipe->instructions);
+        return RecipeInstructionResource::collection($recipe->instructions);
     }
 
     /**
@@ -181,7 +179,7 @@ class InstructionsController extends ApiController
      * @group RecipeInstructions
      * @response {"data":[],"message":"Ingredient successfully deleted","status":200}
      */
-    public function destroy(Recipe $recipe, Instruction $instruction)
+    public function destroy(Recipe $recipe, RecipeInstruction $instruction)
     {
         Gate::authorize('delete', $recipe);
         $instruction->delete();

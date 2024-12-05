@@ -3,10 +3,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\V1;
 
-use App\Http\Controllers\Api\AuthController;
 use App\Models\Recipe;
 use App\Models\User;
-use Database\Seeders\Tests\V1\RecipesControllerSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -14,17 +12,11 @@ class RecipesControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    const ENDPOINT_PREFIX = 'api/v1';
-    public function setUp(): void
-    {
-        parent::setUp();
-        $this->seed(RecipesControllerSeeder::class);
-    }
-
     // RETRIEVE A LIST OF ALL RECIPES
     public function test_as_anonymous_i_get_a_list_of_all_recipes(): void
     {
-        $response = $this->get(self::ENDPOINT_PREFIX . '/recipes');
+        $recipes = Recipe::factory(10)->create();
+        $response = $this->getJson(route('recipes.index'));
         $response->assertStatus(200)
             ->assertJsonStructure([
                 'data' => [
@@ -37,7 +29,8 @@ class RecipesControllerTest extends TestCase
 
     public function test_as_anonymous_i_get_a_single_recipe(): void
     {
-        $response = $this->get(self::ENDPOINT_PREFIX . '/recipes/1');
+        $recipes = Recipe::factory(10)->create();
+        $response = $this->getJson(route('recipes.show', ['recipe' => $recipes->first()->id]));
         $response->assertStatus(200)
             ->assertJsonStructure([
                 'data' => $this->getRecipeStructure()
@@ -46,63 +39,67 @@ class RecipesControllerTest extends TestCase
 
     public function test_trying_to_show_non_existent_recipe_gives_404(): void
     {
-        $response = $this->get(self::ENDPOINT_PREFIX . '/recipes/9999');
+        $response = $this->getJson(route('recipes.show', ['recipe' => 999]));
         $response->assertStatus(404);
     }
 
     public function test_as_anonymous_i_cannot_create_a_recipe(): void
     {
-        $response = $this->post(self::ENDPOINT_PREFIX . '/recipes', $this->getRecipePayload());
+        $response = $this->postJson(route('recipes.store'), $this->getRecipePayload());
         $response->assertStatus(401);
     }
 
     public function test_as_user_i_can_create_my_own_recipe(): void
     {
-        $user = User::factory()->create(['is_admin' => false]);
-        $response = $this->post(
-            self::ENDPOINT_PREFIX . '/recipes',
-            $this->getRecipePayload($user->id),
-            ['Authorization' => 'Bearer ' . AuthController::createToken($user)]
+        $user = User::factory()->create();
+        $response = $this->getAuthenticatedJsonPost(
+            $user,
+            route('recipes.store'),
+            $this->getRecipePayload($user->id)
         );
         $response->assertStatus(201);
     }
 
     public function test_as_user_i_cannot_create_someone_else_recipe(): void
     {
-        $user = User::factory()->create(['is_admin' => false]);
-        $response = $this->post(
-            self::ENDPOINT_PREFIX . '/recipes',
-            $this->getRecipePayload(1),
-            ['Authorization' => 'Bearer ' . AuthController::createToken($user)]
+        $userList = User::factory(2)->create();
+        $response = $this->getAuthenticatedJsonPost(
+            $userList->first(),
+            route('recipes.store'),
+            $this->getRecipePayload($userList->last()->id)
         );
         $response->assertStatus(400);
     }
 
     public function test_as_admin_i_can_create_someone_else_recipe(): void
     {
-        $user = User::factory()->create(['is_admin' => true]);
-        $response = $this->post(
-            self::ENDPOINT_PREFIX . '/recipes',
-            $this->getRecipePayload(1),
-            ['Authorization' => 'Bearer ' . AuthController::createToken($user)]
+        $user = User::factory()->create();
+        $response = $this->getAuthenticatedJsonPost(
+            User::factory()->create(['is_admin' => true]),
+            route('recipes.store'),
+            $this->getRecipePayload($user->id)
         );
         $response->assertStatus(201);
     }
 
     public function test_as_anonymous_i_cannot_replace_a_recipe(): void
     {
-        $response = $this->put(self::ENDPOINT_PREFIX . '/recipes/1', $this->getRecipePayload());
+        $recipe = Recipe::factory()->create();
+        $response = $this->putJson(
+            route('recipes.replace', $recipe),
+            $this->getRecipePayload()
+        );
         $response->assertStatus(401);
     }
 
     public function test_as_user_i_can_replace_my_own_recipe(): void
     {
-        $user = User::factory()->create(['is_admin' => false]);
+        $user = User::factory()->create();
         $recipe = Recipe::factory()->create(['user_id' => $user->id]);
-        $response = $this->put(
-            self::ENDPOINT_PREFIX . '/recipes/' . $recipe->id,
+        $response = $this->getAuthenticatedJsonPut(
+            $user,
+            route('recipes.replace', $recipe),
             $this->getRecipePayload($user->id),
-            ['Authorization' => 'Bearer ' . AuthController::createToken($user)]
         );
         $response->assertStatus(200)
             ->assertJsonStructure(['data' => $this->getRecipeStructure()])
@@ -111,34 +108,36 @@ class RecipesControllerTest extends TestCase
 
     public function test_as_user_i_can_only_replace_my_own_recipe_with_myself_as_author(): void
     {
-        $user = User::factory()->create(['is_admin' => false]);
-        $recipe = Recipe::factory()->create(['user_id' => $user->id]);
-        $response = $this->put(
-            self::ENDPOINT_PREFIX . '/recipes/' . $recipe->id,
-            $this->getRecipePayload(1),
-            ['Authorization' => 'Bearer ' . AuthController::createToken($user)]
+        $usersList = User::factory(2)->create();
+        $recipe = Recipe::factory()->create(['user_id' => $usersList->first()->id]);
+        $response = $this->getAuthenticatedJsonPut(
+            $usersList->first(),
+            route('recipes.replace', $recipe),
+            $this->getRecipePayload($usersList->last()->id),
         );
         $response->assertStatus(400);
     }
 
     public function test_as_user_i_cannot_replace_someone_else_recipe(): void
     {
-        $user = User::factory()->create(['is_admin' => false]);
-        $response = $this->put(
-            self::ENDPOINT_PREFIX . '/recipes/1',
-            $this->getRecipePayload($user->id),
-            ['Authorization' => 'Bearer ' . AuthController::createToken($user)]
+        $usersList = User::factory(2)->create();
+        $recipe = Recipe::factory()->create(['user_id' => $usersList->first()->id]);
+        $response = $this->getAuthenticatedJsonPut(
+            $usersList->last(),
+            route('recipes.replace', $recipe),
+            $this->getRecipePayload($usersList->last()->id),
         );
         $response->assertStatus(403);
     }
 
     public function test_as_admin_i_can_replace_someone_else_recipe(): void
     {
-        $user = User::factory()->create(['is_admin' => true]);
-        $response = $this->put(
-            self::ENDPOINT_PREFIX . '/recipes/1',
+        $user = User::factory()->create();
+        $recipe = Recipe::factory()->create(['user_id' => $user->id]);
+        $response = $this->getAuthenticatedJsonPut(
+            User::factory()->create(['is_admin' => true]),
+            route('recipes.replace', $recipe),
             $this->getRecipePayload($user->id),
-            ['Authorization' => 'Bearer ' . AuthController::createToken($user)]
         );
         $response->assertStatus(200)
             ->assertJsonPath('data.attributes.title', 'Test Recipe');
@@ -146,19 +145,20 @@ class RecipesControllerTest extends TestCase
 
     public function test_trying_to_replace_non_existing_recipe_gives_404(): void
     {
-        $user = User::factory()->create(['is_admin' => true]);
-        $response = $this->put(
-            self::ENDPOINT_PREFIX . '/recipes/999',
+        $user = User::factory()->create();
+        $response = $this->getAuthenticatedJsonPut(
+            User::factory()->create(['is_admin' => true]),
+            route('recipes.replace', ['recipe' => 999]),
             $this->getRecipePayload($user->id),
-            ['Authorization' => 'Bearer ' . AuthController::createToken($user)]
         );
         $response->assertStatus(404);
     }
 
     public function test_as_anonymous_i_cannot_update_a_recipe(): void
     {
-        $response = $this->patch(
-            self::ENDPOINT_PREFIX . '/recipes/1',
+        $recipe = Recipe::factory()->create();
+        $response = $this->patchJson(
+            route('recipes.update', $recipe),
             ['data' => ['attributes' => ['title' => 'PATCHED Recipe']]]
         );
         $response->assertStatus(401);
@@ -167,12 +167,12 @@ class RecipesControllerTest extends TestCase
     public function test_as_user_i_can_update_my_own_recipe(): void
     {
         $changedTitle = 'PATCHED Recipe';
-        $user = User::factory()->create(['is_admin' => false]);
+        $user = User::factory()->create();
         $recipe = Recipe::factory()->create(['user_id' => $user->id]);
-        $response = $this->patch(
-            self::ENDPOINT_PREFIX . '/recipes/' . $recipe->id,
-            ['data' => ['attributes' => ['title' => $changedTitle]]],
-            ['Authorization' => 'Bearer ' . AuthController::createToken($user)]
+        $response = $this->getAuthenticatedJsonPatch(
+            $user,
+            route('recipes.update', $recipe),
+            ['data' => ['attributes' => ['title' => $changedTitle]]]
         );
         $response->assertStatus(200)
             ->assertJsonStructure(['data' => $this->getRecipeStructure()])
@@ -182,11 +182,12 @@ class RecipesControllerTest extends TestCase
     public function test_as_user_i_cannot_update_someone_else_recipe(): void
     {
         $changedTitle = 'PATCHED Recipe';
-        $user = User::factory()->create(['is_admin' => false]);
-        $response = $this->patch(
-            self::ENDPOINT_PREFIX . '/recipes/1',
-            ['data' => ['attributes' => ['title' => $changedTitle]]],
-            ['Authorization' => 'Bearer ' . AuthController::createToken($user)]
+        $usersList = User::factory(2)->create();
+        $recipe = Recipe::factory()->create(['user_id' => $usersList->first()->id]);
+        $response = $this->getAuthenticatedJsonPatch(
+            $usersList->last(),
+            route('recipes.update', $recipe),
+            ['data' => ['attributes' => ['title' => $changedTitle]]]
         );
         $response->assertStatus(403);
     }
@@ -194,17 +195,16 @@ class RecipesControllerTest extends TestCase
     public function test_as_user_i_can_only_update_my_own_recipe_with_myself_as_author(): void
     {
         $changedTitle = 'PATCHED Recipe';
-        $user = User::factory()->create(['is_admin' => false]);
-        $recipe = Recipe::factory()->create(['user_id' => $user->id]);
-        $response = $this->patch(
-            self::ENDPOINT_PREFIX . '/recipes/' . $recipe->id,
+        $recipe = Recipe::factory()->create();
+        $response = $this->getAuthenticatedJsonPatch(
+            User::factory()->create(),
+            route('recipes.update', $recipe),
             [
                 'data' => [
                     'attributes' => ['title' => $changedTitle],
                     'relationships' => ['author' => ['data' => ['id' => 1]]]
                 ]
-            ],
-            ['Authorization' => 'Bearer ' . AuthController::createToken($user)]
+            ]
         );
         $response->assertStatus(400);
     }
@@ -212,31 +212,32 @@ class RecipesControllerTest extends TestCase
     public function test_as_admin_i_can_update_some_else_recipe(): void
     {
         $changedTitle = 'PATCHED Recipe';
-        $user = User::factory()->create(['is_admin' => true]);
-        $response = $this->patch(
-            self::ENDPOINT_PREFIX . '/recipes/1',
-            ['data' => ['attributes' => ['title' => $changedTitle]]],
-            ['Authorization' => 'Bearer ' . AuthController::createToken($user)]
+        $recipe = Recipe::factory()->create();
+        $response = $this->getAuthenticatedJsonPatch(
+            User::factory()->create(['is_admin' => true]),
+            route('recipes.update', $recipe),
+            ['data' => ['attributes' => ['title' => $changedTitle]]]
         );
         $response->assertStatus(200)
             ->assertJsonStructure(['data' => $this->getRecipeStructure()])
             ->assertJsonPath('data.attributes.title', $changedTitle);
     }
+
     public function test_trying_to_update_non_existing_recipe_gives_404(): void
     {
         $changedTitle = 'PATCHED Recipe';
-        $user = User::factory()->create(['is_admin' => true]);
-        $response = $this->patch(
-            self::ENDPOINT_PREFIX . '/recipes/999',
-            ['data' => ['attributes' => ['title' => $changedTitle]]],
-            ['Authorization' => 'Bearer ' . AuthController::createToken($user)]
+        $response = $this->getAuthenticatedJsonPatch(
+            User::factory()->create(['is_admin' => true]),
+            route('recipes.update', ['recipe' => 999]),
+            ['data' => ['attributes' => ['title' => $changedTitle]]]
         );
         $response->assertStatus(404);
     }
 
     public function test_as_anonymous_i_cannot_delete_a_recipe(): void
     {
-        $response = $this->delete(self::ENDPOINT_PREFIX . '/recipes/1');
+        $recipe = Recipe::factory()->create();
+        $response = $this->deleteJson(route('recipes.destroy', ['recipe' => $recipe->id]));
         $response->assertStatus(401);
     }
 
@@ -244,10 +245,9 @@ class RecipesControllerTest extends TestCase
     {
         $user = User::factory()->create(['is_admin' => false]);
         $recipe = Recipe::factory()->create(['user_id' => $user->id]);
-        $response = $this->delete(
-            self::ENDPOINT_PREFIX . '/recipes/' . $recipe->id,
-            [],
-            ['Authorization' => 'Bearer ' . AuthController::createToken($user)]
+        $response = $this->getAuthenticatedJsonDelete(
+            $user,
+            route('recipes.destroy', $recipe)
         );
         $response->assertStatus(200);
         $this->assertDatabaseMissing('recipes', ['id' => $recipe->id]);
@@ -255,33 +255,29 @@ class RecipesControllerTest extends TestCase
 
     public function test_as_user_i_cannot_delete_someone_else_recipe(): void
     {
-        $user = User::factory()->create(['is_admin' => false]);
-        $response = $this->delete(
-            self::ENDPOINT_PREFIX . '/recipes/1',
-            [],
-            ['Authorization' => 'Bearer ' . AuthController::createToken($user)]
+        $recipe = Recipe::factory()->create();
+        $response = $this->getAuthenticatedJsonDelete(
+            User::factory()->create(),
+            route('recipes.destroy', $recipe)
         );
         $response->assertStatus(403);
     }
 
     public function test_as_admin_i_can_delete_someone_else_recipe(): void
     {
-        $user = User::factory()->create(['is_admin' => true]);
-        $response = $this->delete(
-            self::ENDPOINT_PREFIX . '/recipes/1',
-            [],
-            ['Authorization' => 'Bearer ' . AuthController::createToken($user)]
+        $recipe = Recipe::factory()->create();
+        $response = $this->getAuthenticatedJsonDelete(
+            User::factory()->create(['is_admin' => true]),
+            route('recipes.destroy', $recipe)
         );
         $response->assertStatus(200);
     }
 
     public function test_trying_to_delete_a_non_existing_recipe_gives_404(): void
     {
-        $user = User::factory()->create(['is_admin' => true]);
-        $response = $this->delete(
-            self::ENDPOINT_PREFIX . '/recipes/999',
-            [],
-            ['Authorization' => 'Bearer ' . AuthController::createToken($user)]
+        $response = $this->getAuthenticatedJsonDelete(
+            User::factory()->create(['is_admin' => true]),
+            route('recipes.destroy', ['recipe' => 999])
         );
         $response->assertStatus(404);
     }

@@ -29,12 +29,12 @@ class Recipe extends Model
 
     public function ingredients() : HasMany
     {
-        return $this->hasMany(Ingredient::class);
+        return $this->hasMany(RecipeIngredient::class);
     }
 
     public function instructions() : HasMany
     {
-        return $this->hasMany(Instruction::class)->orderBy('order');
+        return $this->hasMany(RecipeInstruction::class)->orderBy('order');
     }
 
     public function author() : BelongsTo

@@ -25,7 +25,7 @@ return new class extends Migration
 
         Schema::create('recipes', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('category_id')->constrained('categories');
             $table->string('title');
             $table->text('description');
@@ -34,7 +34,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('ingredients', function (Blueprint $table) {
+        Schema::create('recipe_ingredients', function (Blueprint $table) {
             $table->id();
             $table->foreignId('recipe_id')->constrained('recipes')->onDelete('cascade');
             $table->string('title');
@@ -43,7 +43,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('instructions', function (Blueprint $table) {
+        Schema::create('recipe_instructions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('recipe_id')->constrained('recipes')->onDelete('cascade');
             $table->text('description');
@@ -57,8 +57,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('instructions');
-        Schema::dropIfExists('ingredients');
+        Schema::dropIfExists('recipe_instructions');
+        Schema::dropIfExists('recipe_ingredients');
         Schema::dropIfExists('recipes');
         Schema::dropIfExists('categories');
     }

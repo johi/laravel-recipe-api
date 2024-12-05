@@ -6,7 +6,7 @@ namespace App\Http\Resources\V1;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class InstructionResource extends JsonResource
+class RecipeInstructionResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -36,7 +36,7 @@ class InstructionResource extends JsonResource
                 ]
             ],
             'links' => [
-                'self' => route('instructions.index', ['recipe' => $recipeId]),
+                'self' => route('recipes.instructions.index', ['recipe' => $recipeId]),
             ]
         ];
     }
