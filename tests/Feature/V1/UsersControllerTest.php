@@ -2,10 +2,8 @@
 
 namespace Tests\Feature\V1;
 
-use App\Http\Controllers\Api\AuthController;
 use App\Models\Recipe;
 use App\Models\User;
-use Database\Seeders\Tests\V1\UsersControllerSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -30,8 +28,7 @@ class UsersControllerTest extends TestCase
     public function test_as_user_i_get_a_list_of_all_users()
     {
         $userList = User::factory(3)->create();
-        $actingUser = User::factory()->create();
-        $response = $this->getAuthenticatedUserJsonGet($actingUser, route('users.index'));
+        $response = $this->getAuthenticatedUserJsonGet(User::factory()->create(), route('users.index'));
         $response->assertStatus(200)
             ->assertJsonStructure($this->getUsersListJsonStructure())
             ->assertJsonPath('meta.total', $userList->count() + 1);
@@ -40,8 +37,10 @@ class UsersControllerTest extends TestCase
     public function test_as_admin_i_get_a_list_of_all_users(): void
     {
         $userList = User::factory(3)->create();
-        $actingUser = User::factory()->create(['is_admin' => true]);
-        $response = $this->getAuthenticatedUserJsonGet($actingUser, route('users.index'));
+        $response = $this->getAuthenticatedUserJsonGet(
+            User::factory()->create(['is_admin' => true]),
+            route('users.index')
+        );
         $response->assertStatus(200)
             ->assertJsonStructure($this->getUsersListJsonStructure())
             ->assertJsonPath('meta.total', $userList->count() + 1);
@@ -51,17 +50,19 @@ class UsersControllerTest extends TestCase
     {
         $user = User::factory()->create();
         $recipesList = Recipe::factory(3)->create(['user_id' => $user->id]);
-        $actingUser = User::factory()->create(['is_admin' => true]);
-        $response = $this->getAuthenticatedUserJsonGet($actingUser, route('users.index', ['include' => 'recipes']));
+        $response = $this->getAuthenticatedUserJsonGet(
+            User::factory()->create(['is_admin' => true]),
+            route('users.index', ['include' => 'recipes'])
+        );
         $response->assertStatus(200)
             ->assertJsonCount($recipesList->count(), 'data.0.attributes.included.recipes');
     }
 
-//    // RETRIEVE A USER
+    // RETRIEVE A USER
     public function test_as_anonymous_i_dont_get_a_specific_user(): void
     {
         $user = User::factory()->create();
-        $response = $this->getJson(route('users.show', ['user' => $user->id]));
+        $response = $this->getJson(route('users.show', $user));
         $response->assertStatus(401)
             ->assertJsonStructure([
                 'message',
@@ -73,8 +74,8 @@ class UsersControllerTest extends TestCase
     public function test_as_user_i_get_a_specific_user(): void
     {
         $userList = User::factory(3)->create();
-        $actingUser = User::factory()->create(['is_admin' => true]);
-        $response = $this->getAuthenticatedUserJsonGet($actingUser,
+        $response = $this->getAuthenticatedUserJsonGet(
+            User::factory()->create(),
             route('users.show', ['user' => $userList->first()->id]));
         $response->assertStatus(200);
     }
@@ -82,8 +83,8 @@ class UsersControllerTest extends TestCase
     public function test_as_admin_i_get_a_specific_user(): void
     {
         $userList = User::factory(3)->create();
-        $actingUser = User::factory()->create(['is_admin' => true]);
-        $response = $this->getAuthenticatedUserJsonGet($actingUser,
+        $response = $this->getAuthenticatedUserJsonGet(
+            User::factory()->create(['is_admin' => true]),
             route('users.show', ['user' => $userList->first()->id]));
         $response->assertStatus(200)
             ->assertJsonStructure($this->getUserJsonStructure());
@@ -94,8 +95,8 @@ class UsersControllerTest extends TestCase
     public function test_trying_to_show_a_non_existing_user_gives_404(): void
     {
         $userList = User::factory(3)->create();
-        $actingUser = User::factory()->create(['is_admin' => true]);
-        $response = $this->getAuthenticatedUserJsonGet($actingUser,
+        $response = $this->getAuthenticatedUserJsonGet(
+            User::factory()->create(['is_admin' => true]),
             route('users.show', ['user' => 100]));
         $response->assertStatus(404);
     }
@@ -104,8 +105,8 @@ class UsersControllerTest extends TestCase
     {
         $userList = User::factory(3)->create();
         $recipeList = Recipe::factory(3)->create(['user_id' => $userList->first()->id]);
-        $actingUser = User::factory()->create(['is_admin' => true]);
-        $response = $this->getAuthenticatedUserJsonGet($actingUser,
+        $response = $this->getAuthenticatedUserJsonGet(
+            User::factory()->create(['is_admin' => true]),
             route('users.show', [
                 'user' => $userList->first()->id,
                 'include' => 'recipes'
@@ -158,7 +159,7 @@ class UsersControllerTest extends TestCase
         $user = User::factory()->create();
         $response = $this->getAuthenticatedJsonPut(
             $user,
-            route('users.replace', ['user' => $user->id]),
+            route('users.replace', $user),
             $this->getUserPayload(['email' => 'test2@example.com'])
         );
         $response->assertStatus(403);
@@ -171,7 +172,7 @@ class UsersControllerTest extends TestCase
         $user = User::factory()->create(['is_admin' => true]);
         $response = $this->getAuthenticatedJsonPut(
             $user,
-            route('users.replace', ['user' => $user->id]),
+            route('users.replace', $user),
             $this->getUserPayload(['email' => 'test2@example.com'])
         );
         $response->assertStatus(200)
@@ -226,7 +227,6 @@ class UsersControllerTest extends TestCase
 
     public function test_trying_to_update_a_non_existing_user_gives_404(): void
     {
-        $userList = User::factory(3)->create();
         $response = $this->getAuthenticatedJsonPatch(
             User::factory()->create(['is_admin' => true]),
             route('users.update', ['user' => 100]),
@@ -238,8 +238,8 @@ class UsersControllerTest extends TestCase
     // DELETE A USER
     public function test_as_anonymous_i_cannot_delete_a_user(): void
     {
-        $userList = User::factory(3)->create();
-        $response = $this->deleteJson(route('users.destroy', ['user' => $userList->first()->id]));
+        $user = User::factory()->create();
+        $response = $this->deleteJson(route('users.destroy', $user));
         $response->assertStatus(401);
     }
 
@@ -248,39 +248,39 @@ class UsersControllerTest extends TestCase
         $user = User::factory()->create();
         $response = $this->getAuthenticatedJsonDelete(
             User::factory()->create(),
-            route('users.destroy', ['user' => $user->id])
+            route('users.destroy', $user)
         );
         $response->assertStatus(403);
     }
 
     public function test_as_admin_i_can_delete_a_user(): void
     {
-        $userList = User::factory(3)->create();
+        $user = User::factory()->create();
         $response = $this->getAuthenticatedJsonDelete(
             User::factory()->create(['is_admin' => true]),
-            route('users.destroy', ['user' =>  $userList->first()->id])
+            route('users.destroy', $user)
         );
         $response->assertStatus(200);
     }
 
     public function test_as_admin_i_cannot_delete_a_user_with_attached_recipes(): void
     {
-        $userList = User::factory(3)->create();
-        $recipeList = Recipe::factory(3)->create(['user_id' => $userList->first()->id]);
+        $user = User::factory()->create();
+        $recipeList = Recipe::factory(3)->create(['user_id' => $user]);
         $response = $this->getAuthenticatedJsonDelete(
             User::factory()->create(['is_admin' => true]),
-            route('users.destroy', ['user' =>  $userList->first()->id])
+            route('users.destroy', $user)
         );
         $response->assertStatus(400);
     }
 
     public function test_as_admin_i_can_for_delete_a_user_with_attached_recipes(): void
     {
-        $userSubject = User::factory()->create();
-        $recipeList = Recipe::factory(3)->create(['user_id' => $userSubject->id]);
+        $user = User::factory()->create();
+        $recipeList = Recipe::factory(3)->create(['user_id' => $user->id]);
         $response = $this->getAuthenticatedJsonDelete(
             User::factory()->create(['is_admin' => true]),
-            route('users.destroy', ['user' =>  $userSubject->id, 'strategy' => 'force'])
+            route('users.destroy', ['user' =>  $user->id, 'strategy' => 'force'])
         );
         $response->assertStatus(200);
     }
