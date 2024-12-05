@@ -2,11 +2,9 @@
 
 namespace Tests\Feature\V1;
 
-use App\Http\Controllers\Api\AuthController;
 use App\Models\RecipeInstruction;
 use App\Models\Recipe;
 use App\Models\User;
-use Database\Seeders\Tests\V1\RecipeInstructionsControllerSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -17,10 +15,9 @@ class RecipeInstructionsControllerTest extends TestCase
     // GET ALL
     public function test_as_anonymous_i_get_a_list_of_all_instructions(): void
     {
-        $userSubject = User::factory()->create();
-        $recipeSubject = Recipe::factory()->create(['user_id' => $userSubject->id]);
-        $instructionsList = RecipeInstruction::factory(5)->create(['recipe_id' => $recipeSubject->id]);
-        $response = $this->getJson(route('recipes.instructions.index', ['recipe' => $recipeSubject]));
+        $recipe = Recipe::factory()->create();
+        $instructionsList = RecipeInstruction::factory(5)->create(['recipe_id' => $recipe->id]);
+        $response = $this->getJson(route('recipes.instructions.index', $recipe));
         $response->assertStatus(200)
             ->assertJsonStructure([
                 'data' => [
@@ -47,7 +44,7 @@ class RecipeInstructionsControllerTest extends TestCase
             'order' => 3,
             'description' => 'Instruction 3',
         ]);
-        $response = $this->getJson(route('recipes.instructions.index', ['recipe' => $recipe]));
+        $response = $this->getJson(route('recipes.instructions.index', $recipe));
         $response->assertStatus(200);
         $instructions = $response->json()['data'];
 
@@ -59,15 +56,9 @@ class RecipeInstructionsControllerTest extends TestCase
     // GET SINGLE
     public function test_as_anonymous_i_get_a_single_instruction(): void
     {
-        $userSubject = User::factory()->create();
-        $recipeSubject = Recipe::factory()->create(['user_id' => $userSubject->id]);
-        $instructionsList = RecipeInstruction::factory(5)->create(['recipe_id' => $recipeSubject->id]);
-        $response = $this->getJson(route('recipes.instructions.show',
-            [
-                'recipe' => $recipeSubject,
-                'instruction' => $instructionsList->first()->id
-            ]
-        ));
+        $recipe = Recipe::factory()->create();
+        $instruction = RecipeInstruction::factory()->create(['recipe_id' => $recipe->id]);
+        $response = $this->getJson(route('recipes.instructions.show', [$recipe, $instruction]));
         $response->assertStatus(200)
             ->assertJsonStructure([
                 'data' => $this->getInstructionStructure()
@@ -76,10 +67,10 @@ class RecipeInstructionsControllerTest extends TestCase
 
     public function test_trying_to_show_non_existent_ingredient_gives_404(): void
     {
-        $recipeSubject = Recipe::factory()->create();
+        $recipe = Recipe::factory()->create();
         $response = $this->getJson(route('recipes.instructions.show',
             [
-                'recipe' => $recipeSubject,
+                'recipe' => $recipe,
                 'instruction' => 999
             ]
         ));
@@ -89,9 +80,9 @@ class RecipeInstructionsControllerTest extends TestCase
     // CREATE
     public function test_as_anonymous_i_cannot_create_an_instructions(): void
     {
-        $recipeSubject = Recipe::factory()->create();
+        $recipe = Recipe::factory()->create();
         $response = $this->postJson(
-            route('recipes.instructions.store', ['recipe' => $recipeSubject]),
+            route('recipes.instructions.store', $recipe),
             $this->getInstructionPayload()
         );
         $response->assertStatus(401);
@@ -103,7 +94,7 @@ class RecipeInstructionsControllerTest extends TestCase
         $recipe = Recipe::factory()->create(['user_id' => $user->id]);
         $response = $this->getAuthenticatedJsonPost(
             $user,
-            route('recipes.instructions.store', ['recipe' => $recipe->id]),
+            route('recipes.instructions.store', $recipe),
             $this->getInstructionPayload($recipe->id)
         );
         $response->assertStatus(201);
@@ -111,23 +102,23 @@ class RecipeInstructionsControllerTest extends TestCase
 
     public function test_creating_an_instruction_assigns_correct_order_to_each_new_instruction()
     {
-        $user = User::factory()->create(['is_admin' => false]);
+        $user = User::factory()->create();
         $recipe = Recipe::factory()->create(['user_id' => $user->id]);
         $response = $this->getAuthenticatedJsonPost(
             $user,
-            route('recipes.instructions.store', ['recipe' => $recipe->id]),
+            route('recipes.instructions.store', $recipe),
             $this->getInstructionPayload($recipe->id)
         );
         $this->assertEquals(1, RecipeInstruction::where('recipe_id', $recipe->id)->first()->order);
         $response = $this->getAuthenticatedJsonPost(
             $user,
-            route('recipes.instructions.store', ['recipe' => $recipe->id]),
+            route('recipes.instructions.store', $recipe),
             $this->getInstructionPayload($recipe->id)
         );
         $this->assertEquals(2, RecipeInstruction::where('recipe_id', $recipe->id)->latest('id')->first()->order);
         $response = $this->getAuthenticatedJsonPost(
             $user,
-            route('recipes.instructions.store', ['recipe' => $recipe->id]),
+            route('recipes.instructions.store', $recipe),
             $this->getInstructionPayload($recipe->id)
         );
         $this->assertEquals(3, RecipeInstruction::where('recipe_id', $recipe->id)->latest('id')->first()->order);
@@ -135,24 +126,22 @@ class RecipeInstructionsControllerTest extends TestCase
 
     public function test_as_user_i_cannot_create_someone_else_instruction(): void
     {
-        $userSubject = User::factory()->create(['is_admin' => false]);
-        $recipeSubject = Recipe::factory()->create(['user_id' => $userSubject->id]);
+        $recipe = Recipe::factory()->create();
         $response = $this->getAuthenticatedJsonPost(
             User::factory()->create(),
-            route('recipes.instructions.store', ['recipe' => $recipeSubject->id]),
-            $this->getInstructionPayload($recipeSubject->id)
+            route('recipes.instructions.store', $recipe),
+            $this->getInstructionPayload($recipe->id)
         );
         $response->assertStatus(403);
     }
 
     public function test_as_admin_i_can_create_someone_else_instruction(): void
     {
-        $userSubject = User::factory()->create(['is_admin' => false]);
-        $recipeSubject = Recipe::factory()->create(['user_id' => $userSubject->id]);
+        $recipe = Recipe::factory()->create();
         $response = $this->getAuthenticatedJsonPost(
             User::factory()->create(['is_admin' => true]),
-            route('recipes.instructions.store', ['recipe' => $recipeSubject->id]),
-            $this->getInstructionPayload($recipeSubject->id)
+            route('recipes.instructions.store', $recipe),
+            $this->getInstructionPayload($recipe->id)
         );
         $response->assertStatus(201);
     }
@@ -160,16 +149,11 @@ class RecipeInstructionsControllerTest extends TestCase
     // REPLACE
     public function test_as_anonymous_i_cannot_replace_an_instruction(): void
     {
-        $userSubject = User::factory()->create(['is_admin' => false]);
-        $recipeSubject = Recipe::factory()->create(['user_id' => $userSubject->id]);
-        $instructionSubject = RecipeInstruction::factory()->create(['recipe_id' => $recipeSubject->id]);
+        $recipe = Recipe::factory()->create();
+        $instruction = RecipeInstruction::factory()->create(['recipe_id' => $recipe->id]);
         $response = $this->putJson(
-            route('recipes.instructions.replace',
-                [
-                    'recipe' => $recipeSubject,
-                    'instruction' => $instructionSubject
-                ]
-            ), $this->getInstructionPayload($recipeSubject->id)
+            route('recipes.instructions.replace', [$recipe, $instruction]),
+            $this->getInstructionPayload($recipe->id)
         );
         $response->assertStatus(401);
     }
@@ -181,12 +165,8 @@ class RecipeInstructionsControllerTest extends TestCase
         $instruction = RecipeInstruction::factory()->create(['recipe_id' => $recipe->id]);
         $response = $this->getAuthenticatedJsonPut(
             $user,
-            route('recipes.instructions.replace',
-                [
-                    'recipe' => $recipe,
-                    'instruction' => $instruction
-                ]
-            ), $this->getInstructionPayload($recipe->id)
+            route('recipes.instructions.replace', [$recipe, $instruction]),
+            $this->getInstructionPayload($recipe->id)
         );
         $response->assertStatus(200)
             ->assertJsonStructure(['data' => $this->getInstructionStructure()])
@@ -195,32 +175,24 @@ class RecipeInstructionsControllerTest extends TestCase
 
     public function test_as_user_i_cannot_replace_someone_else_instruction(): void
     {
-        $recipeSubject = Recipe::factory()->create();
-        $instructionSubject = RecipeInstruction::factory()->create(['recipe_id' => $recipeSubject->id]);
+        $recipe = Recipe::factory()->create();
+        $instruction = RecipeInstruction::factory()->create(['recipe_id' => $recipe->id]);
         $response = $this->getAuthenticatedJsonPut(
             User::factory()->create(),
-            route('recipes.instructions.replace',
-                [
-                    'recipe' => $recipeSubject,
-                    'instruction' => $instructionSubject
-                ]
-            ), $this->getInstructionPayload($recipeSubject->id)
+            route('recipes.instructions.replace', [$recipe, $instruction]),
+            $this->getInstructionPayload($recipe->id)
         );
         $response->assertStatus(403);
     }
 
     public function test_as_admin_i_can_replace_someone_else_instruction(): void
     {
-        $recipeSubject = Recipe::factory()->create();
-        $instructionSubject = RecipeInstruction::factory()->create(['recipe_id' => $recipeSubject->id]);
+        $recipe = Recipe::factory()->create();
+        $instruction = RecipeInstruction::factory()->create(['recipe_id' => $recipe->id]);
         $response = $this->getAuthenticatedJsonPut(
             User::factory()->create(['is_admin' => true]),
-            route('recipes.instructions.replace',
-                [
-                    'recipe' => $recipeSubject,
-                    'instruction' => $instructionSubject
-                ]
-            ), $this->getInstructionPayload($recipeSubject->id)
+            route('recipes.instructions.replace',[$recipe,$instruction]),
+            $this->getInstructionPayload($recipe->id)
         );
         $response->assertStatus(200)
             ->assertJsonPath('data.attributes.description', 'Test Instruction');
@@ -228,15 +200,11 @@ class RecipeInstructionsControllerTest extends TestCase
 
     public function test_trying_to_replace_a_nonexistent_instruction_gives_404(): void
     {
-        $recipeSubject = Recipe::factory()->create();
+        $recipe = Recipe::factory()->create();
         $response = $this->getAuthenticatedJsonPut(
             User::factory()->create(['is_admin' => true]),
-            route('recipes.instructions.replace',
-                [
-                    'recipe' => $recipeSubject,
-                    'instruction' => 999
-                ]
-            ), $this->getInstructionPayload($recipeSubject->id)
+            route('recipes.instructions.replace', ['recipe' => $recipe, 'instruction' => 999]),
+            $this->getInstructionPayload($recipe->id)
         );
         $response->assertStatus(404);
     }
@@ -244,15 +212,10 @@ class RecipeInstructionsControllerTest extends TestCase
     // UPDATE
     public function test_as_anonymous_i_cannot_update_an_instruction(): void
     {
-        $recipeSubject = Recipe::factory()->create();
-        $instructionSubject = RecipeInstruction::factory()->create(['recipe_id' => $recipeSubject->id]);
+        $recipe = Recipe::factory()->create();
+        $instruction = RecipeInstruction::factory()->create(['recipe_id' => $recipe->id]);
         $response = $this->patchJson(
-            route('recipes.instructions.update',
-                [
-                    'recipe' => $recipeSubject->id,
-                    'instruction' => $instructionSubject->id
-                ]
-            ),
+            route('recipes.instructions.update',[$recipe, $instruction]),
             ['data' => ['attributes' => ['description' => 'PATCHED Instruction']]]
         );
         $response->assertStatus(401);
@@ -266,12 +229,7 @@ class RecipeInstructionsControllerTest extends TestCase
         $instruction = RecipeInstruction::factory()->create(['recipe_id' => $recipe->id]);
         $response = $this->getAuthenticatedJsonPatch(
             $user,
-            route('recipes.instructions.update',
-                [
-                    'recipe' => $recipe->id,
-                    'instruction' => $instruction->id
-                ]
-            ),
+            route('recipes.instructions.update', [$recipe, $instruction]),
             ['data' => ['attributes' => ['description' => 'PATCHED Instruction']]]
         );
         $response->assertStatus(200)
@@ -282,16 +240,11 @@ class RecipeInstructionsControllerTest extends TestCase
     public function test_as_user_i_cannot_update_someone_else_instruction(): void
     {
         $changedDescription = 'PATCHED Instruction';
-        $recipeSubject = Recipe::factory()->create();
-        $instructionSubject = RecipeInstruction::factory()->create(['recipe_id' => $recipeSubject->id]);
+        $recipe = Recipe::factory()->create();
+        $instruction = RecipeInstruction::factory()->create(['recipe_id' => $recipe->id]);
         $response = $this->getAuthenticatedJsonPatch(
             User::factory()->create(),
-            route('recipes.instructions.update',
-                [
-                    'recipe' => $recipeSubject->id,
-                    'instruction' => $instructionSubject->id
-                ]
-            ),
+            route('recipes.instructions.update', [$recipe, $instruction->id]),
             ['data' => ['attributes' => ['description' => 'PATCHED Instruction']]]
         );
         $response->assertStatus(403);
@@ -300,16 +253,11 @@ class RecipeInstructionsControllerTest extends TestCase
     public function test_as_admin_i_can_update_some_else_instruction(): void
     {
         $changedDescription = 'PATCHED Instruction';
-        $recipeSubject = Recipe::factory()->create();
-        $instructionSubject = RecipeInstruction::factory()->create(['recipe_id' => $recipeSubject->id]);
+        $recipe = Recipe::factory()->create();
+        $instruction = RecipeInstruction::factory()->create(['recipe_id' => $recipe->id]);
         $response = $this->getAuthenticatedJsonPatch(
             User::factory()->create(['is_admin' => true]),
-            route('recipes.instructions.update',
-                [
-                    'recipe' => $recipeSubject->id,
-                    'instruction' => $instructionSubject->id
-                ]
-            ),
+            route('recipes.instructions.update', [$recipe, $instruction]),
             ['data' => ['attributes' => ['description' => 'PATCHED Instruction']]]
         );
         $response->assertStatus(200)
@@ -320,15 +268,10 @@ class RecipeInstructionsControllerTest extends TestCase
     public function test_trying_to_update_a_non_existing_instruction_gives_404(): void
     {
         $changedDescription = 'PATCHED Instruction';
-        $recipeSubject = Recipe::factory()->create();
+        $recipe = Recipe::factory()->create();
         $response = $this->getAuthenticatedJsonPatch(
             User::factory()->create(['is_admin' => true]),
-            route('recipes.instructions.update',
-                [
-                    'recipe' => $recipeSubject->id,
-                    'instruction' => 999
-                ]
-            ),
+            route('recipes.instructions.update', ['recipe' => $recipe->id, 'instruction' => 999]),
             ['data' => ['attributes' => ['description' => 'PATCHED Instruction']]]
         );
         $response->assertStatus(404);
@@ -484,7 +427,7 @@ class RecipeInstructionsControllerTest extends TestCase
     {
         $recipe = Recipe::factory()->create();
         $instruction = RecipeInstruction::factory()->create(['recipe_id' => $recipe->id]);
-        $response = $this->deleteJson(route('recipes.instructions.destroy', ['recipe' => $recipe, 'instruction' => $instruction]));
+        $response = $this->deleteJson(route('recipes.instructions.destroy', [$recipe, $instruction]));
         $response->assertStatus(401);
     }
 
@@ -495,7 +438,7 @@ class RecipeInstructionsControllerTest extends TestCase
         $instruction = RecipeInstruction::factory()->create(['recipe_id' => $recipe->id]);
         $response = $this->getAuthenticatedJsonDelete(
             $user,
-            route('recipes.instructions.destroy', ['recipe' => $recipe, 'instruction' => $instruction])
+            route('recipes.instructions.destroy', [$recipe, $instruction])
         );
         $response->assertStatus(200);
         $this->assertDatabaseMissing('recipe_instructions', ['id' => $instruction->id]);
@@ -503,32 +446,29 @@ class RecipeInstructionsControllerTest extends TestCase
 
     public function test_as_user_i_cannot_delete_someone_else_instruction(): void
     {
-        $user = User::factory()->create();
-        $recipe = Recipe::factory()->create(['user_id' => $user->id]);
+        $recipe = Recipe::factory()->create();
         $instruction = RecipeInstruction::factory()->create(['recipe_id' => $recipe->id]);
         $response = $this->getAuthenticatedJsonDelete(
             User::factory()->create(),
-            route('recipes.instructions.destroy', ['recipe' => $recipe, 'instruction' => $instruction])
+            route('recipes.instructions.destroy', [$recipe, $instruction])
         );
         $response->assertStatus(403);
     }
 
     public function test_as_admin_i_can_delete_someone_else_instruction(): void
     {
-        $user = User::factory()->create();
-        $recipe = Recipe::factory()->create(['user_id' => $user->id]);
+        $recipe = Recipe::factory()->create();
         $instruction = RecipeInstruction::factory()->create(['recipe_id' => $recipe->id]);
         $response = $this->getAuthenticatedJsonDelete(
             User::factory()->create(['is_admin' => true]),
-            route('recipes.instructions.destroy', ['recipe' => $recipe, 'instruction' => $instruction])
+            route('recipes.instructions.destroy', [$recipe, $instruction])
         );
         $response->assertStatus(200);
     }
 
     public function test_trying_to_delete_a_non_existing_instruction_gives_404(): void
     {
-        $user = User::factory()->create();
-        $recipe = Recipe::factory()->create(['user_id' => $user->id]);
+        $recipe = Recipe::factory()->create();
         $response = $this->getAuthenticatedJsonDelete(
             User::factory()->create(['is_admin' => true]),
             route('recipes.instructions.destroy', ['recipe' => $recipe, 'instruction' => 999])
