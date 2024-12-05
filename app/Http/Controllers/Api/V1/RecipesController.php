@@ -79,10 +79,10 @@ class RecipesController extends ApiController
      * @queryParam include Include related resources, possible values: category, ingredients, instructions  Example: instructions,ingredients
      * @response {"data":{"type":"recipe","id":44,"attributes":{"title":"animi consectetur autem","description":"Nemo tenetur necessitatibus quis est reiciendis et. Dolores qui occaecati aut impedit dolores ea distinctio.","preparationTimeMinutes":80,"servings":4,"createdAt":"2024-11-23T12:57:02.000000Z","updatedAt":"2024-11-23T12:57:07.000000Z"},"relationships":{"author":{"data":{"type":"user","id":10},"links":{"self":"http://localhost:3001/api/v1/authors/10"}},"category":{"data":{"type":"category","id":2},"links":{"self":"http://localhost:3001/api/v1/categories"}},"ingredients":{"links":{"self":"http://localhost:3001/api/v1/recipes/44/ingredients"}}},"included":{"author":{"type":"user","id":10,"attributes":{"name":"Jadon Bruen","email":"tpfannerstill@example.com","isAdmin":false,"included":[]},"links":[{"self":"http://localhost:3001/api/v1/authors/10"}]}},"links":{"self":"http://localhost:3001/api/v1/recipes/44"}}}
      */
-    public function show(int $recipeId)
+    public function show(Recipe $recipe)
     {
         return new RecipeResource(Recipe::with($this->includes($this->possibleIncludes))
-                ->where('id', $recipeId)
+                ->where('id', $recipe->id)
                 ->firstOrFail()
         );
     }

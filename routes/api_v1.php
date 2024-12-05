@@ -14,7 +14,7 @@ Route::get('/categories', [CategoriesController::class, 'index'])
     ->name('categories.index');
 Route::get('recipes', [RecipesController::class, 'index'])
     ->name('recipes.index');
-Route::get('recipes/{recipe}', [RecipesController::class, 'show'])
+Route::get('recipes/{recipe:uuid}', [RecipesController::class, 'show'])
     ->name('recipes.show');
 Route::get('authors', [AuthorsController::class, 'index'])
     ->name('authors.index');
@@ -39,11 +39,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('recipes', [RecipesController::class, 'store'])
         ->name('recipes.store');
-    Route::delete('recipes/{recipe}', [RecipesController::class, 'destroy'])
+    Route::delete('recipes/{recipe:uuid}', [RecipesController::class, 'destroy'])
         ->name('recipes.destroy');
-    Route::put('recipes/{recipe}', [RecipesController::class, 'replace'])
+    Route::put('recipes/{recipe:uuid}', [RecipesController::class, 'replace'])
         ->name('recipes.replace');
-    Route::patch('recipes/{recipe}', [RecipesController::class, 'update'])
+    Route::patch('recipes/{recipe:uuid}', [RecipesController::class, 'update'])
         ->name('recipes.update');
 
     Route::apiResource('users', UsersController::class)->except(['update', 'show', 'destroy']);

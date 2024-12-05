@@ -19,7 +19,7 @@ class RecipeResource extends JsonResource
     {
         return [
             'type' => 'recipe',
-            'id' => $this->id,
+            'id' => $this->uuid,
             'attributes' => [
                 'title' => $this->title,
                 'description' => $this->when(
@@ -52,7 +52,7 @@ class RecipeResource extends JsonResource
                 ],
                 'ingredients' => [
                     'links' => [
-                        'self' => route('recipes.ingredients.index', ['recipe' => $this->id])
+                        'self' => route('recipes.ingredients.index', ['recipe' => $this->uuid])
                     ]
                 ]
             ],
@@ -63,7 +63,7 @@ class RecipeResource extends JsonResource
                 'instructions' => RecipeInstructionResource::collection($this->whenLoaded('instructions')),
             ],
             'links' => [
-                'self' => route('recipes.show', ['recipe' => $this->id])
+                'self' => route('recipes.show', ['recipe' => $this->uuid])
             ]
         ];
     }

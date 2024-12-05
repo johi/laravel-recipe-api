@@ -33,6 +33,11 @@ class Recipe extends Model
         });
     }
 
+    public function getRouteKeyName()
+    {
+        return 'uuid';
+    }
+
     public function category() : BelongsTo
     {
         return $this->belongsTo(Category::class);
