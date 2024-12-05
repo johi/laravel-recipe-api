@@ -13,10 +13,12 @@ return new class extends Migration
     {
         Schema::create('recipe_images', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
             $table->foreignId('recipe_id')->constrained('recipes')->onDelete('cascade');
             $table->string('file_path');
             // $table->boolean('primary');
             $table->timestamps();
+            $table->index('uuid');
         });
     }
 
