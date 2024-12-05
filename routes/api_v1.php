@@ -18,9 +18,9 @@ Route::get('recipes/{recipe:uuid}', [RecipesController::class, 'show'])
     ->name('recipes.show');
 Route::get('authors', [AuthorsController::class, 'index'])
     ->name('authors.index');
-Route::get('authors/{author}', [AuthorsController::class, 'show'])
+Route::get('authors/{author:uuid}', [AuthorsController::class, 'show'])
     ->name('authors.show');
-Route::get('authors/{author}/recipes', [AuthorRecipesController::class, 'index'])
+Route::get('authors/{author:uuid}/recipes', [AuthorRecipesController::class, 'index'])
     ->name('authors.recipes.index');
 Route::get('recipes/{recipe}/ingredients', [RecipeIngredientsController::class, 'index'])
     ->name('recipes.ingredients.index');

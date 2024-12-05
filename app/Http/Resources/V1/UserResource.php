@@ -32,7 +32,7 @@ class UserResource extends JsonResource
                 ]
             ],
             'links' => [
-                ['self' => route('authors.show', ['author' => $this->id])]
+                ['self' => route('authors.show', ['author' => $this->uuid])]
             ]
         ];
     }
