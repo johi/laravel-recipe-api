@@ -39,5 +39,10 @@ class RecipeIngredient extends Model
             }
         });
     }
+    public function getRouteKeyName()
+    {
+        return 'uuid';
+    }
+
 }
 
