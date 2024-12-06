@@ -6,6 +6,7 @@ use App\Models\RecipeInstruction;
 use App\Models\Recipe;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class RecipeInstructionsControllerTest extends TestCase
@@ -17,7 +18,7 @@ class RecipeInstructionsControllerTest extends TestCase
     {
         $recipe = Recipe::factory()->create();
         $instructionsList = RecipeInstruction::factory(5)->create(['recipe_id' => $recipe->id]);
-        $response = $this->getJson(route('recipes.instructions.index', $recipe));
+        $response = $this->getJson(route('recipes.instructions.index', ['recipe' => $recipe->uuid]));
         $response->assertStatus(200)
             ->assertJsonStructure([
                 'data' => [
@@ -44,7 +45,7 @@ class RecipeInstructionsControllerTest extends TestCase
             'order' => 3,
             'description' => 'Instruction 3',
         ]);
-        $response = $this->getJson(route('recipes.instructions.index', $recipe));
+        $response = $this->getJson(route('recipes.instructions.index', ['recipe' => $recipe->uuid]));
         $response->assertStatus(200);
         $instructions = $response->json()['data'];
 
@@ -58,7 +59,12 @@ class RecipeInstructionsControllerTest extends TestCase
     {
         $recipe = Recipe::factory()->create();
         $instruction = RecipeInstruction::factory()->create(['recipe_id' => $recipe->id]);
-        $response = $this->getJson(route('recipes.instructions.show', [$recipe, $instruction]));
+        $response = $this->getJson(route('recipes.instructions.show',
+            [
+                'recipe' => $recipe->uuid,
+                'instruction' => $instruction->uuid
+            ])
+        );
         $response->assertStatus(200)
             ->assertJsonStructure([
                 'data' => $this->getInstructionStructure()
@@ -70,8 +76,8 @@ class RecipeInstructionsControllerTest extends TestCase
         $recipe = Recipe::factory()->create();
         $response = $this->getJson(route('recipes.instructions.show',
             [
-                'recipe' => $recipe,
-                'instruction' => 999
+                'recipe' => $recipe->uuid,
+                'instruction' => Str::uuid()
             ]
         ));
         $response->assertStatus(404);
@@ -82,8 +88,8 @@ class RecipeInstructionsControllerTest extends TestCase
     {
         $recipe = Recipe::factory()->create();
         $response = $this->postJson(
-            route('recipes.instructions.store', $recipe),
-            $this->getInstructionPayload()
+            route('recipes.instructions.store', ['recipe' => $recipe->uuid]),
+            $this->getInstructionPayload($recipe)
         );
         $response->assertStatus(401);
     }
@@ -94,8 +100,8 @@ class RecipeInstructionsControllerTest extends TestCase
         $recipe = Recipe::factory()->create(['user_id' => $user->id]);
         $response = $this->getAuthenticatedJsonPost(
             $user,
-            route('recipes.instructions.store', $recipe),
-            $this->getInstructionPayload($recipe->id)
+            route('recipes.instructions.store', ['recipe' => $recipe->uuid]),
+            $this->getInstructionPayload($recipe)
         );
         $response->assertStatus(201);
     }
@@ -106,20 +112,20 @@ class RecipeInstructionsControllerTest extends TestCase
         $recipe = Recipe::factory()->create(['user_id' => $user->id]);
         $response = $this->getAuthenticatedJsonPost(
             $user,
-            route('recipes.instructions.store', $recipe),
-            $this->getInstructionPayload($recipe->id)
+            route('recipes.instructions.store', ['recipe' => $recipe->uuid]),
+            $this->getInstructionPayload($recipe)
         );
         $this->assertEquals(1, RecipeInstruction::where('recipe_id', $recipe->id)->first()->order);
         $response = $this->getAuthenticatedJsonPost(
             $user,
-            route('recipes.instructions.store', $recipe),
-            $this->getInstructionPayload($recipe->id)
+            route('recipes.instructions.store', ['recipe' => $recipe->uuid]),
+            $this->getInstructionPayload($recipe)
         );
         $this->assertEquals(2, RecipeInstruction::where('recipe_id', $recipe->id)->latest('id')->first()->order);
         $response = $this->getAuthenticatedJsonPost(
             $user,
-            route('recipes.instructions.store', $recipe),
-            $this->getInstructionPayload($recipe->id)
+            route('recipes.instructions.store', ['recipe' => $recipe->uuid]),
+            $this->getInstructionPayload($recipe)
         );
         $this->assertEquals(3, RecipeInstruction::where('recipe_id', $recipe->id)->latest('id')->first()->order);
     }
@@ -129,8 +135,8 @@ class RecipeInstructionsControllerTest extends TestCase
         $recipe = Recipe::factory()->create();
         $response = $this->getAuthenticatedJsonPost(
             User::factory()->create(),
-            route('recipes.instructions.store', $recipe),
-            $this->getInstructionPayload($recipe->id)
+            route('recipes.instructions.store', ['recipe' => $recipe->uuid]),
+            $this->getInstructionPayload($recipe)
         );
         $response->assertStatus(403);
     }
@@ -140,8 +146,8 @@ class RecipeInstructionsControllerTest extends TestCase
         $recipe = Recipe::factory()->create();
         $response = $this->getAuthenticatedJsonPost(
             User::factory()->create(['is_admin' => true]),
-            route('recipes.instructions.store', $recipe),
-            $this->getInstructionPayload($recipe->id)
+            route('recipes.instructions.store', ['recipe' => $recipe->uuid]),
+            $this->getInstructionPayload($recipe)
         );
         $response->assertStatus(201);
     }
@@ -152,8 +158,8 @@ class RecipeInstructionsControllerTest extends TestCase
         $recipe = Recipe::factory()->create();
         $instruction = RecipeInstruction::factory()->create(['recipe_id' => $recipe->id]);
         $response = $this->putJson(
-            route('recipes.instructions.replace', [$recipe, $instruction]),
-            $this->getInstructionPayload($recipe->id)
+            route('recipes.instructions.replace', ['recipe' => $recipe->uuid, 'instruction' => $instruction->uuid]),
+            $this->getInstructionPayload($recipe)
         );
         $response->assertStatus(401);
     }
@@ -165,8 +171,8 @@ class RecipeInstructionsControllerTest extends TestCase
         $instruction = RecipeInstruction::factory()->create(['recipe_id' => $recipe->id]);
         $response = $this->getAuthenticatedJsonPut(
             $user,
-            route('recipes.instructions.replace', [$recipe, $instruction]),
-            $this->getInstructionPayload($recipe->id)
+            route('recipes.instructions.replace', ['recipe' => $recipe->uuid, 'instruction' => $instruction->uuid]),
+            $this->getInstructionPayload($recipe)
         );
         $response->assertStatus(200)
             ->assertJsonStructure(['data' => $this->getInstructionStructure()])
@@ -179,8 +185,8 @@ class RecipeInstructionsControllerTest extends TestCase
         $instruction = RecipeInstruction::factory()->create(['recipe_id' => $recipe->id]);
         $response = $this->getAuthenticatedJsonPut(
             User::factory()->create(),
-            route('recipes.instructions.replace', [$recipe, $instruction]),
-            $this->getInstructionPayload($recipe->id)
+            route('recipes.instructions.replace', ['recipe' => $recipe->uuid, 'instruction' => $instruction->uuid]),
+            $this->getInstructionPayload($recipe)
         );
         $response->assertStatus(403);
     }
@@ -191,8 +197,8 @@ class RecipeInstructionsControllerTest extends TestCase
         $instruction = RecipeInstruction::factory()->create(['recipe_id' => $recipe->id]);
         $response = $this->getAuthenticatedJsonPut(
             User::factory()->create(['is_admin' => true]),
-            route('recipes.instructions.replace',[$recipe,$instruction]),
-            $this->getInstructionPayload($recipe->id)
+            route('recipes.instructions.replace', ['recipe' => $recipe->uuid, 'instruction' => $instruction->uuid]),
+            $this->getInstructionPayload($recipe)
         );
         $response->assertStatus(200)
             ->assertJsonPath('data.attributes.description', 'Test Instruction');
@@ -203,8 +209,8 @@ class RecipeInstructionsControllerTest extends TestCase
         $recipe = Recipe::factory()->create();
         $response = $this->getAuthenticatedJsonPut(
             User::factory()->create(['is_admin' => true]),
-            route('recipes.instructions.replace', ['recipe' => $recipe, 'instruction' => 999]),
-            $this->getInstructionPayload($recipe->id)
+            route('recipes.instructions.replace', ['recipe' => $recipe->uuid, 'instruction' => Str::uuid()]),
+            $this->getInstructionPayload($recipe)
         );
         $response->assertStatus(404);
     }
@@ -215,7 +221,7 @@ class RecipeInstructionsControllerTest extends TestCase
         $recipe = Recipe::factory()->create();
         $instruction = RecipeInstruction::factory()->create(['recipe_id' => $recipe->id]);
         $response = $this->patchJson(
-            route('recipes.instructions.update',[$recipe, $instruction]),
+            route('recipes.instructions.update', ['recipe' => $recipe->uuid, 'instruction' => $instruction->uuid]),
             ['data' => ['attributes' => ['description' => 'PATCHED Instruction']]]
         );
         $response->assertStatus(401);
@@ -229,7 +235,7 @@ class RecipeInstructionsControllerTest extends TestCase
         $instruction = RecipeInstruction::factory()->create(['recipe_id' => $recipe->id]);
         $response = $this->getAuthenticatedJsonPatch(
             $user,
-            route('recipes.instructions.update', [$recipe, $instruction]),
+            route('recipes.instructions.update', ['recipe' => $recipe->uuid, 'instruction' => $instruction->uuid]),
             ['data' => ['attributes' => ['description' => 'PATCHED Instruction']]]
         );
         $response->assertStatus(200)
@@ -244,7 +250,7 @@ class RecipeInstructionsControllerTest extends TestCase
         $instruction = RecipeInstruction::factory()->create(['recipe_id' => $recipe->id]);
         $response = $this->getAuthenticatedJsonPatch(
             User::factory()->create(),
-            route('recipes.instructions.update', [$recipe, $instruction->id]),
+            route('recipes.instructions.update', ['recipe' => $recipe->uuid, 'instruction' => $instruction->uuid]),
             ['data' => ['attributes' => ['description' => 'PATCHED Instruction']]]
         );
         $response->assertStatus(403);
@@ -257,7 +263,7 @@ class RecipeInstructionsControllerTest extends TestCase
         $instruction = RecipeInstruction::factory()->create(['recipe_id' => $recipe->id]);
         $response = $this->getAuthenticatedJsonPatch(
             User::factory()->create(['is_admin' => true]),
-            route('recipes.instructions.update', [$recipe, $instruction]),
+            route('recipes.instructions.update', ['recipe' => $recipe->uuid, 'instruction' => $instruction->uuid]),
             ['data' => ['attributes' => ['description' => 'PATCHED Instruction']]]
         );
         $response->assertStatus(200)
@@ -271,7 +277,7 @@ class RecipeInstructionsControllerTest extends TestCase
         $recipe = Recipe::factory()->create();
         $response = $this->getAuthenticatedJsonPatch(
             User::factory()->create(['is_admin' => true]),
-            route('recipes.instructions.update', ['recipe' => $recipe->id, 'instruction' => 999]),
+            route('recipes.instructions.update', ['recipe' => $recipe->uuid, 'instruction' => Str::uuid()]),
             ['data' => ['attributes' => ['description' => 'PATCHED Instruction']]]
         );
         $response->assertStatus(404);
@@ -294,7 +300,7 @@ class RecipeInstructionsControllerTest extends TestCase
         ];
         $response = $this->getAuthenticatedJsonPost(
             $user,
-            route('recipes.instructions.update.order', $recipe),
+            route('recipes.instructions.update.order', ['recipe' => $recipe->uuid]),
             $payload
         );
         $response->assertStatus(200)
@@ -324,7 +330,7 @@ class RecipeInstructionsControllerTest extends TestCase
         ];
         $response = $this->getAuthenticatedJsonPost(
             $user,
-            route('recipes.instructions.update.order', $recipe),
+            route('recipes.instructions.update.order', ['recipe' => $recipe->uuid]),
             $payload
         );
         $response->assertStatus(400);
@@ -344,7 +350,7 @@ class RecipeInstructionsControllerTest extends TestCase
         ];
         $response = $this->getAuthenticatedJsonPost(
             $user,
-            route('recipes.instructions.update.order', $recipe),
+            route('recipes.instructions.update.order', ['recipe' => $recipe->uuid]),
             $payload
         );
         $response->assertStatus(400)
@@ -366,8 +372,8 @@ class RecipeInstructionsControllerTest extends TestCase
         $response = $this->getAuthenticatedJsonPost(
             $user,
             route('recipes.instructions.assign.order', [
-                'recipe' => $recipe->id,
-                'instruction' => $instructionToMove->id
+                'recipe' => $recipe->uuid,
+                'instruction' => $instructionToMove->uuid
             ]),
             ['data' => ['attributes' => ['order' => $newOrder]]]
         );
@@ -392,8 +398,8 @@ class RecipeInstructionsControllerTest extends TestCase
         $response = $this->getAuthenticatedJsonPost(
             $user,
             route('recipes.instructions.assign.order', [
-                'recipe' => $recipe->id,
-                'instruction' => $instructionToMove->id
+                'recipe' => $recipe->uuid,
+                'instruction' => $instructionToMove->uuid
             ]),
             ['data' => ['attributes' => ['order' => $newOrder]]]
         );
@@ -413,8 +419,8 @@ class RecipeInstructionsControllerTest extends TestCase
         $response = $this->getAuthenticatedJsonPost(
             $user,
             route('recipes.instructions.assign.order', [
-                'recipe' => $recipe->id,
-                'instruction' => $instructions[2]->id
+                'recipe' => $recipe->uuid,
+                'instruction' => $instructions[2]->uuid
             ]),
             ['data' => ['attributes' => ['order' => $newOrder]]]
         );
@@ -427,7 +433,12 @@ class RecipeInstructionsControllerTest extends TestCase
     {
         $recipe = Recipe::factory()->create();
         $instruction = RecipeInstruction::factory()->create(['recipe_id' => $recipe->id]);
-        $response = $this->deleteJson(route('recipes.instructions.destroy', [$recipe, $instruction]));
+        $response = $this->deleteJson(
+            route(
+                'recipes.instructions.destroy',
+                ['recipe' => $recipe->uuid, 'instruction' => $instruction->uuid]
+            )
+        );
         $response->assertStatus(401);
     }
 
@@ -438,7 +449,7 @@ class RecipeInstructionsControllerTest extends TestCase
         $instruction = RecipeInstruction::factory()->create(['recipe_id' => $recipe->id]);
         $response = $this->getAuthenticatedJsonDelete(
             $user,
-            route('recipes.instructions.destroy', [$recipe, $instruction])
+            route('recipes.instructions.destroy', ['recipe' => $recipe->uuid, 'instruction' => $instruction->uuid])
         );
         $response->assertStatus(200);
         $this->assertDatabaseMissing('recipe_instructions', ['id' => $instruction->id]);
@@ -450,7 +461,7 @@ class RecipeInstructionsControllerTest extends TestCase
         $instruction = RecipeInstruction::factory()->create(['recipe_id' => $recipe->id]);
         $response = $this->getAuthenticatedJsonDelete(
             User::factory()->create(),
-            route('recipes.instructions.destroy', [$recipe, $instruction])
+            route('recipes.instructions.destroy', ['recipe' => $recipe->uuid, 'instruction' => $instruction->uuid])
         );
         $response->assertStatus(403);
     }
@@ -461,7 +472,7 @@ class RecipeInstructionsControllerTest extends TestCase
         $instruction = RecipeInstruction::factory()->create(['recipe_id' => $recipe->id]);
         $response = $this->getAuthenticatedJsonDelete(
             User::factory()->create(['is_admin' => true]),
-            route('recipes.instructions.destroy', [$recipe, $instruction])
+            route('recipes.instructions.destroy', ['recipe' => $recipe->uuid, 'instruction' => $instruction->uuid])
         );
         $response->assertStatus(200);
     }
@@ -471,12 +482,12 @@ class RecipeInstructionsControllerTest extends TestCase
         $recipe = Recipe::factory()->create();
         $response = $this->getAuthenticatedJsonDelete(
             User::factory()->create(['is_admin' => true]),
-            route('recipes.instructions.destroy', ['recipe' => $recipe, 'instruction' => 999])
+            route('recipes.instructions.destroy', ['recipe' => $recipe->uuid, 'instruction' => Str::uuid()])
         );
         $response->assertStatus(404);
     }
 
-    private function getInstructionPayload(int $recipeId = 1): array
+    private function getInstructionPayload(Recipe $recipe): array
     {
         return [
             'data' => [
@@ -486,7 +497,7 @@ class RecipeInstructionsControllerTest extends TestCase
                 'relationships' => [
                     'recipe' => [
                         'data' => [
-                            'id' => $recipeId
+                            'id' => $recipe->uuid
                         ]
                     ]
                 ]
