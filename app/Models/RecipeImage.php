@@ -24,6 +24,11 @@ class RecipeImage extends Model
         });
     }
 
+    public function getRouteKeyName()
+    {
+        return 'uuid';
+    }
+
     public function recipe()
     {
         return $this->belongsTo(Recipe::class);
