@@ -67,7 +67,7 @@ class RecipesController extends ApiController
     public function store(StoreRecipeRequest $request)
     {
         Gate::authorize('store', Recipe::class);
-        $category = Category::findOrFail($request->input('data.relationships.category.data.id'));
+        $category = Category::where('uuid', $request->input('data.relationships.category.data.id'))->firstOrFail();
         return new RecipeResource(Recipe::create($request->mappedAttributes()));
     }
 
@@ -109,7 +109,7 @@ class RecipesController extends ApiController
         Gate::authorize('update', $recipe);
         $mappedAttributes = $request->mappedAttributes();
         if (isset($mappedAttributes['category_id'])) {
-            $category = Category::findOrFail($mappedAttributes['category_id']);
+            $category = Category::where('uuid', $request->input('data.relationships.category.data.id'))->firstOrFail();
         }
         $recipe->update($mappedAttributes);
         return new RecipeResource($recipe);
@@ -135,7 +135,7 @@ class RecipesController extends ApiController
     public function replace(ReplaceRecipeRequest $request, Recipe $recipe)
     {
         Gate::authorize('replace', $recipe);
-        $category = Category::findOrFail($request->input('data.relationships.category.data.id'));
+        $category = Category::where('uuid', $request->input('data.relationships.category.data.id'))->firstOrFail();
         $recipe->update($request->mappedAttributes());
         return new RecipeResource($recipe);
     }

@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Api\V1;
 
+use App\Models\Category;
+use App\Models\User;
 use App\Permissions\V1\Abilities;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -25,10 +27,10 @@ class ReplaceRecipeRequest extends BaseRecipeRequest
     public function rules(): array
     {
         $authorIdAttribute = 'data.relationships.author.data.id';
-        $authorRule = 'required|integer|exists:users,id';
+        $authorRule = 'required|uuid|exists:users,uuid';
         $rules = [
             $authorIdAttribute => $authorRule,
-            'data.relationships.category.data.id' => 'required|integer',
+            'data.relationships.category.data.id' => 'required|uuid|exists:categories,uuid',
             'data.attributes.title' => 'required|string',
             'data.attributes.description' => 'required|string',
             'data.attributes.preparationTimeMinutes' => 'required|integer',
@@ -37,7 +39,7 @@ class ReplaceRecipeRequest extends BaseRecipeRequest
         $user = Auth::user();
         if ($user) {
             if ($user->tokenCan(Abilities::UPDATE_OWN_RECIPE)) {
-                $rules[$authorIdAttribute] = $authorRule . '|size:' . $user->id;
+                $rules[$authorIdAttribute] = $authorRule . '|in:' . $user->uuid;
             }
         }
         return $rules;

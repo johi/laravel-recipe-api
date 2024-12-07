@@ -3,10 +3,12 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Api\V1;
 
+use App\Models\Category;
 use App\Models\User;
 use App\Permissions\V1\Abilities;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class StoreRecipeRequest extends BaseRecipeRequest
 {
@@ -26,10 +28,10 @@ class StoreRecipeRequest extends BaseRecipeRequest
     public function rules(): array
     {
         $authorIdAttribute = 'data.relationships.author.data.id';
-        $authorRule = 'required|integer|exists:users,id';
+        $authorRule = 'required|uuid|exists:users,uuid';
         $rules = [
             $authorIdAttribute => $authorRule,
-            'data.relationships.category.data.id' => 'required|integer',
+            'data.relationships.category.data.id' => 'required|uuid|exists:categories,uuid',
             'data.attributes.title' => 'required|string',
             'data.attributes.description' => 'required|string',
             'data.attributes.preparationTimeMinutes' => 'required|integer',
@@ -38,7 +40,7 @@ class StoreRecipeRequest extends BaseRecipeRequest
         $user = Auth::user();
         if ($user) {
             if ($user->tokenCan(Abilities::CREATE_OWN_RECIPE)) {
-                $rules[$authorIdAttribute] = $authorRule . '|size:' . $user->id;
+                $rules[$authorIdAttribute] = $authorRule . '|in:' . $user->uuid;
             }
         }
         return $rules;
@@ -48,7 +50,7 @@ class StoreRecipeRequest extends BaseRecipeRequest
         $user = Auth::user();
         if ($user) {
             return [
-                'data.relationships.author.data.id' => 'The data.relationships.author.data.id must match the users id.',
+                'data.relationships.author.data.id' => 'The data.relationships.author.data.id must match the users uuid.',
             ];
         }
         return [

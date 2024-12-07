@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\V1;
 
+use App\Models\Category;
 use App\Models\Recipe;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -12,6 +13,14 @@ use Tests\TestCase;
 class RecipesControllerTest extends TestCase
 {
     use RefreshDatabase;
+
+    private $testCategory;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+        $this->testCategory = Category::first();
+    }
 
     // RETRIEVE A LIST OF ALL RECIPES
     public function test_as_anonymous_i_get_a_list_of_all_recipes(): void
@@ -46,7 +55,7 @@ class RecipesControllerTest extends TestCase
 
     public function test_as_anonymous_i_cannot_create_a_recipe(): void
     {
-        $response = $this->postJson(route('recipes.store'), $this->getRecipePayload(User::factory()->create()));
+        $response = $this->postJson(route('recipes.store'), $this->getRecipePayload(User::factory()->create(), $this->testCategory));
         $response->assertStatus(401);
     }
 
@@ -56,7 +65,7 @@ class RecipesControllerTest extends TestCase
         $response = $this->getAuthenticatedJsonPost(
             $user,
             route('recipes.store'),
-            $this->getRecipePayload($user)
+            $this->getRecipePayload($user, $this->testCategory)
         );
         $response->assertStatus(201);
     }
@@ -67,7 +76,7 @@ class RecipesControllerTest extends TestCase
         $response = $this->getAuthenticatedJsonPost(
             $userList->first(),
             route('recipes.store'),
-            $this->getRecipePayload($userList->last())
+            $this->getRecipePayload($userList->last(), $this->testCategory)
         );
         $response->assertStatus(400);
     }
@@ -78,7 +87,7 @@ class RecipesControllerTest extends TestCase
         $response = $this->getAuthenticatedJsonPost(
             User::factory()->create(['is_admin' => true]),
             route('recipes.store'),
-            $this->getRecipePayload($user)
+            $this->getRecipePayload($user, $this->testCategory)
         );
         $response->assertStatus(201);
     }
@@ -88,7 +97,7 @@ class RecipesControllerTest extends TestCase
         $recipe = Recipe::factory()->create();
         $response = $this->putJson(
             route('recipes.replace', ['recipe' => $recipe->uuid]),
-            $this->getRecipePayload(User::factory()->create())
+            $this->getRecipePayload(User::factory()->create(), $this->testCategory)
         );
         $response->assertStatus(401);
     }
@@ -100,7 +109,7 @@ class RecipesControllerTest extends TestCase
         $response = $this->getAuthenticatedJsonPut(
             $user,
             route('recipes.replace', ['recipe' => $recipe->uuid]),
-            $this->getRecipePayload($user),
+            $this->getRecipePayload($user, $this->testCategory),
         );
         $response->assertStatus(200)
             ->assertJsonStructure(['data' => $this->getRecipeStructure()])
@@ -114,7 +123,7 @@ class RecipesControllerTest extends TestCase
         $response = $this->getAuthenticatedJsonPut(
             $usersList->first(),
             route('recipes.replace', ['recipe' => $recipe->uuid]),
-            $this->getRecipePayload($usersList->last()),
+            $this->getRecipePayload($usersList->last(), $this->testCategory),
         );
         $response->assertStatus(400);
     }
@@ -126,7 +135,7 @@ class RecipesControllerTest extends TestCase
         $response = $this->getAuthenticatedJsonPut(
             $usersList->last(),
             route('recipes.replace', ['recipe' => $recipe->uuid]),
-            $this->getRecipePayload($usersList->last()),
+            $this->getRecipePayload($usersList->last(), $this->testCategory),
         );
         $response->assertStatus(403);
     }
@@ -138,7 +147,7 @@ class RecipesControllerTest extends TestCase
         $response = $this->getAuthenticatedJsonPut(
             User::factory()->create(['is_admin' => true]),
             route('recipes.replace', ['recipe' => $recipe->uuid]),
-            $this->getRecipePayload($user),
+            $this->getRecipePayload($user, $this->testCategory),
         );
         $response->assertStatus(200)
             ->assertJsonPath('data.attributes.title', 'Test Recipe');
@@ -150,7 +159,7 @@ class RecipesControllerTest extends TestCase
         $response = $this->getAuthenticatedJsonPut(
             User::factory()->create(['is_admin' => true]),
             route('recipes.replace', ['recipe' => Str::uuid()]),
-            $this->getRecipePayload($user),
+            $this->getRecipePayload($user, $this->testCategory),
         );
         $response->assertStatus(404);
     }
@@ -284,7 +293,7 @@ class RecipesControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
-    private function getRecipePayload(User $author, int $categoryId = 1): array
+    private function getRecipePayload(User $author, Category $category): array
     {
         return [
             'data' => [
@@ -297,12 +306,12 @@ class RecipesControllerTest extends TestCase
                 'relationships' => [
                     'author' => [
                         'data' => [
-                            'id' => $author->id
+                            'id' => $author->uuid
                         ]
                     ],
                     'category' => [
                         'data' => [
-                            'id' => $categoryId
+                            'id' => $category->uuid
                         ]
                     ]
                 ]
