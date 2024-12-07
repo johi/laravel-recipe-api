@@ -19,7 +19,7 @@ class RecipeImagesControllerTest extends TestCase
     {
         $recipe = Recipe::factory()->create();
         RecipeImage::factory()->count(3)->create(['recipe_id' => $recipe->id]);
-        $response = $this->getJson(route('recipes.images.index', $recipe));
+        $response = $this->getJson(route('recipes.images.index', ['recipe' => $recipe->uuid]));
         $response->assertStatus(200)
             ->assertJsonCount(3, 'data')
             ->assertJsonStructure([
@@ -36,7 +36,7 @@ class RecipeImagesControllerTest extends TestCase
         $file = UploadedFile::fake()->image('test-image.jpg', 1200, 900);
         $response = $this->getAuthenticatedJsonPost(
             $user,
-            route('recipes.images.store', $recipe),
+            route('recipes.images.store', ['recipe' => $recipe->uuid]),
             ['image' => $file]
         );
         $response->assertCreated()
@@ -57,7 +57,7 @@ class RecipeImagesControllerTest extends TestCase
         $file = UploadedFile::fake()->create('not-an-image.txt', 100, 'text/plain');
         $response = $this->getAuthenticatedJsonPost(
             $user,
-            route('recipes.images.store', $recipe),
+            route('recipes.images.store', ['recipe' => $recipe->uuid]),
             ['image' => $file]
         );
         $response->assertStatus(400)
@@ -71,7 +71,7 @@ class RecipeImagesControllerTest extends TestCase
         $file = UploadedFile::fake()->image('small-image.jpg', 400, 300);
         $response = $this->getAuthenticatedJsonPost(
             $user,
-            route('recipes.images.store', $recipe),
+            route('recipes.images.store', ['recipe' => $recipe->uuid]),
             ['image' => $file]
         );
         $response->assertStatus(400)
@@ -85,7 +85,7 @@ class RecipeImagesControllerTest extends TestCase
         $file = UploadedFile::fake()->image('wrong-aspect-ratio.jpg', 800, 800);
         $response = $this->getAuthenticatedJsonPost(
             $user,
-            route('recipes.images.store', $recipe),
+            route('recipes.images.store', ['recipe' => $recipe->uuid]),
             ['image' => $file]
         );
         $response->assertStatus(400)
@@ -96,7 +96,7 @@ class RecipeImagesControllerTest extends TestCase
     {
         $recipe = Recipe::factory()->create();
         $image = RecipeImage::factory()->create(['recipe_id' => $recipe->id]);
-        $response = $this->getJson(route('recipes.images.show', [$recipe, $image]));
+        $response = $this->getJson(route('recipes.images.show', ['recipe' => $recipe->uuid, $image]));
         $response->assertStatus(200)
             ->assertJsonStructure([
                 'data' => $this->getRecipeImageStructure()
@@ -113,7 +113,7 @@ class RecipeImagesControllerTest extends TestCase
         $image = RecipeImage::factory()->create(['recipe_id' => $recipe->id, 'file_path' => $filePath]);
         $response = $this->getAuthenticatedJsonDelete(
             $user,
-            route('recipes.images.destroy', [$recipe, $image])
+            route('recipes.images.destroy', ['recipe' => $recipe->uuid, $image])
         );
         $response->assertStatus(200)
             ->assertJsonStructure([

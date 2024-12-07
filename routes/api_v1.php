@@ -10,72 +10,78 @@ use App\Http\Controllers\Api\V1\AuthorsController;
 use App\Http\Controllers\Api\V1\UsersController;
 use Illuminate\Support\Facades\Route;
 
+#categories
 Route::get('/categories', [CategoriesController::class, 'index'])
     ->name('categories.index');
+#recipes
 Route::get('recipes', [RecipesController::class, 'index'])
     ->name('recipes.index');
-Route::get('recipes/{recipe}', [RecipesController::class, 'show'])
+Route::get('recipes/{recipe:uuid}', [RecipesController::class, 'show'])
     ->name('recipes.show');
+#authors
 Route::get('authors', [AuthorsController::class, 'index'])
     ->name('authors.index');
-Route::get('authors/{author}', [AuthorsController::class, 'show'])
+Route::get('authors/{author:uuid}', [AuthorsController::class, 'show'])
     ->name('authors.show');
-Route::get('authors/{author}/recipes', [AuthorRecipesController::class, 'index'])
+Route::get('authors/{author:uuid}/recipes', [AuthorRecipesController::class, 'index'])
     ->name('authors.recipes.index');
-Route::get('recipes/{recipe}/ingredients', [RecipeIngredientsController::class, 'index'])
+#ingredients
+Route::get('recipes/{recipe:uuid}/ingredients', [RecipeIngredientsController::class, 'index'])
     ->name('recipes.ingredients.index');
-Route::get('recipes/{recipe}/ingredients/{ingredient}', [RecipeIngredientsController::class, 'show'])
+Route::get('recipes/{recipe:uuid}/ingredients/{ingredient:uuid}', [RecipeIngredientsController::class, 'show'])
     ->name('recipes.ingredients.show')->scopeBindings();
-Route::get('recipes/{recipe}/instructions', [RecipeInstructionsController::class, 'index'])
+#instructions
+Route::get('recipes/{recipe:uuid}/instructions', [RecipeInstructionsController::class, 'index'])
     ->name('recipes.instructions.index');
-Route::get('recipes/{recipe}/instructions/{instruction}', [RecipeInstructionsController::class, 'show'])
+Route::get('recipes/{recipe:uuid}/instructions/{instruction:uuid}', [RecipeInstructionsController::class, 'show'])
     ->name('recipes.instructions.show')->scopeBindings();
-Route::get('recipes/{recipe}/images', [RecipeImagesController::class, 'index'])
+#images
+Route::get('recipes/{recipe:uuid}/images', [RecipeImagesController::class, 'index'])
     ->name('recipes.images.index');
-Route::get('recipes/{recipe}/images/{image}', [RecipeImagesController::class, 'show'])
+Route::get('recipes/{recipe:uuid}/images/{image:uuid}', [RecipeImagesController::class, 'show'])
     ->name('recipes.images.show')->scopeBindings();
 
 Route::middleware('auth:sanctum')->group(function () {
-
+    #recipes
     Route::post('recipes', [RecipesController::class, 'store'])
         ->name('recipes.store');
-    Route::delete('recipes/{recipe}', [RecipesController::class, 'destroy'])
+    Route::delete('recipes/{recipe:uuid}', [RecipesController::class, 'destroy'])
         ->name('recipes.destroy');
-    Route::put('recipes/{recipe}', [RecipesController::class, 'replace'])
+    Route::put('recipes/{recipe:uuid}', [RecipesController::class, 'replace'])
         ->name('recipes.replace');
-    Route::patch('recipes/{recipe}', [RecipesController::class, 'update'])
+    Route::patch('recipes/{recipe:uuid}', [RecipesController::class, 'update'])
         ->name('recipes.update');
-
-    Route::apiResource('users', UsersController::class)->except(['update']);
-    Route::put('users/{user}', [UsersController::class, 'replace'])->name('users.replace');
-    Route::patch('users/{user}', [UsersController::class, 'update'])->name('users.update');
-
-    // ingredients
-    Route::post('recipes/{recipe}/ingredients', [RecipeIngredientsController::class, 'store'])
+    #users
+    Route::apiResource('users', UsersController::class)->except(['update', 'show', 'destroy']);
+    Route::get('users/{user:uuid}', [UsersController::class, 'show'])->name('users.show');
+    Route::delete('users/{user:uuid}', [UsersController::class, 'destroy'])->name('users.destroy');
+    Route::put('users/{user:uuid}', [UsersController::class, 'replace'])->name('users.replace');
+    Route::patch('users/{user:uuid}', [UsersController::class, 'update'])->name('users.update');
+    #ingredients
+    Route::post('recipes/{recipe:uuid}/ingredients', [RecipeIngredientsController::class, 'store'])
         ->name('recipes.ingredients.store');
-    Route::put('recipes/{recipe}/ingredients/{ingredient}', [RecipeIngredientsController::class, 'replace'])
+    Route::put('recipes/{recipe:uuid}/ingredients/{ingredient:uuid}', [RecipeIngredientsController::class, 'replace'])
         ->name('recipes.ingredients.replace')->scopeBindings();
-    Route::patch('recipes/{recipe}/ingredients/{ingredient}', [RecipeIngredientsController::class, 'update'])
+    Route::patch('recipes/{recipe:uuid}/ingredients/{ingredient:uuid}', [RecipeIngredientsController::class, 'update'])
         ->name('recipes.ingredients.update')->scopeBindings();
-    Route::delete('recipes/{recipe}/ingredients/{ingredient}', [RecipeIngredientsController::class, 'destroy'])
+    Route::delete('recipes/{recipe:uuid}/ingredients/{ingredient:uuid}', [RecipeIngredientsController::class, 'destroy'])
         ->name('recipes.ingredients.destroy')->scopeBindings();
-
-    // instructions
-    Route::post('recipes/{recipe}/instructions', [RecipeInstructionsController::class, 'store'])
+    #instructions
+    Route::post('recipes/{recipe:uuid}/instructions', [RecipeInstructionsController::class, 'store'])
         ->name('recipes.instructions.store');
-    Route::put('recipes/{recipe}/instructions/{instruction}', [RecipeInstructionsController::class, 'replace'])
+    Route::put('recipes/{recipe:uuid}/instructions/{instruction:uuid}', [RecipeInstructionsController::class, 'replace'])
         ->name('recipes.instructions.replace')->scopeBindings();
-    Route::patch('recipes/{recipe}/instructions/{instruction}', [RecipeInstructionsController::class, 'update'])
+    Route::patch('recipes/{recipe:uuid}/instructions/{instruction}', [RecipeInstructionsController::class, 'update'])
         ->name('recipes.instructions.update')->scopeBindings();
-    Route::delete('recipes/{recipe}/instructions/{instruction}', [RecipeInstructionsController::class, 'destroy'])
+    Route::delete('recipes/{recipe:uuid}/instructions/{instruction:uuid}', [RecipeInstructionsController::class, 'destroy'])
         ->name('recipes.instructions.destroy')->scopeBindings();
-    Route::post('recipes/{recipe}/instructions/update-order', [RecipeInstructionsController::class, 'updateOrder'])
+    Route::post('recipes/{recipe:uuid}/instructions/update-order', [RecipeInstructionsController::class, 'updateOrder'])
         ->name('recipes.instructions.update.order');
-    Route::post('recipes/{recipe}/instructions/{instruction}/assign-order', [RecipeInstructionsController::class, 'assignOrder'])
+    Route::post('recipes/{recipe:uuid}/instructions/{instruction:uuid}/assign-order', [RecipeInstructionsController::class, 'assignOrder'])
         ->name('recipes.instructions.assign.order')->scopeBindings();
-
-    Route::post('recipes/{recipe}/images', [RecipeImagesController::class, 'store'])
+    #images
+    Route::post('recipes/{recipe:uuid}/images', [RecipeImagesController::class, 'store'])
         ->name('recipes.images.store');
-    Route::delete('recipes/{recipe}/images/{image}', [RecipeImagesController::class, 'destroy'])
+    Route::delete('recipes/{recipe:uuid}/images/{image:uuid}', [RecipeImagesController::class, 'destroy'])
         ->name('recipes.images.destroy')->scopeBindings();
 });

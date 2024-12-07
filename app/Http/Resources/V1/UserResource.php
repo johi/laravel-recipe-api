@@ -17,7 +17,7 @@ class UserResource extends JsonResource
     {
         return [
             'type' => 'user',
-            'id' => $this->id,
+            'id' => $this->uuid,
             'attributes' => [
                 'name' => $this->name,
                 'email' => $this->email,
@@ -32,7 +32,7 @@ class UserResource extends JsonResource
                 ]
             ],
             'links' => [
-                ['self' => route('authors.show', ['author' => $this->id])]
+                ['self' => route('authors.show', ['author' => $this->uuid])]
             ]
         ];
     }

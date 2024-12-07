@@ -17,7 +17,7 @@ class CategoryResource extends JsonResource
     {
         return [
             'type' => 'recipe',
-            'id' => $this->id,
+            'id' => $this->uuid,
             'attributes' => [
                 'title' => $this->title,
             ],

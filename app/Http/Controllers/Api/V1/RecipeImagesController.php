@@ -17,7 +17,7 @@ class RecipeImagesController extends ApiController
     /**
      * Get all images for a recipe
      * @group RecipeImages
-     * @response {"data":[{"type":"recipeImage","id":7,"attributes":{"imageUrl":"http://localhost:3001/recipes/images/5e5cb3ff-35dd-4854-812b-c70fb8ee8f27.png"},"relationships":{"recipe":{"data":{"type":"recipe","id":1},"links":{"self":"http://localhost:3001/api/v1/recipes/1"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/1/images"}},{"type":"recipeImage","id":8,"attributes":{"imageUrl":"http://localhost:3001/recipes/images/a395ca73-ed1f-43b6-af25-7610614e531b.png"},"relationships":{"recipe":{"data":{"type":"recipe","id":1},"links":{"self":"http://localhost:3001/api/v1/recipes/1"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/1/images"}}]}
+     * @response {"data":[{"type":"image","id":"e297fa0c-6d9a-4897-bfef-1d95c3ef6489","attributes":{"imageUrl":"http://localhost:3001/recipes/images/f832cbdf-d9c0-46c9-8f50-d0809dc3d831.png"},"relationships":{"recipe":{"data":{"type":"recipe","id":"268b64ce-170d-4c39-97fa-515a531da1d2"},"links":{"self":"http://localhost:3001/api/v1/recipes/268b64ce-170d-4c39-97fa-515a531da1d2"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/268b64ce-170d-4c39-97fa-515a531da1d2/images/e297fa0c-6d9a-4897-bfef-1d95c3ef6489"}},{"type":"image","id":"975534e8-d559-4343-9e38-e027ab748ff1","attributes":{"imageUrl":"http://localhost:3001/recipes/images/21a386b3-1db3-4455-8942-512c821deaad.png"},"relationships":{"recipe":{"data":{"type":"recipe","id":"268b64ce-170d-4c39-97fa-515a531da1d2"},"links":{"self":"http://localhost:3001/api/v1/recipes/268b64ce-170d-4c39-97fa-515a531da1d2"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/268b64ce-170d-4c39-97fa-515a531da1d2/images/975534e8-d559-4343-9e38-e027ab748ff1"}}]}
      */
     public function index(Recipe $recipe)
     {
@@ -29,7 +29,7 @@ class RecipeImagesController extends ApiController
      * @group RecipeImages
      * @bodyParam image file required The image file to upload. Must be a JPEG, PNG, or JPG format, with a max size of 2MB
      * aspect ratio is expected to be 4:3 and minimum resolution should be 800x600
-     * @response {"data":{"type":"recipeImage","id":8,"attributes":{"imageUrl":"http://localhost:3001/recipes/images/a395ca73-ed1f-43b6-af25-7610614e531b.png"},"relationships":{"recipe":{"data":{"type":"recipe","id":1},"links":{"self":"http://localhost:3001/api/v1/recipes/1"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/1/images"}}}
+     * @response {"data":{"type":"image","id":"975534e8-d559-4343-9e38-e027ab748ff1","attributes":{"imageUrl":"http://localhost:3001/recipes/images/21a386b3-1db3-4455-8942-512c821deaad.png"},"relationships":{"recipe":{"data":{"type":"recipe","id":"268b64ce-170d-4c39-97fa-515a531da1d2"},"links":{"self":"http://localhost:3001/api/v1/recipes/268b64ce-170d-4c39-97fa-515a531da1d2"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/268b64ce-170d-4c39-97fa-515a531da1d2/images/975534e8-d559-4343-9e38-e027ab748ff1"}}}
      */
     public function store(StoreRecipeImageRequest $request, Recipe $recipe)
     {
@@ -46,7 +46,7 @@ class RecipeImagesController extends ApiController
     /**
      * Show a single recipeImage
      * @group RecipeImages
-     * @response {"data":{"type":"recipeImage","id":8,"attributes":{"imageUrl":"http://localhost:3001/recipes/images/a395ca73-ed1f-43b6-af25-7610614e531b.png"},"relationships":{"recipe":{"data":{"type":"recipe","id":1},"links":{"self":"http://localhost:3001/api/v1/recipes/1"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/1/images"}}}
+     * @response {"data":{"type":"image","id":"975534e8-d559-4343-9e38-e027ab748ff1","attributes":{"imageUrl":"http://localhost:3001/recipes/images/21a386b3-1db3-4455-8942-512c821deaad.png"},"relationships":{"recipe":{"data":{"type":"recipe","id":"268b64ce-170d-4c39-97fa-515a531da1d2"},"links":{"self":"http://localhost:3001/api/v1/recipes/268b64ce-170d-4c39-97fa-515a531da1d2"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/268b64ce-170d-4c39-97fa-515a531da1d2/images/975534e8-d559-4343-9e38-e027ab748ff1"}}}
      */
     public function show(Recipe $recipe, RecipeImage $image)
     {

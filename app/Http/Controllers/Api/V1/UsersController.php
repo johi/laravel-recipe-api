@@ -32,7 +32,7 @@ class UsersController extends ApiController
      * @queryParam filter[name] Filter by name, works with or without use of wildcard Example:`*`Miller
      * @queryParam include Include related resources, possible values: recipes Example: recipes
      * @queryParam sort Data field(s) to sort by: name, email, createdAt, updatedAt. Separate multiple with commas. Denote descending sort with a minus sign. Example: name,-createdAt
-     * @response {"data":[{"type":"user","id":1,"attributes":{"name":"Admin","email":"admin@example.com","isAdmin":1,"included":[]},"links":[{"self":"http://localhost:3001/api/v1/authors/1"}]},{"type":"user","id":2,"attributes":{"name":"Mrs. Eulah Schaefer V","email":"mabel.kris@example.com","isAdmin":0,"included":[]},"links":[{"self":"http://localhost:3001/api/v1/authors/2"}]}],"links":{"first":"http://localhost:3001/api/v1/users?page=1","last":"http://localhost:3001/api/v1/users?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"http://localhost:3001/api/v1/users?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"http://localhost:3001/api/v1/users","per_page":15,"to":11,"total":11}}
+     * @response {"data":[{"type":"user","id":"4ccaa5ed-aaf9-4ed3-81bb-54140a77132b","attributes":{"name":"Admin","email":"admin@example.com","isAdmin":true,"included":[]},"links":[{"self":"http://localhost:3001/api/v1/authors/4ccaa5ed-aaf9-4ed3-81bb-54140a77132b"}]},{"type":"user","id":"18034e5b-e428-4af1-aca8-9e177ad95020","attributes":{"name":"Rafaela Beahan","email":"scot23@example.net","isAdmin":false,"included":[]},"links":[{"self":"http://localhost:3001/api/v1/authors/18034e5b-e428-4af1-aca8-9e177ad95020"}]}],"links":{"first":"http://localhost:3001/api/v1/users?page=1","last":"http://localhost:3001/api/v1/users?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"http://localhost:3001/api/v1/users?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"http://localhost:3001/api/v1/users","per_page":15,"to":11,"total":11}}
      */
     public function index(AuthorFilter $filters)
     {
@@ -53,7 +53,7 @@ class UsersController extends ApiController
      * @bodyParam data.attributes.email string required example: john.doe@example.com
      * @bodyParam data.attributes.isAdmin boolean required example: true
      * @bodyParam data.attributes.password string required
-     * @response {"data":{"type":"user","id":12,"attributes":{"name":"Test User","email":"test@example.com","isAdmin":null,"included":[]},"links":[{"self":"http://localhost:3001/api/v1/authors/12"}]}}
+     * @response {"data":{"type":"user","id":"ec791f55-cea3-4244-ae6e-93f18bf9e96a","attributes":{"name":"Mr. Elliot Windler Sr.","email":"tomas.dare@example.com","isAdmin":false,"included":[]},"links":[{"self":"http://localhost:3001/api/v1/authors/ec791f55-cea3-4244-ae6e-93f18bf9e96a"}]}}
      */
     public function store(StoreUserRequest $request)
     {
@@ -65,14 +65,13 @@ class UsersController extends ApiController
      * Get a single user
      *
      * @group Users
-     * @urlParam id int required Example: 1
      * @queryParam include Include related resources, possible values: recipes Example: recipes
-     * @response {"data":{"type":"user","id":3,"attributes":{"name":"Miss Roxane Barton","email":"okey67@example.org","isAdmin":0,"included":[]},"links":[{"self":"http://localhost:3001/api/v1/authors/3"}]}}
+     * @response {"data":{"type":"user","id":"ec791f55-cea3-4244-ae6e-93f18bf9e96a","attributes":{"name":"Mr. Elliot Windler Sr.","email":"tomas.dare@example.com","isAdmin":false,"included":[]},"links":[{"self":"http://localhost:3001/api/v1/authors/ec791f55-cea3-4244-ae6e-93f18bf9e96a"}]}}
      */
-    public function show(int $userId)
+    public function show(User $user)
     {
         return new UserResource(User::with($this->includes($this->possibleIncludes))
-            ->where('id', $userId)
+            ->where('id', $user->id)
             ->firstOrFail()
         );
     }
@@ -87,7 +86,7 @@ class UsersController extends ApiController
      * @bodyParam data.attributes.email string optional example: john.doe@example.com
      * @bodyParam data.attributes.isAdmin boolean optional example: true
      * @bodyParam data.attributes.password string optional
-     * @response {"data":{"type":"user","id":3,"attributes":{"name":"Miss Roxane Barton","email":"okey67@example.org","isAdmin":0,"included":[]},"links":[{"self":"http://localhost:3001/api/v1/authors/3"}]}}
+     * @response {"data":{"type":"user","id":"ec791f55-cea3-4244-ae6e-93f18bf9e96a","attributes":{"name":"Mr. Elliot Windler Sr.","email":"tomas.dare@example.com","isAdmin":false,"included":[]},"links":[{"self":"http://localhost:3001/api/v1/authors/ec791f55-cea3-4244-ae6e-93f18bf9e96a"}]}}
      */
     public function update(UpdateUserRequest $request, User $user)
     {
@@ -106,7 +105,7 @@ class UsersController extends ApiController
      * @bodyParam data.attributes.email string required example: john.doe@example.com
      * @bodyParam data.attributes.isAdmin boolean required example: true
      * @bodyParam data.attributes.password string required
-     * @response {"data":{"type":"user","id":3,"attributes":{"name":"Miss Roxane Barton","email":"okey67@example.org","isAdmin":0,"included":[]},"links":[{"self":"http://localhost:3001/api/v1/authors/3"}]}}
+     * @response {"data":{"type":"user","id":"ec791f55-cea3-4244-ae6e-93f18bf9e96a","attributes":{"name":"Mr. Elliot Windler Sr.","email":"tomas.dare@example.com","isAdmin":false,"included":[]},"links":[{"self":"http://localhost:3001/api/v1/authors/ec791f55-cea3-4244-ae6e-93f18bf9e96a"}]}}
      */
     public function replace(ReplaceUserRequest $request, User $user)
     {

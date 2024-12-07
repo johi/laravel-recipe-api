@@ -5,7 +5,7 @@ namespace App\Http\Requests\Api\V1;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreIngredientRequest extends BaseIngredientRequest
+class UpdateRecipeInstructionRequest extends BaseRecipeInstructionRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,9 +23,8 @@ class StoreIngredientRequest extends BaseIngredientRequest
     public function rules(): array
     {
         return [
-            'data.attributes.title' => 'required|string',
-            'data.attributes.quantity' => 'required|integer',
-            'data.attributes.unit' => 'required|string',
+            'data.attributes.description' => 'required|string', // since we only have one data field it's required
+            'data.attributes.order' => 'prohibited',
         ];
     }
 }

@@ -19,6 +19,7 @@ Some criteria that have driven the development are as follows:
 - it should allow filtering results from resource lists
 - it should allow including related for resource
 - sorting on resource lists
+- use of uuids instead of surrogate ids to give objects a true identity
 
 The demo is inspired by the excellent [laravel API master class tutorial](https://github.com/laracasts/laravel-api-master-class/) 
 by Jeremy McPeak on [laracasts](https://laracasts.com/series/laravel-api-master-class). 

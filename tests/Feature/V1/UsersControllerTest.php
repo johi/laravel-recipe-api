@@ -5,6 +5,7 @@ namespace Tests\Feature\V1;
 use App\Models\Recipe;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 #@todo email already taken + validation
@@ -62,7 +63,7 @@ class UsersControllerTest extends TestCase
     public function test_as_anonymous_i_dont_get_a_specific_user(): void
     {
         $user = User::factory()->create();
-        $response = $this->getJson(route('users.show', $user));
+        $response = $this->getJson(route('users.show', ['user' => $user->uuid]));
         $response->assertStatus(401)
             ->assertJsonStructure([
                 'message',
@@ -76,7 +77,7 @@ class UsersControllerTest extends TestCase
         $userList = User::factory(3)->create();
         $response = $this->getAuthenticatedUserJsonGet(
             User::factory()->create(),
-            route('users.show', ['user' => $userList->first()->id]));
+            route('users.show', ['user' => $userList->first()->uuid]));
         $response->assertStatus(200);
     }
 
@@ -85,7 +86,7 @@ class UsersControllerTest extends TestCase
         $userList = User::factory(3)->create();
         $response = $this->getAuthenticatedUserJsonGet(
             User::factory()->create(['is_admin' => true]),
-            route('users.show', ['user' => $userList->first()->id]));
+            route('users.show', ['user' => $userList->first()->uuid]));
         $response->assertStatus(200)
             ->assertJsonStructure($this->getUserJsonStructure());
     }
@@ -97,7 +98,7 @@ class UsersControllerTest extends TestCase
         $userList = User::factory(3)->create();
         $response = $this->getAuthenticatedUserJsonGet(
             User::factory()->create(['is_admin' => true]),
-            route('users.show', ['user' => 100]));
+            route('users.show', ['user' => Str::uuid()]));
         $response->assertStatus(404);
     }
 
@@ -108,7 +109,7 @@ class UsersControllerTest extends TestCase
         $response = $this->getAuthenticatedUserJsonGet(
             User::factory()->create(['is_admin' => true]),
             route('users.show', [
-                'user' => $userList->first()->id,
+                'user' => $userList->first()->uuid,
                 'include' => 'recipes'
             ]));
         $response->assertStatus(200)
@@ -148,7 +149,7 @@ class UsersControllerTest extends TestCase
     {
         $userList = User::factory(3)->create();
         $response = $this->putJson(
-            route('users.update', ['user' => $userList->first()->id]),
+            route('users.update', ['user' => $userList->first()->uuid]),
             $this->getUserPayload()
         );
         $response->assertStatus(401);
@@ -159,7 +160,7 @@ class UsersControllerTest extends TestCase
         $user = User::factory()->create();
         $response = $this->getAuthenticatedJsonPut(
             $user,
-            route('users.replace', $user),
+            route('users.replace', ['user' => $user->uuid]),
             $this->getUserPayload(['email' => 'test2@example.com'])
         );
         $response->assertStatus(403);
@@ -172,7 +173,7 @@ class UsersControllerTest extends TestCase
         $user = User::factory()->create(['is_admin' => true]);
         $response = $this->getAuthenticatedJsonPut(
             $user,
-            route('users.replace', $user),
+            route('users.replace', ['user' => $user->uuid]),
             $this->getUserPayload(['email' => 'test2@example.com'])
         );
         $response->assertStatus(200)
@@ -184,7 +185,7 @@ class UsersControllerTest extends TestCase
     {
         $response = $this->getAuthenticatedJsonPut(
             User::factory()->create(['is_admin' => true]),
-            route('users.replace', ['user' => 100]),
+            route('users.replace', ['user' => Str::uuid()]),
             $this->getUserPayload(['email' => 'test2@example.com'])
         );
         $response->assertStatus(404);
@@ -195,7 +196,7 @@ class UsersControllerTest extends TestCase
     {
         $userList = User::factory(3)->create();
         $response = $this->patchJson(
-            route('users.update', ['user' => $userList->first()->id]),
+            route('users.update', ['user' => $userList->first()->uuid]),
             ['data' => [ 'attributes' => ['email' => 'test2@example.com']]]
         );
         $response->assertStatus(401);
@@ -206,7 +207,7 @@ class UsersControllerTest extends TestCase
         $userList = User::factory(3)->create();
         $response = $this->getAuthenticatedJsonPatch(
             User::factory()->create(),
-            route('users.update', ['user' => $userList->first()->id]),
+            route('users.update', ['user' => $userList->first()->uuid]),
             ['data' => [ 'attributes' => ['email' => 'test2@example.com']]]
         );
         $response->assertStatus(403);
@@ -217,7 +218,7 @@ class UsersControllerTest extends TestCase
         $userList = User::factory(3)->create();
         $response = $this->getAuthenticatedJsonPatch(
             User::factory()->create(['is_admin' => true]),
-            route('users.update', ['user' => $userList->first()->id]),
+            route('users.update', ['user' => $userList->first()->uuid]),
             ['data' => [ 'attributes' => ['email' => 'test2@example.com']]]
         );
         $response->assertStatus(200)
@@ -229,7 +230,7 @@ class UsersControllerTest extends TestCase
     {
         $response = $this->getAuthenticatedJsonPatch(
             User::factory()->create(['is_admin' => true]),
-            route('users.update', ['user' => 100]),
+            route('users.update', ['user' => Str::uuid()]),
             ['data' => [ 'attributes' => ['email' => 'test2@example.com']]]
         );
         $response->assertStatus(404);
@@ -239,7 +240,7 @@ class UsersControllerTest extends TestCase
     public function test_as_anonymous_i_cannot_delete_a_user(): void
     {
         $user = User::factory()->create();
-        $response = $this->deleteJson(route('users.destroy', $user));
+        $response = $this->deleteJson(route('users.destroy', ['user' => $user->uuid]));
         $response->assertStatus(401);
     }
 
@@ -248,7 +249,7 @@ class UsersControllerTest extends TestCase
         $user = User::factory()->create();
         $response = $this->getAuthenticatedJsonDelete(
             User::factory()->create(),
-            route('users.destroy', $user)
+            route('users.destroy', ['user' => $user->uuid])
         );
         $response->assertStatus(403);
     }
@@ -258,7 +259,7 @@ class UsersControllerTest extends TestCase
         $user = User::factory()->create();
         $response = $this->getAuthenticatedJsonDelete(
             User::factory()->create(['is_admin' => true]),
-            route('users.destroy', $user)
+            route('users.destroy', ['user' => $user->uuid])
         );
         $response->assertStatus(200);
     }
@@ -266,10 +267,10 @@ class UsersControllerTest extends TestCase
     public function test_as_admin_i_cannot_delete_a_user_with_attached_recipes(): void
     {
         $user = User::factory()->create();
-        $recipeList = Recipe::factory(3)->create(['user_id' => $user]);
+        $recipeList = Recipe::factory(3)->create(['user_id' => $user->id]);
         $response = $this->getAuthenticatedJsonDelete(
             User::factory()->create(['is_admin' => true]),
-            route('users.destroy', $user)
+            route('users.destroy', ['user' => $user->uuid])
         );
         $response->assertStatus(400);
     }
@@ -280,7 +281,7 @@ class UsersControllerTest extends TestCase
         $recipeList = Recipe::factory(3)->create(['user_id' => $user->id]);
         $response = $this->getAuthenticatedJsonDelete(
             User::factory()->create(['is_admin' => true]),
-            route('users.destroy', ['user' =>  $user->id, 'strategy' => 'force'])
+            route('users.destroy', ['user' =>  $user->uuid, 'strategy' => 'force'])
         );
         $response->assertStatus(200);
     }
@@ -289,7 +290,7 @@ class UsersControllerTest extends TestCase
     {
         $response = $this->getAuthenticatedJsonDelete(
             User::factory()->create(['is_admin' => true]),
-            route('users.destroy', ['user' =>  100])
+            route('users.destroy', ['user' =>  Str::uuid()])
         );
         $response->assertStatus(404);
     }

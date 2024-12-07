@@ -14,11 +14,9 @@ class RecipeImageResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $recipeId = is_string($request->route('recipe'))
-            ? $request->route('recipe') : $request->route('recipe')->id;
         return [
-            'type' => 'recipeImage',
-            'id' => $this->id,
+            'type' => 'image',
+            'id' => $this->uuid,
             'attributes' => [
                 'imageUrl' => asset($this->file_path)
             ],
@@ -26,15 +24,15 @@ class RecipeImageResource extends JsonResource
                 'recipe' => [
                     'data' => [
                         'type' => 'recipe',
-                        'id' => $recipeId
+                        'id' => $this->recipe->uuid
                     ],
                     'links' => [
-                        'self' => route('recipes.show', ['recipe' => $recipeId])
+                        'self' => route('recipes.show', ['recipe' => $this->recipe->uuid])
                     ]
                 ]
             ],
             'links' => [
-                'self' => route('recipes.images.index', ['recipe' => $recipeId]),
+                'self' => route('recipes.images.index', ['recipe' => $this->recipe->uuid]),
             ]
         ];
     }

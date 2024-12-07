@@ -14,7 +14,9 @@ return new class extends Migration
     {
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
             $table->string('title');
+            $table->index('uuid');
         });
 
         foreach (Category::getCategories() as $category) {
@@ -25,6 +27,7 @@ return new class extends Migration
 
         Schema::create('recipes', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('category_id')->constrained('categories');
             $table->string('title');
@@ -32,23 +35,28 @@ return new class extends Migration
             $table->unsignedInteger('preparation_time_minutes');
             $table->unsignedInteger('servings');
             $table->timestamps();
+            $table->index('uuid');
         });
 
         Schema::create('recipe_ingredients', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
             $table->foreignId('recipe_id')->constrained('recipes')->onDelete('cascade');
             $table->string('title');
             $table->float('quantity');
             $table->string('unit');
             $table->timestamps();
+            $table->index('uuid');
         });
 
         Schema::create('recipe_instructions', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
             $table->foreignId('recipe_id')->constrained('recipes')->onDelete('cascade');
             $table->text('description');
             $table->unsignedInteger('order');
             $table->timestamps();
+            $table->index('uuid');
         });
     }
 
