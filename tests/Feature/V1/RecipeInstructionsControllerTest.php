@@ -293,9 +293,9 @@ class RecipeInstructionsControllerTest extends TestCase
         ]);
         $payload = [
             'data' => [
-                ['id' => $instructions[0]->id, 'attributes' => ['order' => 2]],
-                ['id' => $instructions[1]->id, 'attributes' => ['order' => 1]],
-                ['id' => $instructions[2]->id, 'attributes' => ['order' => 3]],
+                ['id' => $instructions[0]->uuid, 'attributes' => ['order' => 2]],
+                ['id' => $instructions[1]->uuid, 'attributes' => ['order' => 1]],
+                ['id' => $instructions[2]->uuid, 'attributes' => ['order' => 3]],
             ]
         ];
         $response = $this->getAuthenticatedJsonPost(
@@ -323,8 +323,8 @@ class RecipeInstructionsControllerTest extends TestCase
         ]);
         $payload = [
             'data' => [
-                ['id' => $instructions[0]->id, 'attributes' => ['order' => 2]],
-                ['id' => $instructions[1]->id, 'attributes' => ['order' => 1]],
+                ['id' => $instructions[0]->uuid, 'attributes' => ['order' => 2]],
+                ['id' => $instructions[1]->uuid, 'attributes' => ['order' => 1]],
                 // Missing the third instruction
             ]
         ];
@@ -343,9 +343,9 @@ class RecipeInstructionsControllerTest extends TestCase
         $instructions = RecipeInstruction::factory()->count(3)->create(['recipe_id' => $recipe->id]);
         $payload = [
             'data' => [
-                ['id' => $instructions[0]->id, 'attributes' => ['order' => 2]],
-                ['id' => $instructions[1]->id, 'attributes' => ['order' => 1]],
-                ['id' => $instructions[2]->id, 'attributes' => ['order' => 5]], // out of bounds
+                ['id' => $instructions[0]->uuid, 'attributes' => ['order' => 2]],
+                ['id' => $instructions[1]->uuid, 'attributes' => ['order' => 1]],
+                ['id' => $instructions[2]->uuid, 'attributes' => ['order' => 5]], // out of bounds
             ]
         ];
         $response = $this->getAuthenticatedJsonPost(

@@ -23,7 +23,7 @@ class UpdateInstructionOrderRequest extends FormRequest
     {
         return [
             'data' => 'required|array',
-            'data.*.id' => 'required|integer|exists:recipe_instructions,id',
+            'data.*.id' => 'required|uuid|exists:recipe_instructions,uuid',
             'data.*.attributes.order' => 'required|integer|min:1',
         ];
     }

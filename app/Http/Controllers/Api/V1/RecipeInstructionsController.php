@@ -110,11 +110,11 @@ class RecipeInstructionsController extends ApiController
 
         Gate::authorize('update', $recipe);
         $recipeId = $recipe->id;
-        $instructionIds = RecipeInstruction::where('recipe_id', $recipeId)->pluck('id')->toArray();
+        $instructionUuids = RecipeInstruction::where('recipe_id', $recipeId)->pluck('uuid')->toArray();
         $instructionsData = $request->input('data');
-        $providedIds = array_column($instructionsData, 'id');
+        $providedUuids = array_column($instructionsData, 'id');
 
-        if (array_diff($instructionIds, $providedIds)) {
+        if (array_diff($instructionUuids, $providedUuids)) {
             return $this->error('All instructions must be included in the update.', 400);
         }
         // Get total number of instructions
@@ -127,7 +127,7 @@ class RecipeInstructionsController extends ApiController
         }
         DB::transaction(function () use ($instructionsData, $recipeId) {
             foreach ($instructionsData as $data) {
-                RecipeInstruction::where('id', $data['id'])
+                RecipeInstruction::where('uuid', $data['id'])
                     ->where('recipe_id', $recipeId)
                     ->update(['order' => $data['attributes']['order']]);
             }
