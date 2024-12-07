@@ -5,7 +5,7 @@ namespace App\Http\Requests\Api\V1;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateInstructionRequest extends BaseInstructionRequest
+class UpdateRecipeInstructionRequest extends BaseRecipeInstructionRequest
 {
     /**
      * Determine if the user is authorized to make this request.

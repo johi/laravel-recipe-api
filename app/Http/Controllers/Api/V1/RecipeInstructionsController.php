@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Requests\Api\V1\AssignInstructionOrderRequest;
-use App\Http\Requests\Api\V1\ReplaceInstructionRequest;
-use App\Http\Requests\Api\V1\StoreInstructionRequest;
+use App\Http\Requests\Api\V1\ReplaceRecipeInstructionRequest;
+use App\Http\Requests\Api\V1\StoreRecipeInstructionRequest;
 use App\Http\Requests\Api\V1\UpdateInstructionOrderRequest;
-use App\Http\Requests\Api\V1\UpdateInstructionRequest;
+use App\Http\Requests\Api\V1\UpdateRecipeInstructionRequest;
 use App\Http\Resources\V1\RecipeInstructionResource;
 use App\Models\RecipeInstruction;
 use App\Models\Recipe;
@@ -38,7 +38,7 @@ class RecipeInstructionsController extends ApiController
      * @bodyParam data.attributes.description string required
      * @response {"data":{"type":"instruction","id":"7e8af067-23b9-451b-ab48-a29256529f63","attributes":{"description":"Veritatis autem pariatur minima tenetur esse. Sapiente ducimus sed quia sapiente.","order":1},"relationships":{"recipe":{"data":{"type":"recipe","id":"268b64ce-170d-4c39-97fa-515a531da1d2"},"links":{"self":"http://localhost:3001/api/v1/recipes/268b64ce-170d-4c39-97fa-515a531da1d2"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/268b64ce-170d-4c39-97fa-515a531da1d2/instructions"}}}
      */
-    public function store(StoreInstructionRequest $request, Recipe $recipe)
+    public function store(StoreRecipeInstructionRequest $request, Recipe $recipe)
     {
         Gate::authorize('storeRelated', $recipe);
         $attributes = $request->mappedAttributes();
@@ -67,7 +67,7 @@ class RecipeInstructionsController extends ApiController
      * @bodyParam data.attributes.description string required
      * @response {"data":{"type":"instruction","id":"7e8af067-23b9-451b-ab48-a29256529f63","attributes":{"description":"Veritatis autem pariatur minima tenetur esse. Sapiente ducimus sed quia sapiente.","order":1},"relationships":{"recipe":{"data":{"type":"recipe","id":"268b64ce-170d-4c39-97fa-515a531da1d2"},"links":{"self":"http://localhost:3001/api/v1/recipes/268b64ce-170d-4c39-97fa-515a531da1d2"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/268b64ce-170d-4c39-97fa-515a531da1d2/instructions"}}}
      */
-    public function replace(ReplaceInstructionRequest $request, Recipe $recipe, RecipeInstruction $instruction)
+    public function replace(ReplaceRecipeInstructionRequest $request, Recipe $recipe, RecipeInstruction $instruction)
     {
         Gate::authorize('replace', $recipe);
         $attributes = $request->mappedAttributes();
@@ -84,7 +84,7 @@ class RecipeInstructionsController extends ApiController
      * @bodyParam data.attributes.description string required
      * @response {"data":{"type":"instruction","id":"7e8af067-23b9-451b-ab48-a29256529f63","attributes":{"description":"Veritatis autem pariatur minima tenetur esse. Sapiente ducimus sed quia sapiente.","order":1},"relationships":{"recipe":{"data":{"type":"recipe","id":"268b64ce-170d-4c39-97fa-515a531da1d2"},"links":{"self":"http://localhost:3001/api/v1/recipes/268b64ce-170d-4c39-97fa-515a531da1d2"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/268b64ce-170d-4c39-97fa-515a531da1d2/instructions"}}}
      */
-    public function update(UpdateInstructionRequest $request, Recipe $recipe, RecipeInstruction $instruction)
+    public function update(UpdateRecipeInstructionRequest $request, Recipe $recipe, RecipeInstruction $instruction)
     {
         Gate::authorize('update', $recipe);
         $attributes = $request->mappedAttributes();
