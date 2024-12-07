@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Http\Requests\Api\V1\ReplaceIngredientRequest;
-use App\Http\Requests\Api\V1\StoreIngredientRequest;
-use App\Http\Requests\Api\V1\UpdateIngredientRequest;
+use App\Http\Requests\Api\V1\ReplaceRecipeIngredientRequest;
+use App\Http\Requests\Api\V1\StoreRecipeIngredientRequest;
+use App\Http\Requests\Api\V1\UpdateRecipeIngredientRequest;
 use App\Http\Resources\V1\RecipeIngredientResource;
 use App\Models\RecipeIngredient;
 use App\Models\Recipe;
@@ -37,7 +37,7 @@ class RecipeIngredientsController extends ApiController
      * @bodyParam data.attributes.unit integer required
      * @response {"data":{"type":"ingredient","id":"09fae2ad-baed-4160-8cc2-c24ea991cbb5","attributes":{"title":"distinctio","quantity":65,"unit":"tsp"},"relationships":{"recipe":{"data":{"type":"recipe","id":"268b64ce-170d-4c39-97fa-515a531da1d2"},"links":{"self":"http://localhost:3001/api/v1/recipes/268b64ce-170d-4c39-97fa-515a531da1d2"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/268b64ce-170d-4c39-97fa-515a531da1d2/ingredients"}}}
      */
-    public function store(StoreIngredientRequest $request, Recipe $recipe)
+    public function store(StoreRecipeIngredientRequest $request, Recipe $recipe)
     {
         Gate::authorize('storeRelated', $recipe);
         $attributes = $request->mappedAttributes();
@@ -66,7 +66,7 @@ class RecipeIngredientsController extends ApiController
      * @bodyParam data.attributes.unit integer optional
      * @response {"data":{"type":"ingredient","id":"09fae2ad-baed-4160-8cc2-c24ea991cbb5","attributes":{"title":"distinctio","quantity":65,"unit":"tsp"},"relationships":{"recipe":{"data":{"type":"recipe","id":"268b64ce-170d-4c39-97fa-515a531da1d2"},"links":{"self":"http://localhost:3001/api/v1/recipes/268b64ce-170d-4c39-97fa-515a531da1d2"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/268b64ce-170d-4c39-97fa-515a531da1d2/ingredients"}}}
      */
-    public function update(UpdateIngredientRequest $request, Recipe $recipe, RecipeIngredient $ingredient)
+    public function update(UpdateRecipeIngredientRequest $request, Recipe $recipe, RecipeIngredient $ingredient)
     {
         Gate::authorize('update', $recipe);
         $attributes = $request->mappedAttributes();
@@ -86,7 +86,7 @@ class RecipeIngredientsController extends ApiController
      * @bodyParam data.attributes.unit integer required
      * @response {"data":{"type":"ingredient","id":"09fae2ad-baed-4160-8cc2-c24ea991cbb5","attributes":{"title":"distinctio","quantity":65,"unit":"tsp"},"relationships":{"recipe":{"data":{"type":"recipe","id":"268b64ce-170d-4c39-97fa-515a531da1d2"},"links":{"self":"http://localhost:3001/api/v1/recipes/268b64ce-170d-4c39-97fa-515a531da1d2"}}},"links":{"self":"http://localhost:3001/api/v1/recipes/268b64ce-170d-4c39-97fa-515a531da1d2/ingredients"}}}
      */
-    public function replace(ReplaceIngredientRequest $request, Recipe $recipe, RecipeIngredient $ingredient)
+    public function replace(ReplaceRecipeIngredientRequest $request, Recipe $recipe, RecipeIngredient $ingredient)
     {
         Gate::authorize('replace', $recipe);
         $attributes = $request->mappedAttributes();

@@ -5,7 +5,7 @@ namespace App\Http\Requests\Api\V1;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class BaseIngredientRequest extends FormRequest
+class BaseRecipeIngredientRequest extends FormRequest
 {
     public function mappedAttributes(array $otherAttributes = []): array
     {
