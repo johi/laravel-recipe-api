@@ -35,16 +35,16 @@ class RecipeResource extends JsonResource
                 'author' => [
                     'data' => [
                         'type' => 'user',
-                        'id' => $this->user_id
+                        'id' => $this->author->uuid
                     ],
                     'links' => [
-                        'self' => route('authors.show', ['author' => $this->user_id])
+                        'self' => route('authors.show', ['author' => $this->author->uuid])
                     ]
                 ],
                 'category' => [
                     'data' => [
                         'type' => 'category',
-                        'id' => $this->category_id
+                        'id' => $this->category->uuid
                     ],
                     'links' => [
                         'self' => route('categories.index')

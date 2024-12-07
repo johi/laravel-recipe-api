@@ -15,11 +15,9 @@ class RecipeInstructionResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $recipeId = is_string($request->route('recipe'))
-            ? $request->route('recipe') : $request->route('recipe')->id;
         return [
             'type' => 'instruction',
-            'id' => $this->id,
+            'id' => $this->uuid,
             'attributes' => [
                 'description' => $this->description,
                 'order' => $this->order,
@@ -28,15 +26,15 @@ class RecipeInstructionResource extends JsonResource
                 'recipe' => [
                     'data' => [
                         'type' => 'recipe',
-                        'id' => $recipeId
+                        'id' => $this->recipe->uuid
                     ],
                     'links' => [
-                        'self' => route('recipes.show', ['recipe' => $recipeId])
+                        'self' => route('recipes.show', ['recipe' => $this->recipe->uuid])
                     ]
                 ]
             ],
             'links' => [
-                'self' => route('recipes.instructions.index', ['recipe' => $recipeId]),
+                'self' => route('recipes.instructions.index', ['recipe' => $this->recipe->uuid]),
             ]
         ];
     }
