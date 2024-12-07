@@ -32,7 +32,7 @@ class RecipeImageResource extends JsonResource
                 ]
             ],
             'links' => [
-                'self' => route('recipes.images.show', ['recipe' => $this->recipe->uuid, 'image' => $this->uuid]),
+                'self' => route('recipes.images.index', ['recipe' => $this->recipe->uuid]),
             ]
         ];
     }

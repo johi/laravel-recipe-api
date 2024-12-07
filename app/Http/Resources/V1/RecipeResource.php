@@ -49,11 +49,6 @@ class RecipeResource extends JsonResource
                     'links' => [
                         'self' => route('categories.index')
                     ]
-                ],
-                'ingredients' => [
-                    'links' => [
-                        'self' => route('recipes.ingredients.index', ['recipe' => $this->uuid])
-                    ]
                 ]
             ],
             'included' => [
