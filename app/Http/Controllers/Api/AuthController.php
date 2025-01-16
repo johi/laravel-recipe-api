@@ -122,12 +122,4 @@ class AuthController extends Controller
             ->plainTextToken;
     }
 
-    private function getExpirationFromSignedUrl($signedUrl)
-    {
-        // Decode the signed URL's query string to get the expiration timestamp
-        parse_str(parse_url($signedUrl, PHP_URL_QUERY), $queryParams);
-
-        // Extract the expiration timestamp from the URL's query parameters
-        return isset($queryParams['expires']) ? (int) $queryParams['expires'] : 0;
-    }
 }
