@@ -49,10 +49,9 @@ class AuthController extends Controller
     /**
      * Register
      *
-     * @hideFromAPIDocumentation
      * @unauthenticated
      * @group Authentication
-     * @response {"data":{},"message":"Registered","status":200}
+     * @response {"data":{},"message":"Registration successful, please verify your email.","status":201}
      */
     public function register(RegisterUserRequest $request) {
         $request->validated($request->all());
@@ -65,20 +64,38 @@ class AuthController extends Controller
         return $this->success('Registration successful, please verify your email.', [], 201);
     }
 
+    /**
+     * Verify email
+     *
+     * @unauthenticated
+     * @group Authentication
+     */
     public function verify(Request $request, $uuid, $hash)
     {
-        // Find the user by ID
-        $user = User::where('uuid', $request->route('uuid'))->firstOrFail();
-
-        // Check if the hash matches the user's email
-        if (!hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
-            abort(403, 'Invalid verification link.');
+        // Check if the URL has a valid signature and is not expired
+        if (!$request->hasValidSignature()) {
+            return response()->json(['message' => 'Invalid or tampered link.'], 400);
         }
 
-        if ($request->hasValidSignature()) {
-            $user->markEmailAsVerified();
-            return response()->json(['message' => 'Email verified successfully.']);
+        // Retrieve the original expires time from the signed URL
+        $signedUrl = $request->fullUrl();
+        $expires = $this->getExpirationFromSignedUrl($signedUrl);
+
+        // Check if the link has expired (current time is past the expiration time)
+        if (now()->timestamp > $expires) {
+            return $this->error('The verification link has expired.', 400);
         }
+
+        // Continue with the email verification process
+        $user = User::where('uuid', $uuid)->firstOrFail();
+
+        // Validate the hash (it should match the email hash)
+        if ($hash !== sha1($user->getEmailForVerification())) {
+            return $this->error('Invalid verification link.', 400);
+        }
+
+        // Mark the user as verified
+        $user->markEmailAsVerified();
 
         return $this->success('Email verified successfully.', [], 200);
     }
@@ -117,5 +134,14 @@ class AuthController extends Controller
                 now()->addMonth()
             )
             ->plainTextToken;
+    }
+
+    private function getExpirationFromSignedUrl($signedUrl)
+    {
+        // Decode the signed URL's query string to get the expiration timestamp
+        parse_str(parse_url($signedUrl, PHP_URL_QUERY), $queryParams);
+
+        // Extract the expiration timestamp from the URL's query parameters
+        return isset($queryParams['expires']) ? (int) $queryParams['expires'] : 0;
     }
 }

@@ -9,21 +9,30 @@ class CustomVerifyEmail extends BaseVerifyEmail
 {
     protected function verificationUrl($notifiable)
     {
-        $backendUrl = URL::temporarySignedRoute(
+        // Prepare the UUID and hash
+        $uuid = $notifiable->uuid;
+        $hash = sha1($notifiable->getEmailForVerification());
+
+        // Set expiration time
+        $expires = now()->addMinutes(config('auth.verification.expire', 60));
+
+        // Generate a signed URL
+        $url = URL::temporarySignedRoute(
             'verification.verify',
-            now()->addMinutes(config('auth.verification.expire', 60)),
+            $expires,
             [
-                'uuid' => $notifiable->uuid, // Use UUID instead of the primary key
-                'hash' => sha1($notifiable->getEmailForVerification()),
+                'uuid' => $uuid,
+                'hash' => $hash,
             ]
         );
 
-        // Replace the API URL with the frontend URL
+        // Combine backend URL with frontend URL
         $frontendUrl = config('app.frontend_url') . '/email/verify';
 
-        // Extract the query string and append it to the frontend URL
-        $queryString = parse_url($backendUrl, PHP_URL_QUERY);
+        // Extract the query string and append to frontend URL
+        $queryString = parse_url($url, PHP_URL_QUERY);
 
-        return "{$frontendUrl}?{$queryString}";
+        // Return final URL
+        return "{$frontendUrl}/{$uuid}/{$hash}?{$queryString}";
     }
 }
