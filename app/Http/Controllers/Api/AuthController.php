@@ -80,6 +80,12 @@ class AuthController extends Controller
         return $this->success('Email verified successfully.', [], 200);
     }
 
+    /**
+     * Resend Email Verification Notification
+     *
+     * @unauthenticated
+     * @group Authentication
+     */
     public function resendVerification(ResendEmailVerificationRequest $request)
     {
         $request->validated($request->all());
