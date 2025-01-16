@@ -106,7 +106,7 @@ class AuthControllerTest extends TestCase
     }
 
     // test_verify_email timed out
-    public function test_verify_email_with_invalid_hash(): void
+    public function test_verify_email_with_invalid_url_hash(): void
     {
         $user = User::factory()->create([
             'email_verified_at' => null,
@@ -120,21 +120,13 @@ class AuthControllerTest extends TestCase
             ->assertJsonPath('message', 'Invalid verification link.');
     }
 
-    public function test_verify_email_with_expired_hash(): void
+    public function test_verify_email_with_expired_url_signature(): void
     {
         $user = User::factory()->create([
             'email_verified_at' => null,
         ]);
 
-        // Generate a verification URL with an already expired timestamp
-        $expiredVerificationUrl = URL::temporarySignedRoute(
-            'verification.verify',
-            now()->subMinutes(1), // URL expired 1 minute ago
-            [
-                'uuid' => $user->uuid,
-                'hash' => sha1($user->email),
-            ]
-        );
+        $expiredVerificationUrl = $this->generateVerificationUrl($user, false, true);
 
         $response = $this->get($expiredVerificationUrl);
 
@@ -200,11 +192,12 @@ class AuthControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
-    private function generateVerificationUrl($user, $invalidHash = false): string
+    private function generateVerificationUrl($user, $invalidHash = false, $expired = false): string
     {
+        $expires = $expired ? now()->subMinutes(1) : now()->addMinutes(60);
         $verificationUrl = URL::temporarySignedRoute(
             'verification.verify',
-            now()->addMinutes(60),
+            $expires,
             [
                 'uuid' => $user->uuid,
                 'hash' => $invalidHash ? 'invalid_hash' : sha1($user->email),

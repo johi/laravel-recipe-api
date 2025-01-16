@@ -72,31 +72,11 @@ class AuthController extends Controller
      */
     public function verify(Request $request, $uuid, $hash)
     {
-        // Check if the URL has a valid signature and is not expired
-        if (!$request->hasValidSignature()) {
-            return response()->json(['message' => 'Invalid or tampered link.'], 400);
-        }
-
-        // Retrieve the original expires time from the signed URL
-        $signedUrl = $request->fullUrl();
-        $expires = $this->getExpirationFromSignedUrl($signedUrl);
-
-        // Check if the link has expired (current time is past the expiration time)
-        if (now()->timestamp > $expires) {
-            return $this->error('The verification link has expired.', 400);
-        }
-
-        // Continue with the email verification process
         $user = User::where('uuid', $uuid)->firstOrFail();
-
-        // Validate the hash (it should match the email hash)
         if ($hash !== sha1($user->getEmailForVerification())) {
             return $this->error('Invalid verification link.', 400);
         }
-
-        // Mark the user as verified
         $user->markEmailAsVerified();
-
         return $this->success('Email verified successfully.', [], 200);
     }
 
