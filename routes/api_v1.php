@@ -41,7 +41,7 @@ Route::get('recipes/{recipe:uuid}/images', [RecipeImagesController::class, 'inde
 Route::get('recipes/{recipe:uuid}/images/{image:uuid}', [RecipeImagesController::class, 'show'])
     ->name('recipes.images.show')->scopeBindings();
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     #recipes
     Route::post('recipes', [RecipesController::class, 'store'])
         ->name('recipes.store');

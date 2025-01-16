@@ -10,6 +10,7 @@ The topic is that of managing recipes and some related entities, it contains end
 - managing recipe ingredients as aggregate of recipes
 - browsing these data as anonymous users
 - managing users
+- signing up and verifying email
 
 Some criteria that have driven the development are as follows:
 - differentiated access restrictions for different kinds of users (anonymous, users, admins)
