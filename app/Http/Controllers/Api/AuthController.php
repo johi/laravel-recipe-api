@@ -102,6 +102,12 @@ class AuthController extends Controller
         return $this->ok('Verification email resent.');
     }
 
+    /**
+     * Forgot Password
+     *
+     * @unauthenticated
+     * @group Authentication
+     */
     public function forgotPassword(ForgotPasswordRequest $request)
     {
         $status = Password::sendResetLink(
@@ -115,6 +121,12 @@ class AuthController extends Controller
         return $this->error('Unable to send reset link.', 400);
     }
 
+    /**
+     * Validate Password Reset Token
+     *
+     * @unauthenticated
+     * @group Authentication
+     */
     public function validateResetToken(Request $request, $token)
     {
         $request->validate([
@@ -133,6 +145,12 @@ class AuthController extends Controller
         ]);
     }
 
+    /**
+     * Reset Password
+     *
+     * @unauthenticated
+     * @group Authentication
+     */
     public function resetPassword(ResetPasswordRequest $request)
     {
         $status = Password::reset(
