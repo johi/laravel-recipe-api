@@ -10,3 +10,6 @@ Route::post('/email/resend-verification', [AuthController::class, 'resendVerific
 Route::get('/email/verify/{uuid}/{hash}', [AuthController::class, 'verify'])
     ->middleware(['signed', 'throttle:6,1'])
     ->name('verification.verify');
+Route::post('/password/forgot', [AuthController::class, 'forgotPassword'])->name('password.email');
+Route::get('/password/validate-reset-token/{token}', [AuthController::class, 'validateResetToken'])->name('password.reset');
+Route::post('/password/reset', [AuthController::class, 'resetPassword'])->name('password.update');
