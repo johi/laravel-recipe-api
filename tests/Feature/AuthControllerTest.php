@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Notifications\CustomVerifyEmail;
+use App\Notifications\CustomVerifyEmailNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\URL;
@@ -69,7 +69,7 @@ class AuthControllerTest extends TestCase
 
         Notification::assertSentTo(
             User::firstWhere('email', 'john.doe@example.com'),
-            CustomVerifyEmail::class
+            CustomVerifyEmailNotification::class
         );
     }
 
@@ -153,7 +153,7 @@ class AuthControllerTest extends TestCase
         $response->assertStatus(200)
             ->assertJsonPath('message', 'Verification email resent.');
 
-        Notification::assertSentTo($user, \App\Notifications\CustomVerifyEmail::class);
+        Notification::assertSentTo($user, \App\Notifications\CustomVerifyEmailNotification::class);
     }
 
     public function test_resend_verification_for_verified_user(): void

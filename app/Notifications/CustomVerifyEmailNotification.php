@@ -5,7 +5,7 @@ use Illuminate\Auth\Notifications\VerifyEmail as BaseVerifyEmail;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Facades\URL;
 
-class CustomVerifyEmail extends BaseVerifyEmail
+class CustomVerifyEmailNotification extends BaseVerifyEmail
 {
     protected function verificationUrl($notifiable)
     {
