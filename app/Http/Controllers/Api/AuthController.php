@@ -3,15 +3,18 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\ForgotPasswordRequest;
 use App\Http\Requests\Api\LoginUserRequest;
 use App\Http\Requests\Api\RegisterUserRequest;
 use App\Http\Requests\Api\ResendEmailVerificationRequest;
-use App\Models\User;
-use App\Permissions\V1\Abilities;
-use App\Traits\ApiResponses;
-use Illuminate\Http\Request;
+use App\Http\Requests\Api\ResetPasswordRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
+use App\Traits\ApiResponses;
+use Illuminate\Http\Request;
+use App\Permissions\V1\Abilities;
+use App\Models\User;
 
 class AuthController extends Controller
 {
@@ -97,6 +100,72 @@ class AuthController extends Controller
 
         $user->sendEmailVerificationNotification();
         return $this->ok('Verification email resent.');
+    }
+
+    /**
+     * Forgot Password
+     *
+     * @unauthenticated
+     * @group Authentication
+     */
+    public function forgotPassword(ForgotPasswordRequest $request)
+    {
+        $status = Password::sendResetLink(
+            $request->only('email')
+        );
+
+        if ($status === Password::RESET_LINK_SENT) {
+            return $this->success('Reset link sent to your email.', [], 200);
+        }
+
+        return $this->error('Unable to send reset link.', 400);
+    }
+
+    /**
+     * Validate Password Reset Token
+     *
+     * @unauthenticated
+     * @group Authentication
+     */
+    public function validateResetToken(Request $request, $token)
+    {
+        $request->validate([
+            'email' => ['required', 'email'],
+        ]);
+        $credentials = [
+            'email' => $request->input('email'),
+            'token' => $token,
+        ];
+        $user = User::where('email', $credentials['email'])->first();
+        if (!$user || !Password::getRepository()->exists($user, $token)) {
+            return $this->error('Invalid or expired reset token.', 400);
+        }
+        return $this->success('Valid token.', [
+            'reset_token' => $token,
+        ]);
+    }
+
+    /**
+     * Reset Password
+     *
+     * @unauthenticated
+     * @group Authentication
+     */
+    public function resetPassword(ResetPasswordRequest $request)
+    {
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function ($user, $password) {
+                $user->forceFill([
+                    'password' => Hash::make($password),
+                ])->save();
+                $user->tokens()->delete();
+            }
+        );
+        if ($status === Password::PASSWORD_RESET) {
+            return $this->success('Password reset successfully.', [], 200);
+        }
+        return $this->error(trans($status), 400);
     }
 
     /**

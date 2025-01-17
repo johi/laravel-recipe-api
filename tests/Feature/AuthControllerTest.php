@@ -2,9 +2,11 @@
 
 namespace Tests\Feature;
 
-use App\Notifications\CustomVerifyEmail;
+use App\Notifications\CustomVerifyEmailNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\URL;
 use App\Models\User;
 use Tests\TestCase;
@@ -69,7 +71,7 @@ class AuthControllerTest extends TestCase
 
         Notification::assertSentTo(
             User::firstWhere('email', 'john.doe@example.com'),
-            CustomVerifyEmail::class
+            CustomVerifyEmailNotification::class
         );
     }
 
@@ -147,13 +149,13 @@ class AuthControllerTest extends TestCase
         ]);
 
         $response = $this->post('api/email/resend-verification', [
-            'email' => 'john.doe@example.com',
+            'email' => $user->email,
         ]);
 
         $response->assertStatus(200)
             ->assertJsonPath('message', 'Verification email resent.');
 
-        Notification::assertSentTo($user, \App\Notifications\CustomVerifyEmail::class);
+        Notification::assertSentTo($user, \App\Notifications\CustomVerifyEmailNotification::class);
     }
 
     public function test_resend_verification_for_verified_user(): void
@@ -164,11 +166,114 @@ class AuthControllerTest extends TestCase
         ]);
 
         $response = $this->post('api/email/resend-verification', [
-            'email' => 'john.doe@example.com',
+            'email' => $user->email,
         ]);
 
         $response->assertStatus(400)
             ->assertJsonPath('message', 'Email is already verified.');
+    }
+
+    public function test_forgot_password_sends_reset_link(): void
+    {
+        Notification::fake();
+
+        $user = User::factory()->create(['email' => 'user@example.com']);
+
+        $response = $this->post('api/password/forgot', [
+            'email' => $user->email,
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJsonPath('message', 'Reset link sent to your email.');
+
+        Notification::assertSentTo($user, \App\Notifications\CustomPasswordResetNotification::class);
+    }
+
+    public function test_forgot_password_with_nonexistent_email(): void
+    {
+        $response = $this->post('api/password/forgot', [
+            'email' => 'nonexistent@example.com',
+        ]);
+
+        $response->assertStatus(400)
+            ->assertJsonPath('errors.0.message', 'No account found with this email address.');
+    }
+
+    public function test_validate_reset_token_with_valid_token(): void
+    {
+        $user = User::factory()->create(['email' => 'user@example.com']);
+        $token = Password::createToken($user);
+        $response = $this->getJson("api/password/validate-reset-token/{$token}?email={$user->email}");
+        $response->assertStatus(200)
+            ->assertJsonPath('message', 'Valid token.')
+            ->assertJsonPath('data.reset_token', $token);
+    }
+
+    public function test_validate_reset_token_with_invalid_token(): void
+    {
+        $user = User::factory()->create();
+        $response = $this->getJson("api/password/validate-reset-token/invalid-token?email={$user->email}");
+        $response->assertStatus(400)
+            ->assertJsonPath('message', 'Invalid or expired reset token.');
+    }
+
+    public function test_validate_reset_token_with_nonexistent_email(): void
+    {
+        $user = User::factory()->create();
+        $validToken = Password::createToken($user);
+        $response = $this->getJson("api/password/validate-reset-token/{$validToken}?email=nonexistent@example.com");
+        $response->assertStatus(400)
+            ->assertJsonPath('message', 'Invalid or expired reset token.');
+    }
+
+    public function test_reset_password_with_valid_token(): void
+    {
+        $user = User::factory()->create();
+        $token = Password::createToken($user);
+
+        $response = $this->post('api/password/reset', [
+            'email' => $user->email,
+            'token' => $token,
+            'password' => 'new_password',
+            'password_confirmation' => 'new_password',
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJsonPath('message', 'Password reset successfully.');
+
+        $this->assertTrue(Hash::check('new_password', $user->fresh()->password));
+    }
+
+    public function test_reset_password_with_invalid_token(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->post('api/password/reset', [
+            'email' => $user->email,
+            'token' => 'invalid-token',
+            'password' => 'new_password',
+            'password_confirmation' => 'new_password',
+        ]);
+
+        $response->assertStatus(400)
+            ->assertJsonPath('message', 'This password reset token is invalid.');
+    }
+
+    public function test_reset_password_with_non_matching_password_confirmation(): void
+    {
+        $user = User::factory()->create();
+        $token = Password::createToken($user);
+
+        $response = $this->post('api/password/reset', [
+            'email' => $user->email,
+            'token' => $token,
+            'password' => 'new_password',
+            'password_confirmation' => 'different_password',
+        ]);
+
+        $response->assertStatus(400)
+            ->assertJsonPath('errors.0.message', 'The password confirmation does not match.')
+            ->assertJsonPath('errors.0.source', 'password');
     }
 
     public function test_logout(): void

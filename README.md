@@ -11,6 +11,7 @@ The topic is that of managing recipes and some related entities, it contains end
 - browsing these data as anonymous users
 - managing users
 - signing up and verifying email
+- forgot password flow
 
 Some criteria that have driven the development are as follows:
 - differentiated access restrictions for different kinds of users (anonymous, users, admins)
