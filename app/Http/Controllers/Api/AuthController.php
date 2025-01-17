@@ -120,22 +120,14 @@ class AuthController extends Controller
         $request->validate([
             'email' => ['required', 'email'],
         ]);
-
         $credentials = [
             'email' => $request->input('email'),
             'token' => $token,
         ];
-
-        $status = Password::getRepository()->exists(
-            User::where('email', $credentials['email'])->firstOrFail(),
-            $token
-        );
-
-        if (!$status) {
+        $user = User::where('email', $credentials['email'])->first();
+        if (!$user || !Password::getRepository()->exists($user, $token)) {
             return $this->error('Invalid or expired reset token.', 400);
         }
-
-        // Token is valid, return success response with a temporary token
         return $this->success('Valid token.', [
             'reset_token' => $token,
         ]);
@@ -143,23 +135,18 @@ class AuthController extends Controller
 
     public function resetPassword(ResetPasswordRequest $request)
     {
-        // Validate the password reset token using Laravel's Password facade
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function ($user, $password) {
                 $user->forceFill([
                     'password' => Hash::make($password),
                 ])->save();
-
-                // Optionally, revoke all tokens to log the user out of all devices
                 $user->tokens()->delete();
             }
         );
-
         if ($status === Password::PASSWORD_RESET) {
             return $this->success('Password reset successfully.', [], 200);
         }
-
         return $this->error(trans($status), 400);
     }
 
