@@ -3,7 +3,9 @@
 use App\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Middleware\HandleCors;
 use Illuminate\Support\Facades\Route;
+
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -19,7 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
         }
     )
     ->withMiddleware(function (Middleware $middleware) {
-    //
+        $middleware->append(HandleCors::class);
     })
 
     ->withExceptions(new ExceptionHandler())
