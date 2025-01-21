@@ -8,6 +8,7 @@ use App\Http\Requests\Api\LoginUserRequest;
 use App\Http\Requests\Api\RegisterUserRequest;
 use App\Http\Requests\Api\ResendEmailVerificationRequest;
 use App\Http\Requests\Api\ResetPasswordRequest;
+use App\Http\Resources\V1\UserResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
@@ -45,6 +46,7 @@ class AuthController extends Controller
             'Authenticated',
             [
                 'token' => self::createToken($user),
+                'user' => new UserResource($user),
             ]
         );
     }
