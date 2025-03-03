@@ -61,6 +61,7 @@ class RecipeImagesControllerTest extends TestCase
             ['image' => $file]
         );
         $response->assertStatus(400)
+            ->assertJsonStructure($this->getErrorStructure())
             ->assertJsonStructure($this->getRecipeImageUploadErrorStructure());
     }
 
@@ -75,6 +76,7 @@ class RecipeImagesControllerTest extends TestCase
             ['image' => $file]
         );
         $response->assertStatus(400)
+            ->assertJsonStructure($this->getErrorStructure())
             ->assertJsonStructure($this->getRecipeImageUploadErrorStructure());
     }
 
@@ -89,6 +91,7 @@ class RecipeImagesControllerTest extends TestCase
             ['image' => $file]
         );
         $response->assertStatus(400)
+            ->assertJsonStructure($this->getErrorStructure())
             ->assertJsonStructure($this->getRecipeImageUploadErrorStructure());
     }
 

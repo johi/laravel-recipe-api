@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Notifications\CustomPasswordResetNotification;
 use App\Notifications\CustomVerifyEmailNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
@@ -117,9 +118,10 @@ class AuthControllerTest extends TestCase
         $verificationUrl = $this->generateVerificationUrl($user, invalidHash: true);
 
         $response = $this->get($verificationUrl);
-
         $response->assertStatus(400)
-            ->assertJsonPath('message', 'Invalid verification link.');
+            ->assertJsonStructure($this->getErrorStructure())
+            ->assertJsonPath('errors.0.message', 'Invalid verification link.')
+            ->assertJsonPath('errors.0.source', null);
     }
 
     public function test_verify_email_with_expired_url_signature(): void
@@ -133,7 +135,9 @@ class AuthControllerTest extends TestCase
         $response = $this->get($expiredVerificationUrl);
 
         $response->assertStatus(400)
-            ->assertJsonPath('message', 'Invalid signature.');
+            ->assertJsonStructure($this->getErrorStructure())
+            ->assertJsonPath('errors.0.message', 'Invalid signature.')
+            ->assertJsonPath('errors.0.source', null);
 
         // Assert the user's email is still not verified
         $this->assertNull($user->fresh()->email_verified_at);
@@ -155,7 +159,7 @@ class AuthControllerTest extends TestCase
         $response->assertStatus(200)
             ->assertJsonPath('message', 'Verification email resent.');
 
-        Notification::assertSentTo($user, \App\Notifications\CustomVerifyEmailNotification::class);
+        Notification::assertSentTo($user, CustomVerifyEmailNotification::class);
     }
 
     public function test_resend_verification_for_verified_user(): void
@@ -170,7 +174,9 @@ class AuthControllerTest extends TestCase
         ]);
 
         $response->assertStatus(400)
-            ->assertJsonPath('message', 'Email is already verified.');
+            ->assertJsonStructure($this->getErrorStructure())
+            ->assertJsonPath('errors.0.message', 'Email is already verified.')
+            ->assertJsonPath('errors.0.source', null);
     }
 
     public function test_forgot_password_sends_reset_link(): void
@@ -186,7 +192,7 @@ class AuthControllerTest extends TestCase
         $response->assertStatus(200)
             ->assertJsonPath('message', 'Reset link sent to your email.');
 
-        Notification::assertSentTo($user, \App\Notifications\CustomPasswordResetNotification::class);
+        Notification::assertSentTo($user, CustomPasswordResetNotification::class);
     }
 
     public function test_forgot_password_with_nonexistent_email(): void
@@ -214,7 +220,9 @@ class AuthControllerTest extends TestCase
         $user = User::factory()->create();
         $response = $this->getJson("api/password/validate-reset-token/invalid-token?email={$user->email}");
         $response->assertStatus(400)
-            ->assertJsonPath('message', 'Invalid or expired reset token.');
+            ->assertJsonStructure($this->getErrorStructure())
+            ->assertJsonPath('errors.0.message', 'Invalid or expired reset token.')
+            ->assertJsonPath('errors.0.source', null);
     }
 
     public function test_validate_reset_token_with_nonexistent_email(): void
@@ -223,7 +231,9 @@ class AuthControllerTest extends TestCase
         $validToken = Password::createToken($user);
         $response = $this->getJson("api/password/validate-reset-token/{$validToken}?email=nonexistent@example.com");
         $response->assertStatus(400)
-            ->assertJsonPath('message', 'Invalid or expired reset token.');
+            ->assertJsonStructure($this->getErrorStructure())
+            ->assertJsonPath('errors.0.message', 'Invalid or expired reset token.')
+            ->assertJsonPath('errors.0.source', null);
     }
 
     public function test_reset_password_with_valid_token(): void
@@ -256,7 +266,9 @@ class AuthControllerTest extends TestCase
         ]);
 
         $response->assertStatus(400)
-            ->assertJsonPath('message', 'This password reset token is invalid.');
+            ->assertJsonStructure($this->getErrorStructure())
+            ->assertJsonPath('errors.0.message', 'This password reset token is invalid.')
+            ->assertJsonPath('errors.0.source', null);
     }
 
     public function test_reset_password_with_non_matching_password_confirmation(): void
@@ -272,6 +284,7 @@ class AuthControllerTest extends TestCase
         ]);
 
         $response->assertStatus(400)
+            ->assertJsonStructure($this->getErrorStructure())
             ->assertJsonPath('errors.0.message', 'The password confirmation does not match.')
             ->assertJsonPath('errors.0.source', 'password');
     }
@@ -294,7 +307,8 @@ class AuthControllerTest extends TestCase
     public function test_logout_when_unauthenticated(): void
     {
         $response = $this->post('api/logout', [], ['Authorization' => 'Bearer invalid_token']);
-        $response->assertStatus(401);
+        $response->assertStatus(401)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     private function generateVerificationUrl($user, $invalidHash = false, $expired = false): string

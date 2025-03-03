@@ -30,8 +30,7 @@ class Handler
     {
         $exceptions->renderable(
             fn (AccessDeniedHttpException $e) => $this->error(
-                __('Unauthorized'),
-                403,
+                [['message' => __('Unauthorized'), 'source' => null]], 403
             )
         );
     }
@@ -40,8 +39,7 @@ class Handler
     {
         $exceptions->renderable(
             fn (AuthenticationException $e) => $this->error(
-                __('Forbidden'),
-                401,
+                [['message' => __('Forbidden'), 'source' => null]], 401
             )
         );
     }
@@ -50,10 +48,13 @@ class Handler
     {
         $exceptions->renderable(
             fn (NotFoundHttpException $e) => $this->error(
-                __(':resource cannot be found.', [
-                    'resource' => ucfirst(Str::afterLast($e->getPrevious()?->getModel(), '\\')) ?: 'Resource',
-                ]),
-                404,
+                [[
+                    'message' => __(':resource cannot be found.', [
+                        'resource' => ucfirst(Str::afterLast($e->getPrevious()?->getModel(), '\\')) ?: 'Resource',
+                    ]),
+                    'source' => null
+                ]],
+                404
             )
         );
     }
@@ -63,19 +64,16 @@ class Handler
         $exceptions->renderable(function (ValidationException $e) {
             $errors = [];
 
-            foreach ($e->errors() as $key => $value) {
-                foreach ($value as $message) {
+            foreach ($e->errors() as $field => $messages) {
+                foreach ($messages as $message) {
                     $errors[] = [
                         'message' => $message,
-                        'source' => $key,
+                        'source' => $field, // Ensure correct field name
                     ];
                 }
             }
 
-            return $this->error(
-                $errors,
-                400,
-            );
+            return $this->error($errors, 400);
         });
     }
 
@@ -83,8 +81,11 @@ class Handler
     {
         $exceptions->renderable(
             fn (\Throwable $e) => $this->error(
-                (config('app.debug') ? $e->getMessage() : __('Unknown error')),
-                 400,
+                [[
+                    'message' => config('app.debug') ? $e->getMessage() : __('Unknown error'),
+                    'source' => null
+                ]],
+                400
             )
         );
     }

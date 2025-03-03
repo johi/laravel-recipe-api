@@ -50,13 +50,15 @@ class RecipesControllerTest extends TestCase
     public function test_trying_to_show_non_existent_recipe_gives_404(): void
     {
         $response = $this->getJson(route('recipes.show', ['recipe' => Str::uuid()]));
-        $response->assertStatus(404);
+        $response->assertStatus(404)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     public function test_as_anonymous_i_cannot_create_a_recipe(): void
     {
         $response = $this->postJson(route('recipes.store'), $this->getRecipePayload(User::factory()->create(), $this->testCategory));
-        $response->assertStatus(401);
+        $response->assertStatus(401)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     public function test_as_user_i_can_create_my_own_recipe(): void
@@ -78,7 +80,8 @@ class RecipesControllerTest extends TestCase
             route('recipes.store'),
             $this->getRecipePayload($userList->last(), $this->testCategory)
         );
-        $response->assertStatus(400);
+        $response->assertStatus(400)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     public function test_as_admin_i_can_create_someone_else_recipe(): void
@@ -99,7 +102,8 @@ class RecipesControllerTest extends TestCase
             route('recipes.replace', ['recipe' => $recipe->uuid]),
             $this->getRecipePayload(User::factory()->create(), $this->testCategory)
         );
-        $response->assertStatus(401);
+        $response->assertStatus(401)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     public function test_as_user_i_can_replace_my_own_recipe(): void
@@ -125,7 +129,8 @@ class RecipesControllerTest extends TestCase
             route('recipes.replace', ['recipe' => $recipe->uuid]),
             $this->getRecipePayload($usersList->last(), $this->testCategory),
         );
-        $response->assertStatus(400);
+        $response->assertStatus(400)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     public function test_as_user_i_cannot_replace_someone_else_recipe(): void
@@ -137,7 +142,8 @@ class RecipesControllerTest extends TestCase
             route('recipes.replace', ['recipe' => $recipe->uuid]),
             $this->getRecipePayload($usersList->last(), $this->testCategory),
         );
-        $response->assertStatus(403);
+        $response->assertStatus(403)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     public function test_as_admin_i_can_replace_someone_else_recipe(): void
@@ -161,7 +167,8 @@ class RecipesControllerTest extends TestCase
             route('recipes.replace', ['recipe' => Str::uuid()]),
             $this->getRecipePayload($user, $this->testCategory),
         );
-        $response->assertStatus(404);
+        $response->assertStatus(404)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     public function test_as_anonymous_i_cannot_update_a_recipe(): void
@@ -171,7 +178,8 @@ class RecipesControllerTest extends TestCase
             route('recipes.update', ['recipe' => $recipe->uuid]),
             ['data' => ['attributes' => ['title' => 'PATCHED Recipe']]]
         );
-        $response->assertStatus(401);
+        $response->assertStatus(401)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     public function test_as_user_i_can_update_my_own_recipe(): void
@@ -199,7 +207,8 @@ class RecipesControllerTest extends TestCase
             route('recipes.update', ['recipe' => $recipe->uuid]),
             ['data' => ['attributes' => ['title' => $changedTitle]]]
         );
-        $response->assertStatus(403);
+        $response->assertStatus(403)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     public function test_as_user_i_can_only_update_my_own_recipe_with_myself_as_author(): void
@@ -217,7 +226,8 @@ class RecipesControllerTest extends TestCase
                 ]
             ]
         );
-        $response->assertStatus(400);
+        $response->assertStatus(400)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     public function test_as_admin_i_can_update_some_else_recipe(): void
@@ -242,14 +252,16 @@ class RecipesControllerTest extends TestCase
             route('recipes.update', ['recipe' => Str::uuid()]),
             ['data' => ['attributes' => ['title' => $changedTitle]]]
         );
-        $response->assertStatus(404);
+        $response->assertStatus(404)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     public function test_as_anonymous_i_cannot_delete_a_recipe(): void
     {
         $recipe = Recipe::factory()->create();
         $response = $this->deleteJson(route('recipes.destroy', ['recipe' => $recipe->uuid]));
-        $response->assertStatus(401);
+        $response->assertStatus(401)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     public function test_as_user_i_can_delete_my_own_recipe(): void
@@ -271,7 +283,8 @@ class RecipesControllerTest extends TestCase
             User::factory()->create(),
             route('recipes.destroy', ['recipe' => $recipe->uuid])
         );
-        $response->assertStatus(403);
+        $response->assertStatus(403)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     public function test_as_admin_i_can_delete_someone_else_recipe(): void
@@ -290,7 +303,8 @@ class RecipesControllerTest extends TestCase
             User::factory()->create(['is_admin' => true]),
             route('recipes.destroy', ['recipe' => Str::uuid()])
         );
-        $response->assertStatus(404);
+        $response->assertStatus(404)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     private function getRecipePayload(User $author, Category $category): array

@@ -37,17 +37,19 @@ trait ApiResponses {
      * @param int|null $statusCode
      * @return JsonResponse
      */
-    protected function error(string|array $errors = [], int|null $statusCode = null) : JsonResponse
+    protected function error(string|array $errors = [], int|null $statusCode = null): JsonResponse
     {
-        if (is_string($errors)) {
+        // If errors is already an array of formatted error objects, return as-is
+        if (is_array($errors) && isset($errors[0]['message']) && array_key_exists('source', $errors[0])) {
             return response()->json([
-                'message' => $errors,
+                'errors' => $errors,
                 'status' => $statusCode
             ], $statusCode);
         }
 
+        // Otherwise, format as a single error message
         return response()->json([
-            'errors' => $errors,
+            'errors' => [['message' => is_string($errors) ? $errors : 'An error occurred', 'source' => null]],
             'status' => $statusCode
         ], $statusCode);
     }

@@ -80,7 +80,8 @@ class RecipeInstructionsControllerTest extends TestCase
                 'instruction' => Str::uuid()
             ]
         ));
-        $response->assertStatus(404);
+        $response->assertStatus(404)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     // CREATE
@@ -91,7 +92,8 @@ class RecipeInstructionsControllerTest extends TestCase
             route('recipes.instructions.store', ['recipe' => $recipe->uuid]),
             $this->getInstructionPayload($recipe)
         );
-        $response->assertStatus(401);
+        $response->assertStatus(401)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     public function test_as_user_i_can_create_my_own_instruction(): void
@@ -138,7 +140,8 @@ class RecipeInstructionsControllerTest extends TestCase
             route('recipes.instructions.store', ['recipe' => $recipe->uuid]),
             $this->getInstructionPayload($recipe)
         );
-        $response->assertStatus(403);
+        $response->assertStatus(403)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     public function test_as_admin_i_can_create_someone_else_instruction(): void
@@ -161,7 +164,8 @@ class RecipeInstructionsControllerTest extends TestCase
             route('recipes.instructions.replace', ['recipe' => $recipe->uuid, 'instruction' => $instruction->uuid]),
             $this->getInstructionPayload($recipe)
         );
-        $response->assertStatus(401);
+        $response->assertStatus(401)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     public function test_as_user_i_can_replace_my_own_instruction(): void
@@ -188,7 +192,8 @@ class RecipeInstructionsControllerTest extends TestCase
             route('recipes.instructions.replace', ['recipe' => $recipe->uuid, 'instruction' => $instruction->uuid]),
             $this->getInstructionPayload($recipe)
         );
-        $response->assertStatus(403);
+        $response->assertStatus(403)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     public function test_as_admin_i_can_replace_someone_else_instruction(): void
@@ -212,7 +217,8 @@ class RecipeInstructionsControllerTest extends TestCase
             route('recipes.instructions.replace', ['recipe' => $recipe->uuid, 'instruction' => Str::uuid()]),
             $this->getInstructionPayload($recipe)
         );
-        $response->assertStatus(404);
+        $response->assertStatus(404)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     // UPDATE
@@ -224,7 +230,8 @@ class RecipeInstructionsControllerTest extends TestCase
             route('recipes.instructions.update', ['recipe' => $recipe->uuid, 'instruction' => $instruction->uuid]),
             ['data' => ['attributes' => ['description' => 'PATCHED Instruction']]]
         );
-        $response->assertStatus(401);
+        $response->assertStatus(401)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     public function test_as_user_i_can_update_my_own_instructions(): void
@@ -253,7 +260,8 @@ class RecipeInstructionsControllerTest extends TestCase
             route('recipes.instructions.update', ['recipe' => $recipe->uuid, 'instruction' => $instruction->uuid]),
             ['data' => ['attributes' => ['description' => 'PATCHED Instruction']]]
         );
-        $response->assertStatus(403);
+        $response->assertStatus(403)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     public function test_as_admin_i_can_update_some_else_instruction(): void
@@ -280,7 +288,8 @@ class RecipeInstructionsControllerTest extends TestCase
             route('recipes.instructions.update', ['recipe' => $recipe->uuid, 'instruction' => Str::uuid()]),
             ['data' => ['attributes' => ['description' => 'PATCHED Instruction']]]
         );
-        $response->assertStatus(404);
+        $response->assertStatus(404)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     // Update-Order
@@ -333,7 +342,8 @@ class RecipeInstructionsControllerTest extends TestCase
             route('recipes.instructions.update.order', ['recipe' => $recipe->uuid]),
             $payload
         );
-        $response->assertStatus(400);
+        $response->assertStatus(400)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     public function test_update_order_out_of_range(): void
@@ -354,7 +364,9 @@ class RecipeInstructionsControllerTest extends TestCase
             $payload
         );
         $response->assertStatus(400)
-            ->assertJson(['message' => 'Order values must be within the valid range.']);
+            ->assertJsonStructure($this->getErrorStructure())
+            ->assertJsonPath('errors.0.message', 'Order values must be within the valid range.')
+            ->assertJsonPath('errors.0.source', null);
     }
 
     // Assign Order
@@ -425,7 +437,9 @@ class RecipeInstructionsControllerTest extends TestCase
             ['data' => ['attributes' => ['order' => $newOrder]]]
         );
         $response->assertStatus(400)
-            ->assertJson(['message' => 'Order must be between 1 and 3.']);
+            ->assertJsonStructure($this->getErrorStructure())
+            ->assertJsonPath('errors.0.message', 'Order must be between 1 and 3.')
+            ->assertJsonPath('errors.0.source', null);
     }
 
     // DELETE
@@ -439,7 +453,8 @@ class RecipeInstructionsControllerTest extends TestCase
                 ['recipe' => $recipe->uuid, 'instruction' => $instruction->uuid]
             )
         );
-        $response->assertStatus(401);
+        $response->assertStatus(401)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     public function test_as_user_i_can_delete_my_own_instruction(): void
@@ -463,7 +478,8 @@ class RecipeInstructionsControllerTest extends TestCase
             User::factory()->create(),
             route('recipes.instructions.destroy', ['recipe' => $recipe->uuid, 'instruction' => $instruction->uuid])
         );
-        $response->assertStatus(403);
+        $response->assertStatus(403)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     public function test_as_admin_i_can_delete_someone_else_instruction(): void
@@ -484,7 +500,8 @@ class RecipeInstructionsControllerTest extends TestCase
             User::factory()->create(['is_admin' => true]),
             route('recipes.instructions.destroy', ['recipe' => $recipe->uuid, 'instruction' => Str::uuid()])
         );
-        $response->assertStatus(404);
+        $response->assertStatus(404)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     private function getInstructionPayload(Recipe $recipe): array

@@ -52,7 +52,8 @@ class AuthorsControllerTest extends TestCase
     public function test_trying_to_show_non_existent_author_gives_404(): void
     {
         $response = $this->getJson(route('authors.show', Str::uuid()));
-        $response->assertStatus(404);
+        $response->assertStatus(404)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     public function test_i_can_include_recipes_for_single_author(): void

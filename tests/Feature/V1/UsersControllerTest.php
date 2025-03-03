@@ -19,11 +19,7 @@ class UsersControllerTest extends TestCase
         $users = User::factory(10)->create();
         $response = $this->getJson(route('users.index'));
         $response->assertStatus(401)
-            ->assertJsonStructure([
-                'message',
-                'status'
-            ])
-            ->assertJsonPath('status', 401);
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     public function test_as_user_i_get_a_list_of_all_users()
@@ -65,11 +61,7 @@ class UsersControllerTest extends TestCase
         $user = User::factory()->create();
         $response = $this->getJson(route('users.show', ['user' => $user->uuid]));
         $response->assertStatus(401)
-            ->assertJsonStructure([
-                'message',
-                'status'
-            ])
-            ->assertJsonPath('status', 401);
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     public function test_as_user_i_get_a_specific_user(): void
@@ -99,7 +91,8 @@ class UsersControllerTest extends TestCase
         $response = $this->getAuthenticatedUserJsonGet(
             User::factory()->create(['is_admin' => true]),
             route('users.show', ['user' => Str::uuid()]));
-        $response->assertStatus(404);
+        $response->assertStatus(404)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     public function test_i_can_include_recipes_for_a_specific_user(): void
@@ -120,7 +113,8 @@ class UsersControllerTest extends TestCase
     public function test_as_anonymous_i_cannot_create_a_user(): void
     {
         $response = $this->postJson(route('users.store'), $this->getUserPayload());
-        $response->assertStatus(401);
+        $response->assertStatus(401)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     public function test_as_user_i_cannot_create_a_user(): void
@@ -130,7 +124,8 @@ class UsersControllerTest extends TestCase
             route('users.store'),
             $this->getUserPayload()
         );
-        $response->assertStatus(403);
+        $response->assertStatus(403)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     public function test_as_admin_i_can_create_a_user(): void
@@ -152,7 +147,8 @@ class UsersControllerTest extends TestCase
             route('users.update', ['user' => $userList->first()->uuid]),
             $this->getUserPayload()
         );
-        $response->assertStatus(401);
+        $response->assertStatus(401)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     public function test_as_user_i_cannot_replace_a_user(): void
@@ -163,7 +159,8 @@ class UsersControllerTest extends TestCase
             route('users.replace', ['user' => $user->uuid]),
             $this->getUserPayload(['email' => 'test2@example.com'])
         );
-        $response->assertStatus(403);
+        $response->assertStatus(403)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     public function test_as_admin_i_can_replace_a_user(): void
@@ -188,7 +185,8 @@ class UsersControllerTest extends TestCase
             route('users.replace', ['user' => Str::uuid()]),
             $this->getUserPayload(['email' => 'test2@example.com'])
         );
-        $response->assertStatus(404);
+        $response->assertStatus(404)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     // UPDATE A USER
@@ -199,7 +197,8 @@ class UsersControllerTest extends TestCase
             route('users.update', ['user' => $userList->first()->uuid]),
             ['data' => [ 'attributes' => ['email' => 'test2@example.com']]]
         );
-        $response->assertStatus(401);
+        $response->assertStatus(401)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     public function test_as_user_i_cannot_update_a_user(): void
@@ -210,7 +209,8 @@ class UsersControllerTest extends TestCase
             route('users.update', ['user' => $userList->first()->uuid]),
             ['data' => [ 'attributes' => ['email' => 'test2@example.com']]]
         );
-        $response->assertStatus(403);
+        $response->assertStatus(403)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     public function test_as_admin_i_can_update_a_user(): void
@@ -233,7 +233,8 @@ class UsersControllerTest extends TestCase
             route('users.update', ['user' => Str::uuid()]),
             ['data' => [ 'attributes' => ['email' => 'test2@example.com']]]
         );
-        $response->assertStatus(404);
+        $response->assertStatus(404)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     // DELETE A USER
@@ -241,7 +242,8 @@ class UsersControllerTest extends TestCase
     {
         $user = User::factory()->create();
         $response = $this->deleteJson(route('users.destroy', ['user' => $user->uuid]));
-        $response->assertStatus(401);
+        $response->assertStatus(401)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     public function test_as_user_i_cannot_delete_a_user(): void
@@ -251,7 +253,8 @@ class UsersControllerTest extends TestCase
             User::factory()->create(),
             route('users.destroy', ['user' => $user->uuid])
         );
-        $response->assertStatus(403);
+        $response->assertStatus(403)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     public function test_as_admin_i_can_delete_a_user(): void
@@ -272,7 +275,8 @@ class UsersControllerTest extends TestCase
             User::factory()->create(['is_admin' => true]),
             route('users.destroy', ['user' => $user->uuid])
         );
-        $response->assertStatus(400);
+        $response->assertStatus(400)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     public function test_as_admin_i_can_for_delete_a_user_with_attached_recipes(): void
@@ -292,7 +296,8 @@ class UsersControllerTest extends TestCase
             User::factory()->create(['is_admin' => true]),
             route('users.destroy', ['user' =>  Str::uuid()])
         );
-        $response->assertStatus(404);
+        $response->assertStatus(404)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     private function getUserPayload($extra = []): array

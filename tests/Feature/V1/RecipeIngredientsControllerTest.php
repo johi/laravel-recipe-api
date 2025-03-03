@@ -51,7 +51,8 @@ class RecipeIngredientsControllerTest extends TestCase
                 'recipe' => $recipe->uuid,
                 'ingredient' => Str::uuid()
             ]), []);
-        $response->assertStatus(404);
+        $response->assertStatus(404)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     // CREATE
@@ -62,7 +63,8 @@ class RecipeIngredientsControllerTest extends TestCase
             route('recipes.ingredients.store', ['recipe' => $recipe->uuid]),
             $this->getIngredientPayload($recipe)
         );
-        $response->assertStatus(401);
+        $response->assertStatus(401)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     public function test_as_user_i_can_create_my_own_ingredient(): void
@@ -85,7 +87,8 @@ class RecipeIngredientsControllerTest extends TestCase
             route('recipes.ingredients.store', ['recipe' => $recipe->uuid]),
             $this->getIngredientPayload($recipe)
         );
-        $response->assertStatus(403);
+        $response->assertStatus(403)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     public function test_as_admin_i_can_create_someone_else_ingredient(): void
@@ -108,7 +111,8 @@ class RecipeIngredientsControllerTest extends TestCase
             route('recipes.ingredients.replace', ['recipe' => $recipe->uuid, 'ingredient' => $ingredient->uuid]),
             $this->getIngredientPayload($recipe)
         );
-        $response->assertStatus(401);
+        $response->assertStatus(401)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     public function test_as_user_i_can_replace_my_own_ingredient(): void
@@ -135,7 +139,8 @@ class RecipeIngredientsControllerTest extends TestCase
             route('recipes.ingredients.replace', ['recipe' => $recipe->uuid, 'ingredient' => $ingredient->uuid]),
             $this->getIngredientPayload($recipe)
         );
-        $response->assertStatus(403);
+        $response->assertStatus(403)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     public function test_as_admin_i_can_replace_someone_else_ingredient(): void
@@ -159,7 +164,8 @@ class RecipeIngredientsControllerTest extends TestCase
             route('recipes.ingredients.replace', ['recipe' => $recipe, 'ingredient' => Str::uuid()]),
             $this->getIngredientPayload($recipe)
         );
-        $response->assertStatus(404);
+        $response->assertStatus(404)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     // UPDATE
@@ -171,7 +177,8 @@ class RecipeIngredientsControllerTest extends TestCase
             route('recipes.ingredients.update', ['recipe' => $recipe->uuid, 'ingredient' => $ingredient->uuid]),
             ['data' => ['attributes' => ['title' => 'PATCHED Ingredient']]]
         );
-        $response->assertStatus(401);
+        $response->assertStatus(401)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     public function test_as_user_i_can_update_my_own_ingredient(): void
@@ -200,7 +207,8 @@ class RecipeIngredientsControllerTest extends TestCase
             route('recipes.ingredients.update', ['recipe' => $recipe->uuid, 'ingredient' => $ingredient->uuid]),
             ['data' => ['attributes' => ['title' => $changedTitle]]]
         );
-        $response->assertStatus(403);
+        $response->assertStatus(403)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     public function test_as_admin_i_can_update_some_else_ingredient(): void
@@ -227,7 +235,8 @@ class RecipeIngredientsControllerTest extends TestCase
             route('recipes.ingredients.update', ['recipe' => $recipe->uuid, 'ingredient' => Str::uuid()]),
             ['data' => ['attributes' => ['title' => $changedTitle]]]
         );
-        $response->assertStatus(404);
+        $response->assertStatus(404)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     // DELETE
@@ -236,7 +245,8 @@ class RecipeIngredientsControllerTest extends TestCase
         $recipe = Recipe::factory()->create();
         $ingredient = RecipeIngredient::factory()->create(['recipe_id' => $recipe->id]);
         $response = $this->deleteJson(route('recipes.ingredients.destroy', ['recipe' => $recipe->uuid, 'ingredient' => $ingredient->uuid]));
-        $response->assertStatus(401);
+        $response->assertStatus(401)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     public function test_as_user_i_can_delete_my_own_ingredient(): void
@@ -260,7 +270,8 @@ class RecipeIngredientsControllerTest extends TestCase
             User::factory()->create(),
             route('recipes.ingredients.destroy', ['recipe' => $recipe->uuid, 'ingredient' => $ingredient->uuid]),
         );
-        $response->assertStatus(403);
+        $response->assertStatus(403)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     public function test_as_admin_i_can_delete_someone_else_ingredient(): void
@@ -281,7 +292,8 @@ class RecipeIngredientsControllerTest extends TestCase
             User::factory()->create(['is_admin' => true]),
             route('recipes.ingredients.destroy', ['recipe' => $recipe->uuid, 'ingredient' => Str::uuid()]),
         );
-        $response->assertStatus(404);
+        $response->assertStatus(404)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     // private methods

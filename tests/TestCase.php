@@ -47,4 +47,17 @@ abstract class TestCase extends BaseTestCase
     {
         return $this->makeAuthenticatedRequestWithToken($user, 'DELETE', $route, $data);
     }
+
+    protected function getErrorStructure(): array
+    {
+        return [
+            'errors' => [
+                '*' => [
+                    'message',
+                    'source'
+                ]
+            ],
+            'status'
+        ];
+    }
 }
