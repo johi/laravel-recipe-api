@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Http\Controllers\Api\AuthController;
 use App\Notifications\CustomPasswordResetNotification;
 use App\Notifications\CustomVerifyEmailNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -33,7 +34,7 @@ class AuthControllerTest extends TestCase
                 'message',
                 'status',
             ])
-            ->assertJsonPath('message', 'Authenticated')
+            ->assertJsonPath('message', AuthController::SUCCESS_AUTHENTICATED)
             ->assertJsonPath('status', 200);
     }
 
@@ -48,7 +49,8 @@ class AuthControllerTest extends TestCase
             'email' => 'admin@example.com',
             'password' => 'password',
         ]);
-        $response->assertStatus(403);
+        $response->assertStatus(403)
+            ->assertJsonStructure($this->getErrorStructure());
     }
 
     public function test_register(): void
@@ -63,7 +65,7 @@ class AuthControllerTest extends TestCase
         ]);
 
         $response->assertStatus(201)
-            ->assertJsonPath('message', 'Registration successful, please verify your email.')
+            ->assertJsonPath('message', AuthController::SUCCESS_REGISTERED)
             ->assertJsonStructure(['message', 'status']);
 
         $this->assertDatabaseHas('users', [
@@ -88,6 +90,7 @@ class AuthControllerTest extends TestCase
         ]);
 
         $response->assertStatus(400)
+            ->assertJsonStructure($this->getErrorStructure())
             ->assertJsonPath('errors.0.message', 'The email has already been taken.')
             ->assertJsonPath('errors.0.source', 'email');
     }
@@ -103,7 +106,7 @@ class AuthControllerTest extends TestCase
         $response = $this->get($verificationUrl);
 
         $response->assertStatus(200)
-            ->assertJsonPath('message', 'Email verified successfully.');
+            ->assertJsonPath('message', AuthController::SUCCESS_EMAIL_VERIFIED);
 
         $this->assertNotNull($user->fresh()->email_verified_at);
     }
@@ -120,7 +123,7 @@ class AuthControllerTest extends TestCase
         $response = $this->get($verificationUrl);
         $response->assertStatus(400)
             ->assertJsonStructure($this->getErrorStructure())
-            ->assertJsonPath('errors.0.message', 'Invalid verification link.')
+            ->assertJsonPath('errors.0.message', AuthController::ERROR_INVALID_VERIFICATION_LINK)
             ->assertJsonPath('errors.0.source', null);
     }
 
@@ -157,7 +160,7 @@ class AuthControllerTest extends TestCase
         ]);
 
         $response->assertStatus(200)
-            ->assertJsonPath('message', 'Verification email resent.');
+            ->assertJsonPath('message', AuthController::SUCCESS_EMAIL_VERIFICATION_SENT);
 
         Notification::assertSentTo($user, CustomVerifyEmailNotification::class);
     }
@@ -175,7 +178,7 @@ class AuthControllerTest extends TestCase
 
         $response->assertStatus(400)
             ->assertJsonStructure($this->getErrorStructure())
-            ->assertJsonPath('errors.0.message', 'Email is already verified.')
+            ->assertJsonPath('errors.0.message', AuthController::ERROR_EMAIL_ALREADY_VERIFIED)
             ->assertJsonPath('errors.0.source', null);
     }
 
@@ -190,7 +193,7 @@ class AuthControllerTest extends TestCase
         ]);
 
         $response->assertStatus(200)
-            ->assertJsonPath('message', 'Reset link sent to your email.');
+            ->assertJsonPath('message', AuthController::SUCCESS_RESET_LINK_SENT);
 
         Notification::assertSentTo($user, CustomPasswordResetNotification::class);
     }
@@ -211,7 +214,7 @@ class AuthControllerTest extends TestCase
         $token = Password::createToken($user);
         $response = $this->getJson("api/password/validate-reset-token/{$token}?email={$user->email}");
         $response->assertStatus(200)
-            ->assertJsonPath('message', 'Valid token.')
+            ->assertJsonPath('message', AuthController::SUCCESS_VALID_RESET_TOKEN)
             ->assertJsonPath('data.reset_token', $token);
     }
 
@@ -221,7 +224,7 @@ class AuthControllerTest extends TestCase
         $response = $this->getJson("api/password/validate-reset-token/invalid-token?email={$user->email}");
         $response->assertStatus(400)
             ->assertJsonStructure($this->getErrorStructure())
-            ->assertJsonPath('errors.0.message', 'Invalid or expired reset token.')
+            ->assertJsonPath('errors.0.message', AuthController::ERROR_INVALID_RESET_TOKEN)
             ->assertJsonPath('errors.0.source', null);
     }
 
@@ -232,7 +235,7 @@ class AuthControllerTest extends TestCase
         $response = $this->getJson("api/password/validate-reset-token/{$validToken}?email=nonexistent@example.com");
         $response->assertStatus(400)
             ->assertJsonStructure($this->getErrorStructure())
-            ->assertJsonPath('errors.0.message', 'Invalid or expired reset token.')
+            ->assertJsonPath('errors.0.message', AuthController::ERROR_INVALID_RESET_TOKEN)
             ->assertJsonPath('errors.0.source', null);
     }
 
@@ -249,7 +252,7 @@ class AuthControllerTest extends TestCase
         ]);
 
         $response->assertStatus(200)
-            ->assertJsonPath('message', 'Password reset successfully.');
+            ->assertJsonPath('message', AuthController::SUCCESS_PASSWORD_RESET);
 
         $this->assertTrue(Hash::check('new_password', $user->fresh()->password));
     }

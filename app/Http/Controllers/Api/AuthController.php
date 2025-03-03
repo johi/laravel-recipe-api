@@ -21,6 +21,23 @@ class AuthController extends Controller
 {
     use ApiResponses;
 
+    ### SUCCESS MESSAGES
+    const SUCCESS_AUTHENTICATED = 'Authenticated';
+    const SUCCESS_REGISTERED = 'Registration successful, please verify your email';
+    const SUCCESS_EMAIL_VERIFIED = 'Email verified successfully';
+    const SUCCESS_EMAIL_VERIFICATION_SENT = 'Email verification sent successfully';
+    const SUCCESS_RESET_LINK_SENT = 'Reset link sent to your email';
+    const SUCCESS_VALID_RESET_TOKEN = 'Valid token';
+    const SUCCESS_PASSWORD_RESET = 'Password reset successfully';
+
+    ### ERROR MESSAGES
+    const ERROR_INVALID_CREDENTIALS = 'Invalid credentials';
+    const ERROR_EMAIL_NOT_VERIFIED = 'Email address not verified';
+    const ERROR_INVALID_VERIFICATION_LINK = 'Invalid verification link';
+    const ERROR_EMAIL_ALREADY_VERIFIED = 'Email already verified';
+    const ERROR_UNABLE_TO_SEND_RESET_LINK = 'Unable to send reset link';
+    const ERROR_INVALID_RESET_TOKEN = 'Invalid or expired reset token';
+
     /**
      * Login
      *
@@ -33,17 +50,17 @@ class AuthController extends Controller
     public function login(LoginUserRequest $request) {
         $request->validated($request->all());
         if (!Auth::attempt($request->only('email', 'password'))) {
-            return $this->error('Invalid credentials', 401);
+            return $this->error(self::ERROR_INVALID_CREDENTIALS, 401);
         }
 
         $user = User::firstWhere('email', $request->email);
 
         if (!$user->hasVerifiedEmail()) {
-            return $this->error('Email address not verified.', 403);
+            return $this->error(self::ERROR_EMAIL_NOT_VERIFIED, 403);
         }
 
         return $this->ok(
-            'Authenticated',
+            self::SUCCESS_AUTHENTICATED,
             [
                 'token' => self::createToken($user),
                 'user' => new UserResource($user),
@@ -66,7 +83,7 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
         $user->sendEmailVerificationNotification();
-        return $this->success('Registration successful, please verify your email.', [], 201);
+        return $this->success(self::SUCCESS_REGISTERED, [], 201);
     }
 
     /**
@@ -79,10 +96,10 @@ class AuthController extends Controller
     {
         $user = User::where('uuid', $uuid)->firstOrFail();
         if ($hash !== sha1($user->getEmailForVerification())) {
-            return $this->error('Invalid verification link.', 400);
+            return $this->error(self::ERROR_INVALID_VERIFICATION_LINK, 400);
         }
         $user->markEmailAsVerified();
-        return $this->success('Email verified successfully.', [], 200);
+        return $this->success(self::SUCCESS_EMAIL_VERIFIED, [], 200);
     }
 
     /**
@@ -97,11 +114,11 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->firstOrFail();
 
         if ($user->hasVerifiedEmail()) {
-            return $this->error('Email is already verified.', 400);
+            return $this->error(self::ERROR_EMAIL_ALREADY_VERIFIED, 400);
         }
 
         $user->sendEmailVerificationNotification();
-        return $this->ok('Verification email resent.');
+        return $this->ok(self::SUCCESS_EMAIL_VERIFICATION_SENT);
     }
 
     /**
@@ -117,10 +134,10 @@ class AuthController extends Controller
         );
 
         if ($status === Password::RESET_LINK_SENT) {
-            return $this->success('Reset link sent to your email.', [], 200);
+            return $this->success(self::SUCCESS_RESET_LINK_SENT, [], 200);
         }
 
-        return $this->error('Unable to send reset link.', 400);
+        return $this->error(self::ERROR_UNABLE_TO_SEND_RESET_LINK, 400);
     }
 
     /**
@@ -140,9 +157,9 @@ class AuthController extends Controller
         ];
         $user = User::where('email', $credentials['email'])->first();
         if (!$user || !Password::getRepository()->exists($user, $token)) {
-            return $this->error('Invalid or expired reset token.', 400);
+            return $this->error(self::ERROR_INVALID_RESET_TOKEN, 400);
         }
-        return $this->success('Valid token.', [
+        return $this->success(self::SUCCESS_VALID_RESET_TOKEN, [
             'reset_token' => $token,
         ]);
     }
@@ -165,7 +182,7 @@ class AuthController extends Controller
             }
         );
         if ($status === Password::PASSWORD_RESET) {
-            return $this->success('Password reset successfully.', [], 200);
+            return $this->success(self::SUCCESS_PASSWORD_RESET, [], 200);
         }
         return $this->error(trans($status), 400);
     }
