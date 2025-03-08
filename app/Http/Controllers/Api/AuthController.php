@@ -26,7 +26,7 @@ class AuthController extends Controller
     const SUCCESS_REGISTERED = 'Registration successful, please verify your email';
     const SUCCESS_EMAIL_VERIFIED = 'Email verified successfully';
     const SUCCESS_EMAIL_VERIFICATION_SENT = 'Email verification sent successfully';
-    const SUCCESS_RESET_LINK_SENT = 'Reset link sent to your email';
+    const SUCCESS_RESET_LINK_SENT = 'If the email exists in our database, you will receive an email with instructions on how to reset your password. Please check your inbox, including the spam/junk folder.';
     const SUCCESS_VALID_RESET_TOKEN = 'Valid token';
     const SUCCESS_PASSWORD_RESET = 'Password reset successfully';
 
@@ -35,7 +35,6 @@ class AuthController extends Controller
     const ERROR_EMAIL_NOT_VERIFIED = 'Email address not verified';
     const ERROR_INVALID_VERIFICATION_LINK = 'Invalid verification link';
     const ERROR_EMAIL_ALREADY_VERIFIED = 'Email already verified';
-    const ERROR_UNABLE_TO_SEND_RESET_LINK = 'Unable to send reset link';
     const ERROR_INVALID_RESET_TOKEN = 'Invalid or expired reset token';
 
     /**
@@ -55,6 +54,7 @@ class AuthController extends Controller
 
         $user = User::firstWhere('email', $request->email);
 
+        // This should be ok, since we only reach this part when the user provided correct credentials.
         if (!$user->hasVerifiedEmail()) {
             return $this->error(self::ERROR_EMAIL_NOT_VERIFIED, 403);
         }
@@ -129,15 +129,12 @@ class AuthController extends Controller
      */
     public function forgotPassword(ForgotPasswordRequest $request)
     {
-        $status = Password::sendResetLink(
-            $request->only('email')
-        );
-
-        if ($status === Password::RESET_LINK_SENT) {
-            return $this->success(self::SUCCESS_RESET_LINK_SENT, [], 200);
+        $user = User::where('email', $request->email)->first();
+        if ($user) {
+            Password::sendResetLink($request->only('email'));
         }
 
-        return $this->error(self::ERROR_UNABLE_TO_SEND_RESET_LINK, 400);
+        return $this->success(self::SUCCESS_RESET_LINK_SENT, [], 200);
     }
 
     /**

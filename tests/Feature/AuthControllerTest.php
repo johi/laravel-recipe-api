@@ -204,8 +204,8 @@ class AuthControllerTest extends TestCase
             'email' => 'nonexistent@example.com',
         ]);
 
-        $response->assertStatus(400)
-            ->assertJsonPath('errors.0.message', 'No account found with this email address.');
+        $response->assertStatus(200)
+            ->assertJsonPath('message', AuthController::SUCCESS_RESET_LINK_SENT);
     }
 
     public function test_validate_reset_token_with_valid_token(): void
